@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
 using labbackend.Models;
+using backendLab.Models;  // Ensure this namespace is included if ReviewContext is defined here
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +9,10 @@ builder.Services.AddControllers();
 
 // Register the GuestContext with dependency injection
 builder.Services.AddDbContext<GuestContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register the ReviewContext with dependency injection
+builder.Services.AddDbContext<ReviewContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Swagger for API documentation (useful for testing during development)
