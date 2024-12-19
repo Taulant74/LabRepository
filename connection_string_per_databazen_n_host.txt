@@ -1,0 +1,3 @@
+ "ConnectionStrings": {
+    "DefaultConnection": "Data Source=sql6033.site4now.net;Initial Catalog=db_ab09aa_lab;User Id=db_ab09aa_lab_admin;Password=taulant05"
+  }
