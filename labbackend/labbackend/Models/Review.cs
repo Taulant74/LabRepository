@@ -1,8 +1,11 @@
-﻿using backendLab.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using labbackend.Models;
+
 
 namespace backendLab.Models
 {
+      [Table("EventBooking")] // Explicitly map to the correct table name
+ 
     public class Review
     {
         public int ReviewID { get; set; }

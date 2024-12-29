@@ -64,27 +64,69 @@ namespace labbackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            string query = @"
-                INSERT INTO Guest (GuestID, FirstName, LastName, Email, Phone, Passi)
-                VALUES (@GuestID, @FirstName, @LastName, @Email, @Phone,@Passi);";
+            string sqlDataSource = _configuration.GetConnectionString("DefaultConnection");
 
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (SqlConnection connection = new SqlConnection(sqlDataSource))
             {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@GuestID", guest.GuestID);
-                command.Parameters.AddWithValue("@FirstName", guest.FirstName);
-                command.Parameters.AddWithValue("@LastName", guest.LastName);
-                command.Parameters.AddWithValue("@Email", guest.Email);
-                command.Parameters.AddWithValue("@Phone", guest.Phone);
-                command.Parameters.AddWithValue("@Passi", guest.Passi);
-
-
                 await connection.OpenAsync();
-                await command.ExecuteNonQueryAsync();
+
+                // Check for existing email
+                string checkEmailQuery = "SELECT COUNT(*) FROM Guest WHERE Email = @Email";
+                using (SqlCommand checkEmailCmd = new SqlCommand(checkEmailQuery, connection))
+                {
+                    checkEmailCmd.Parameters.AddWithValue("@Email", guest.Email);
+                    int emailCount = (int)await checkEmailCmd.ExecuteScalarAsync();
+                    if (emailCount > 0)
+                    {
+                        return BadRequest(new { Field = "Email", Message = "This email is already in use." });
+                    }
+                }
+
+                // Check for existing phone
+                string checkPhoneQuery = "SELECT COUNT(*) FROM Guest WHERE Phone = @Phone";
+                using (SqlCommand checkPhoneCmd = new SqlCommand(checkPhoneQuery, connection))
+                {
+                    checkPhoneCmd.Parameters.AddWithValue("@Phone", guest.Phone);
+                    int phoneCount = (int)await checkPhoneCmd.ExecuteScalarAsync();
+                    if (phoneCount > 0)
+                    {
+                        return BadRequest(new { Field = "Phone", Message = "This phone number is already in use." });
+                    }
+                }
+
+                // Validate password length
+                if (guest.Passi == null || guest.Passi.Length < 8)
+                {
+                    return BadRequest(new { Field = "Password", Message = "Password must be at least 8 characters long." });
+                }
+
+                // Insert the guest into the database
+                string insertQuery = @"
+            INSERT INTO Guest (GuestID, FirstName, LastName, Email, Phone, Passi)
+            VALUES (@GuestID, @FirstName, @LastName, @Email, @Phone, @Passi);";
+
+                using (SqlCommand insertCmd = new SqlCommand(insertQuery, connection))
+                {
+                    if (guest.GuestID == null)
+                    {
+                        return BadRequest(new { Field = "GuestID", Message = "Guest ID is required." });
+                    }
+
+                    insertCmd.Parameters.AddWithValue("@GuestID", guest.GuestID);
+                    insertCmd.Parameters.AddWithValue("@FirstName", guest.FirstName ?? (object)DBNull.Value);
+                    insertCmd.Parameters.AddWithValue("@LastName", guest.LastName ?? (object)DBNull.Value);
+                    insertCmd.Parameters.AddWithValue("@Email", guest.Email ?? (object)DBNull.Value);
+                    insertCmd.Parameters.AddWithValue("@Phone", guest.Phone ?? (object)DBNull.Value);
+                    insertCmd.Parameters.AddWithValue("@Passi", guest.Passi ?? (object)DBNull.Value);
+
+                    await insertCmd.ExecuteNonQueryAsync();
+                }
             }
 
-            return new JsonResult("Added Succesfully");
+            return Ok(new { Message = "Guest added successfully." });
         }
+
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGuest(int id, Guest guest)

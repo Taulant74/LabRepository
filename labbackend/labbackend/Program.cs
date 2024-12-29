@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using labbackend.Models;
-using backendLab.Models;  // Ensure this namespace is included if ReviewContext is defined here
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,44 +10,37 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<GuestContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register the ReviewContext with dependency injection
-builder.Services.AddDbContext<ReviewContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Swagger for API documentation (useful for testing during development)
+// Add Swagger for API documentation (useful for testing during development)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure CORS Policy
+// Configure CORS Policy to allow frontend connection
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", // Name of the CORS policy
-        builder =>
-        {
-            builder.AllowAnyOrigin() // Allows requests from any origin
-                   .AllowAnyMethod() // Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
-                   .AllowAnyHeader(); // Allows any HTTP headers
-        });
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
 var app = builder.Build();
 
-// Use CORS policy in the application
-app.UseCors("AllowAll"); // Applies the "AllowAll" CORS policy globally
+// Use CORS policy globally
+app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline for development
 if (app.Environment.IsDevelopment())
 {
-    // Swagger is used for testing and exploring APIs easily during development
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); // Redirects HTTP requests to HTTPS
+app.UseHttpsRedirection(); // Redirect HTTP to HTTPS
 
-app.UseAuthorization(); // Applies authorization policies
+app.UseAuthorization();
 
-// Map controllers for routing the API requests
-app.MapControllers();
+app.MapControllers(); // Map API controllers for routing
 
 app.Run();
