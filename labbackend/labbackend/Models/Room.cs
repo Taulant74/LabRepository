@@ -1,4 +1,6 @@
-﻿room: namespace labbackend.Models
+﻿using System;
+
+namespace labbackend.Models
 {
     public class Room
     {
@@ -8,8 +10,7 @@
         public int RoomTypeID { get; set; }
 
         // Relationships
-        public Hotel Hotel { get; set; }
-        public RoomType RoomType { get; set; }
+        //public Hotel Hotel { get; set; }
+       // public RoomType RoomType { get; set; }
     }
-
 }

@@ -1,7 +1,4 @@
-﻿using labbackend.Models;
-using Microsoft.EntityFrameworkCore;
-
-roomcontext: using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace labbackend.Models
 {
@@ -13,5 +10,4 @@ namespace labbackend.Models
 
         public DbSet<Room> Rooms { get; set; }
     }
-
 }
