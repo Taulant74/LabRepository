@@ -98,8 +98,7 @@
               "RelativeToolTip": "labbackend\\Controllers\\SupplierController.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAFUAAAAiAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-30T14:38:47.208Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-30T14:38:47.208Z"
             },
             {
               "$type": "Document",
@@ -111,8 +110,7 @@
               "RelativeToolTip": "labbackend\\Models\\SupplierContext.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-30T14:36:56.951Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-30T14:36:56.951Z"
             },
             {
               "$type": "Document",
@@ -124,8 +122,7 @@
               "RelativeToolTip": "labbackend\\Models\\Supplier.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-30T14:36:15.459Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-30T14:36:15.459Z"
             },
             {
               "$type": "Document",
@@ -135,7 +132,7 @@
               "RelativeDocumentMoniker": "labbackend\\Program.cs",
               "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Program.cs",
               "RelativeToolTip": "labbackend\\Program.cs",
-              "ViewState": "AQIAAC4AAAAAAAAAAAAowDgAAAAAAAAA",
+              "ViewState": "AQIAAC4AAAAAAAAAAAAowDcAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-19T21:32:54.308Z",
               "EditorCaption": ""
@@ -150,8 +147,7 @@
               "RelativeToolTip": "labbackend\\Controllers\\AmenityController.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-30T11:32:12.546Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-30T11:32:12.546Z"
             },
             {
               "$type": "Document",
@@ -163,8 +159,7 @@
               "RelativeToolTip": "labbackend\\Models\\GuestContext.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAdAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-19T21:32:54.36Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-19T21:32:54.36Z"
             },
             {
               "$type": "Document",
@@ -188,8 +183,7 @@
               "RelativeToolTip": "labbackend\\Models\\Amenity.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-30T11:28:41.968Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-30T11:28:41.968Z"
             },
             {
               "$type": "Document",
@@ -201,8 +195,7 @@
               "RelativeToolTip": "labbackend\\appsettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAmwAwAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-12-19T21:32:54.264Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-19T21:32:54.264Z"
             },
             {
               "$type": "Document",
@@ -226,8 +219,7 @@
               "RelativeToolTip": "labbackend\\Models\\Review.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-30T11:49:40.354Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-30T11:49:40.354Z"
             },
             {
               "$type": "Document",
