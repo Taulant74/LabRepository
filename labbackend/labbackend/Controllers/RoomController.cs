@@ -21,10 +21,7 @@ namespace labbackend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRooms()
         {
-            var rooms = await _context.Rooms
-                .Include(r => r.Hotel)
-                .Include(r => r.RoomType)
-                .ToListAsync();
+            var rooms = await _context.Rooms.ToListAsync();
             return Ok(rooms);
         }
 
@@ -32,10 +29,7 @@ namespace labbackend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRoom(int id)
         {
-            var room = await _context.Rooms
-                .Include(r => r.Hotel)
-                .Include(r => r.RoomType)
-                .FirstOrDefaultAsync(r => r.RoomID == id);
+            var room = await _context.Rooms.FirstOrDefaultAsync(r => r.RoomID == id);
 
             if (room == null)
             {
