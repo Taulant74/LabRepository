@@ -10,7 +10,7 @@ namespace labbackend.Models
         public DateTime PaymentDate { get; set; }
 
         // Relationships
-        public Invoice Invoice { get; set; }
+        //public Invoice Invoice { get; set; }
     }
 
 }

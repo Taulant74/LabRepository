@@ -3,7 +3,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using labbackend.Models;
 
@@ -59,22 +58,14 @@ namespace labbackend.Controllers
         [HttpPost]
         public async Task<IActionResult> PostPayment([FromBody] Payment payment)
         {
-            // Ensure the model is valid
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Validate InvoiceID before inserting
-            if (!await DoesInvoiceExist(payment.InvoiceID))
-            {
-                return BadRequest("The specified InvoiceID does not exist.");
-            }
-
             // Generate a unique PaymentID
             payment.PaymentID = GenerateUniquePaymentID();
 
-            // Insert Payment into database
             string query = @"INSERT INTO Payment (PaymentID, InvoiceID, Amount, PaymentDate)
                              VALUES (@PaymentID, @InvoiceID, @Amount, @PaymentDate);";
 
@@ -102,13 +93,6 @@ namespace labbackend.Controllers
                 return BadRequest("Payment ID mismatch");
             }
 
-            // Validate InvoiceID before updating
-            if (!await DoesInvoiceExist(payment.InvoiceID))
-            {
-                return BadRequest("The specified InvoiceID does not exist.");
-            }
-
-            // Update Payment in database
             string query = @"UPDATE Payment
                              SET InvoiceID = @InvoiceID, Amount = @Amount, PaymentDate = @PaymentDate
                              WHERE PaymentID = @PaymentID;";
@@ -154,21 +138,6 @@ namespace labbackend.Controllers
             }
 
             return new JsonResult("Deleted Successfully");
-        }
-
-        // Helper: Check if the Invoice exists
-        private async Task<bool> DoesInvoiceExist(int invoiceId)
-        {
-            string query = "SELECT COUNT(1) FROM Invoice WHERE InvoiceID = @InvoiceID;";
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@InvoiceID", invoiceId);
-
-                await connection.OpenAsync();
-                int count = (int)await command.ExecuteScalarAsync();
-                return count > 0;
-            }
         }
 
         // Helper: Generate unique PaymentID

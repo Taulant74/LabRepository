@@ -9,8 +9,8 @@ namespace labbackend.Models
         public decimal Amount { get; set; }
 
         // Relationships
-        public Reservation Reservation { get; set; }
-        public ICollection<Payment> Payments { get; set; }
+        //public Reservation Reservation { get; set; }
+       // public ICollection<Payment> Payments { get; set; }
     }
 
 }

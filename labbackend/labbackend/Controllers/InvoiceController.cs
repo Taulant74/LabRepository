@@ -61,12 +61,6 @@ namespace labbackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Validate ReservationID before inserting
-            if (!await DoesReservationExist(invoice.ReservationID))
-            {
-                return BadRequest("The specified ReservationID does not exist.");
-            }
-
             // Generate a unique InvoiceID
             invoice.InvoiceID = GenerateUniqueInvoiceID();
 
@@ -93,12 +87,6 @@ namespace labbackend.Controllers
             if (id != invoice.InvoiceID)
             {
                 return BadRequest("Invoice ID mismatch");
-            }
-
-            // Validate ReservationID before updating
-            if (!await DoesReservationExist(invoice.ReservationID))
-            {
-                return BadRequest("The specified ReservationID does not exist.");
             }
 
             string query = @"UPDATE Invoice
@@ -144,20 +132,6 @@ namespace labbackend.Controllers
             }
 
             return new JsonResult("Deleted Successfully");
-        }
-
-        private async Task<bool> DoesReservationExist(int reservationId)
-        {
-            string query = "SELECT COUNT(1) FROM Reservation WHERE ReservationID = @ReservationID;";
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@ReservationID", reservationId);
-
-                await connection.OpenAsync();
-                int count = (int)await command.ExecuteScalarAsync();
-                return count > 0;
-            }
         }
 
         private int GenerateUniqueInvoiceID()
