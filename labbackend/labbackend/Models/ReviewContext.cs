@@ -1,13 +1,10 @@
-﻿using labbackend.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace backendLab.Models
+namespace labbackend.Models
 {
     public class ReviewContext : DbContext
     {
-        public ReviewContext(DbContextOptions<ReviewContext> options) : base(options)
-        {
-        }
+        public ReviewContext(DbContextOptions<ReviewContext> options) : base(options) { }
 
         public DbSet<Review> Reviews { get; set; }
 
@@ -16,6 +13,4 @@ namespace backendLab.Models
             modelBuilder.Entity<Review>().ToTable("Review"); // Map to the correct table name
         }
     }
-
 }
-
