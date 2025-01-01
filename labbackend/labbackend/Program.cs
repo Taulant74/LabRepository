@@ -3,48 +3,54 @@ using labbackend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllers();
 
-// Register the GuestContext with dependency injection
-builder.Services.AddDbContext<GuestContext>(options =>
+// Register ReviewContext with the DI container
+builder.Services.AddDbContext<ReviewContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register the InventoryContext with dependency injection
-builder.Services.AddDbContext<InventoryContext>(options =>
+// Register EventBookingContext with the DI container
+builder.Services.AddDbContext<EventBookingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add Swagger for API documentation (useful for testing during development)
+// Register FeedbackContext with the DI container
+builder.Services.AddDbContext<FeedbackContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register AmenityContext with the DI container
+builder.Services.AddDbContext<AmenityContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Enable Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure CORS Policy to allow frontend connection
+// Configure CORS Policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowAll", builder =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
     });
 });
 
 var app = builder.Build();
 
-// Use CORS policy globally
+// Use CORS policy
 app.UseCors("AllowAll");
 
-// Configure the HTTP request pipeline for development
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); // Redirect HTTP to HTTPS
-
+app.UseHttpsRedirection();
 app.UseAuthorization();
-
-app.MapControllers(); // Map API controllers for routing
+app.MapControllers();
 
 app.Run();

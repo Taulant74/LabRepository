@@ -1,11 +1,11 @@
-﻿using backendLab.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using labbackend.Models;
 
-namespace backendLab.Controllers
+namespace labbackend.Controllers
+
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -39,16 +39,6 @@ namespace backendLab.Controllers
             return review;
         }
 
-        // POST: api/Review
-        [HttpPost]
-        public async Task<ActionResult<Review>> PostReview(Review review)
-        {
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetReview), new { id = review.ReviewID }, review);
-        }
-
         // PUT: api/Review/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReview(int id, Review review)
@@ -77,6 +67,16 @@ namespace backendLab.Controllers
             }
 
             return NoContent();
+        }
+
+        // POST: api/Review
+        [HttpPost]
+        public async Task<ActionResult<Review>> PostReview(Review review)
+        {
+            _context.Reviews.Add(review);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetReview), new { id = review.ReviewID }, review);
         }
 
         // DELETE: api/Review/5

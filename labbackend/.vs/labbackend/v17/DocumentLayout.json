@@ -1,30 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\",
+  "WorkspaceRootPath": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\source\\repos\\labrepository\\labbackend\\labbackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\dell-center\\desktop\\srcde\\labrepository\\labbackend\\labbackend\\models\\roomtypecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\models\\roomtypecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\source\\repos\\labrepository\\labbackend\\labbackend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\source\\repos\\labrepository\\labbackend\\labbackend\\models\\guest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\models\\guest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\source\\repos\\labrepository\\labbackend\\labbackend\\models\\guestcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\models\\guestcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\source\\repos\\labrepository\\labbackend\\labbackend\\controllers\\guestcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\controllers\\guestcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\source\\repos\\labrepository\\labbackend\\labbackend\\labbackend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\labbackend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\dell-center\\desktop\\srcde\\labrepository\\labbackend\\labbackend\\models\\roomtype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\models\\roomtype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,80 +18,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\appsettings.json",
-              "RelativeDocumentMoniker": "labbackend\\appsettings.json",
-              "ToolTip": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\appsettings.json",
-              "RelativeToolTip": "labbackend\\appsettings.json",
+              "DocumentIndex": 1,
+              "Title": "RoomType.cs",
+              "DocumentMoniker": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\Models\\RoomType.cs",
+              "RelativeDocumentMoniker": "labbackend\\Models\\RoomType.cs",
+              "ToolTip": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\Models\\RoomType.cs",
+              "RelativeToolTip": "labbackend\\Models\\RoomType.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-12-19T21:32:54.264Z",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-30T20:56:59.856Z",
               "EditorCaption": ""
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\Program.cs",
-              "RelativeDocumentMoniker": "labbackend\\Program.cs",
-              "ToolTip": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\Program.cs",
-              "RelativeToolTip": "labbackend\\Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAxAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-19T21:32:54.308Z"
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "labbackend.csproj",
-              "DocumentMoniker": "C:\\Users\\rinaq\\Source\\Repos\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
-              "RelativeDocumentMoniker": "labbackend\\labbackend.csproj",
-              "ToolTip": "C:\\Users\\rinaq\\Source\\Repos\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
-              "RelativeToolTip": "labbackend\\labbackend.csproj",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-12-19T21:32:54.317Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "GuestContext.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\Models\\GuestContext.cs",
-              "RelativeDocumentMoniker": "labbackend\\Models\\GuestContext.cs",
-              "ToolTip": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\Models\\GuestContext.cs",
-              "RelativeToolTip": "labbackend\\Models\\GuestContext.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAdAAAA",
+              "DocumentIndex": 0,
+              "Title": "RoomTypeContext.cs",
+              "DocumentMoniker": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\Models\\RoomTypeContext.cs",
+              "RelativeDocumentMoniker": "labbackend\\Models\\RoomTypeContext.cs",
+              "ToolTip": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\Models\\RoomTypeContext.cs",
+              "RelativeToolTip": "labbackend\\Models\\RoomTypeContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-19T21:32:54.36Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "GuestController.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\Controllers\\GuestController.cs",
-              "RelativeDocumentMoniker": "labbackend\\Controllers\\GuestController.cs",
-              "ToolTip": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\Controllers\\GuestController.cs",
-              "RelativeToolTip": "labbackend\\Controllers\\GuestController.cs",
-              "ViewState": "AQIAABEAAAAAAAAAAAAIwJAAAAARAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-19T21:32:54.367Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Guest.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\Models\\Guest.cs",
-              "RelativeDocumentMoniker": "labbackend\\Models\\Guest.cs",
-              "ToolTip": "C:\\Users\\rinaq\\source\\repos\\LabRepository\\labbackend\\labbackend\\Models\\Guest.cs",
-              "RelativeToolTip": "labbackend\\Models\\Guest.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAtAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-19T21:32:54.373Z"
+              "WhenOpened": "2024-12-30T20:56:48.452Z",
+              "EditorCaption": ""
             }
           ]
         }
