@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // Inline styles for components
 const styles = {
@@ -65,238 +67,505 @@ const styles = {
     padding: "16px",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
     marginBottom: "16px",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    marginTop: "16px",
-  },
-  tableHeader: {
-    background: "#1890ff",
-    color: "#fff",
-  },
-  tableHeaderCell: {
-    padding: "8px",
-    border: "1px solid #ddd",
-  },
-  tableRow: {
-    background: "#fff",
-  },
-  tableCell: {
-    padding: "8px",
-    border: "1px solid #ddd",
-  },
+  }
+  
 };
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("users");
+  const [activeTab, setActiveTab] = useState("guests");
+  const [guests, setGuests] = useState([]);
+  const [editGuest, setEditGuest] = useState(null);
+  const [notification, setNotification] = useState("");
+  const [inventory, setInventory] = useState([]);
+const [editInventory, setEditInventory] = useState(null);
+const [newInventory, setNewInventory] = useState(null);
 
-  const renderUsersContent = () => (
-    <div style={styles.card}>
-      <h3>Users</h3>
-      <table style={styles.table}>
-        <thead style={styles.tableHeader}>
-          <tr>
-            <th style={styles.tableHeaderCell}>ID</th>
-            <th style={styles.tableHeaderCell}>Name</th>
-            <th style={styles.tableHeaderCell}>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>1</td>
-            <td style={styles.tableCell}>John Doe</td>
-            <td style={styles.tableCell}>john@example.com</td>
-          </tr>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>2</td>
-            <td style={styles.tableCell}>Jane Smith</td>
-            <td style={styles.tableCell}>jane@example.com</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+
+useEffect(() => {
+    if (activeTab === "inventory") {
+      fetchInventory();
+    }
+  }, [activeTab]);
+  
+  useEffect(() => {
+    if (activeTab === "guests") {
+      fetchGuests();
+    }
+  }, [activeTab]);
+
+  const fetchGuests = async () => {
+    try {
+      const response = await axios.get("https://localhost:7085/api/Guest");
+      setGuests(response.data);
+    } catch (error) {
+      console.error("Error fetching guests:", error);
+    }
+  };
+
+  const fetchInventory = async () => {
+    try {
+      const response = await axios.get("https://localhost:7085/api/Inventory");
+      setInventory(response.data); // Use data directly
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
+    }
+  };
+  const handleAddInventory = async () => {
+    try {
+      const inventoryData = { ...newInventory }; // Prepare new inventory data
+      await axios.post("https://localhost:7085/api/Inventory", inventoryData); // Make POST request
+      fetchInventory(); // Refresh inventory list
+      setNewInventory(null); // Close modal
+      showNotification("Inventory added successfully!");
+    } catch (error) {
+      console.error("Error adding inventory:", error);
+      showNotification("Failed to add inventory.");
+    }
+  };
+  
+  
+  
+  
+  
+  
+  
+
+const handleDeleteGuest = async (id) => {
+  try {
+    const response = await axios.delete(`https://localhost:7085/api/Guest/${id}`);
+    if (response.status === 200 || response.status === 204) {
+      fetchGuests(); // Refresh the guests list
+      showNotification("Guest deleted successfully!", "danger");
+    } else {
+      throw new Error("Failed to delete guest.");
+    }
+  } catch (error) {
+    console.error("Error deleting guest:", error);
+    showNotification("Error deleting guest. Please try again.", "danger");
+  }
+};
+
+  const handleUpdateGuest = async () => {
+    try {
+      await axios.put(`https://localhost:7085/api/Guest/${editGuest.guestID}`, editGuest);
+      fetchGuests();
+      setEditGuest(null);
+      showNotification("Guest updated successfully!");
+    } catch (error) {
+      console.error("Error updating guest:", error);
+    }
+  };
+
+  const handleDeleteInventory = async (id) => {
+    try {
+      const response = await axios.delete(`https://localhost:7085/api/Inventory/${id}`);
+      if (response.status === 200 || response.status === 204) {
+        fetchInventory(); // Refresh inventory list
+        showNotification("Inventory item deleted successfully!", "danger");
+      } else {
+        throw new Error("Failed to delete inventory item.");
+      }
+    } catch (error) {
+      console.error("Error deleting inventory item:", error);
+      showNotification("Error deleting inventory item. Please try again.", "danger");
+    }
+  };
+  
+  const handleEditInventory = (item) => {
+    setEditInventory(item); // Pass the item as-is
+  };
+  
+  
+const handleUpdateInventory = async () => {
+    try {
+      await axios.put(
+        `https://localhost:7085/api/Inventory/${editInventory.inventoryID}`,
+        editInventory // Use editInventory directly
+      );
+      fetchInventory();
+      setEditInventory(null);
+      showNotification("Inventory item updated successfully!");
+    } catch (error) {
+      console.error("Error updating inventory item:", error);
+    }
+  };
+  
+  
+  
+  
+  const showNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => setNotification(""), 2000);
+  };
 
   const renderInventoryContent = () => (
-    <div style={styles.card}>
-      <h3>Inventory</h3>
-      <p>Manage your inventory items here.</p>
-      <table style={styles.table}>
-        <thead style={styles.tableHeader}>
-          <tr>
-            <th style={styles.tableHeaderCell}>ID</th>
-            <th style={styles.tableHeaderCell}>Item Name</th>
-            <th style={styles.tableHeaderCell}>Quantity</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>1</td>
-            <td style={styles.tableCell}>Laptops</td>
-            <td style={styles.tableCell}>50</td>
-          </tr>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>2</td>
-            <td style={styles.tableCell}>Desks</td>
-            <td style={styles.tableCell}>30</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Inventory</h3>
+        <button
+  className="btn btn-light text-primary"
+  onClick={() => {
+    const nextInventoryID = 
+      inventory.length > 0 
+        ? Math.max(...inventory.map(item => item.inventoryID)) + 1 
+        : 1;
 
-  const renderMaintenanceRequestContent = () => (
-    <div style={styles.card}>
-      <h3>Maintenance Request</h3>
-      <p>Track maintenance requests here.</p>
-      <table style={styles.table}>
-        <thead style={styles.tableHeader}>
-          <tr>
-            <th style={styles.tableHeaderCell}>ID</th>
-            <th style={styles.tableHeaderCell}>Request Type</th>
-            <th style={styles.tableHeaderCell}>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>1</td>
-            <td style={styles.tableCell}>Electrical</td>
-            <td style={styles.tableCell}>Pending</td>
-          </tr>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>2</td>
-            <td style={styles.tableCell}>Plumbing</td>
-            <td style={styles.tableCell}>Completed</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+    setNewInventory({
+      inventoryID: nextInventoryID,
+      hotelID: "",
+      itemName: "",
+      quantity: "",
+      price: "",
+      supplierID: "",
+    });
+  }}
+>
+  Add New Inventory
+</button>
 
-  const renderStaffContent = () => (
-    <div style={styles.card}>
-      <h3>Staff</h3>
-      <p>View and manage staff details.</p>
-      <table style={styles.table}>
-        <thead style={styles.tableHeader}>
-          <tr>
-            <th style={styles.tableHeaderCell}>ID</th>
-            <th style={styles.tableHeaderCell}>Name</th>
-            <th style={styles.tableHeaderCell}>Position</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>1</td>
-            <td style={styles.tableCell}>Alice Johnson</td>
-            <td style={styles.tableCell}>Manager</td>
-          </tr>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>2</td>
-            <td style={styles.tableCell}>Bob Brown</td>
-            <td style={styles.tableCell}>Technician</td>
-          </tr>
-        </tbody>
-      </table>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>ID</th>
+              <th>Hotel ID</th>
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Supplier ID</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {inventory.length > 0 ? (
+              inventory.map((item) => (
+                <tr key={item.inventoryID}>
+                  <td>{item.inventoryID}</td>
+                  <td>{item.hotelID || "N/A"}</td>
+                  <td>{item.itemName || "N/A"}</td>
+                  <td>{item.quantity || "N/A"}</td>
+                  <td>{item.price || "N/A"}</td>
+                  <td>{item.supplierID || "N/A"}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditInventory(item)} // Open Edit Modal
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteInventory(item.inventoryID)} // Delete Inventory Item
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center text-muted">
+                  No inventory items found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Inventory Modal */}
+      {editInventory && (
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Inventory Item</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setEditInventory(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Hotel ID"
+                  value={editInventory.hotelID || ""}
+                  onChange={(e) =>
+                    setEditInventory({
+                      ...editInventory,
+                      hotelID: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Item Name"
+                  value={editInventory.itemName || ""}
+                  onChange={(e) =>
+                    setEditInventory({
+                      ...editInventory,
+                      itemName: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Quantity"
+                  value={editInventory.quantity || ""}
+                  onChange={(e) =>
+                    setEditInventory({
+                      ...editInventory,
+                      quantity: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Price"
+                  value={editInventory.price || ""}
+                  onChange={(e) =>
+                    setEditInventory({
+                      ...editInventory,
+                      price: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Supplier ID"
+                  value={editInventory.supplierID || ""}
+                  onChange={(e) =>
+                    setEditInventory({
+                      ...editInventory,
+                      supplierID: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleUpdateInventory}
+                >
+                  Update
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditInventory(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add New Inventory Modal */}
+      {newInventory && (
+  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Add New Inventory</h5>
+          <button type="button" className="btn-close" onClick={() => setNewInventory(null)}></button>
+        </div>
+        <div className="modal-body">
+          <input type="number" className="form-control mb-3" placeholder="Inventory ID" value={newInventory.inventoryID} readOnly />
+          <input type="number" className="form-control mb-3" placeholder="Hotel ID" value={newInventory.hotelID} onChange={(e) => setNewInventory({ ...newInventory, hotelID: parseInt(e.target.value, 10) })} />
+          <input type="text" className="form-control mb-3" placeholder="Item Name" value={newInventory.itemName} onChange={(e) => setNewInventory({ ...newInventory, itemName: e.target.value })} />
+          <input type="number" className="form-control mb-3" placeholder="Quantity" value={newInventory.quantity} onChange={(e) => setNewInventory({ ...newInventory, quantity: parseInt(e.target.value, 10) })} />
+          <input type="number" className="form-control mb-3" placeholder="Price" value={newInventory.price} onChange={(e) => setNewInventory({ ...newInventory, price: parseFloat(e.target.value) })} />
+          <input type="number" className="form-control mb-3" placeholder="Supplier ID" value={newInventory.supplierID} onChange={(e) => setNewInventory({ ...newInventory, supplierID: parseInt(e.target.value, 10) })} />
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={handleAddInventory}>Add</button>
+          <button className="btn btn-secondary" onClick={() => setNewInventory(null)}>Cancel</button>
+        </div>
+      </div>
     </div>
-  );
+  </div>
+)}
 
-  const renderSupplierContent = () => (
-    <div style={styles.card}>
-      <h3>Supplier</h3>
-      <p>Manage supplier information here.</p>
-      <table style={styles.table}>
-        <thead style={styles.tableHeader}>
-          <tr>
-            <th style={styles.tableHeaderCell}>ID</th>
-            <th style={styles.tableHeaderCell}>Supplier Name</th>
-            <th style={styles.tableHeaderCell}>Contact</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>1</td>
-            <td style={styles.tableCell}>ABC Supplies</td>
-            <td style={styles.tableCell}>+123456789</td>
-          </tr>
-          <tr style={styles.tableRow}>
-            <td style={styles.tableCell}>2</td>
-            <td style={styles.tableCell}>XYZ Distributors</td>
-            <td style={styles.tableCell}>+987654321</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   );
+  
+  
+  
+  
+  
+  
+  const renderGuestsContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white">
+        <h3 className="m-0">Guests</h3>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {guests.length > 0 ? (
+              guests.map((guest, index) => (
+                <tr key={guest.guestID || index}>
+                  <td>{guest.guestID}</td>
+                  <td>{guest.firstName || "N/A"}</td>
+                  <td>{guest.lastName || "N/A"}</td>
+                  <td>{guest.email || "N/A"}</td>
+                  <td>{guest.phone || "N/A"}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      style={{ borderRadius: "4px" }}
+                      onClick={() => setEditGuest(guest)} // Opens the Edit modal
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      style={{ borderRadius: "4px" }}
+                      onClick={() => handleDeleteGuest(guest.guestID)} // Deletes the guest
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center text-muted">
+                  No guests found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Guest Modal */}
+      {editGuest && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Guest</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setEditGuest(null)} // Closes the modal
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="First Name"
+                  value={editGuest.firstName}
+                  onChange={(e) => setEditGuest({ ...editGuest, firstName: e.target.value })}
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Last Name"
+                  value={editGuest.lastName}
+                  onChange={(e) => setEditGuest({ ...editGuest, lastName: e.target.value })}
+                />
+                <input
+                  type="email"
+                  className="form-control mb-3"
+                  placeholder="Email"
+                  value={editGuest.email}
+                  onChange={(e) => setEditGuest({ ...editGuest, email: e.target.value })}
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Phone"
+                  value={editGuest.phone}
+                  onChange={(e) => setEditGuest({ ...editGuest, phone: e.target.value })}
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleUpdateGuest} // Updates the guest
+                >
+                  Update
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditGuest(null)} // Cancels editing
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  
+  
+  
+  
 
   return (
     <div style={styles.layout}>
-      <div style={styles.sidebar}>
-        <div style={styles.sidebarHeader}>Admin Dashboard</div>
-        <ul style={styles.sidebarMenu}>
-          <li
-            style={{
-              ...styles.sidebarMenuItem,
-              ...(activeTab === "users" ? styles.sidebarMenuItemActive : {}),
-            }}
-            onClick={() => setActiveTab("users")}
-          >
-            Users
-          </li>
-          <li
-            style={{
-              ...styles.sidebarMenuItem,
-              ...(activeTab === "inventory" ? styles.sidebarMenuItemActive : {}),
-            }}
-            onClick={() => setActiveTab("inventory")}
-          >
-            Inventory
-          </li>
-          <li
-            style={{
-              ...styles.sidebarMenuItem,
-              ...(activeTab === "maintenance" ? styles.sidebarMenuItemActive : {}),
-            }}
-            onClick={() => setActiveTab("maintenance")}
-          >
-            Maintenance Request
-          </li>
-          <li
-            style={{
-              ...styles.sidebarMenuItem,
-              ...(activeTab === "staff" ? styles.sidebarMenuItemActive : {}),
-            }}
-            onClick={() => setActiveTab("staff")}
-          >
-            Staff
-          </li>
-          <li
-            style={{
-              ...styles.sidebarMenuItem,
-              ...(activeTab === "supplier" ? styles.sidebarMenuItemActive : {}),
-            }}
-            onClick={() => setActiveTab("supplier")}
-          >
-            Supplier
-          </li>
-        </ul>
-      </div>
+      <div className="d-flex flex-column bg-dark text-white vh-100" style={{ width: "240px" }}>
+  <div className="p-3 border-bottom text-center fw-bold">Admin Dashboard</div>
+  <ul className="nav flex-column">
+    <li className={`nav-item p-2 ${activeTab === "guests" ? "bg-primary text-white" : ""}`} onClick={() => setActiveTab("guests")}>
+      Guests
+    </li>
+    <li className={`nav-item p-2 ${activeTab === "inventory" ? "bg-primary text-white" : ""}`} onClick={() => setActiveTab("inventory")}>
+      Inventory
+    </li>
+  </ul>
+</div>
+
       <div style={{ flex: 1 }}>
-        <div style={styles.header}>
-          <h1 style={styles.headerTitle}>
-            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-          </h1>
-          <button style={styles.headerButton}>View Profile</button>
-        </div>
-        <div style={styles.content}>
-          {activeTab === "users" && renderUsersContent()}
-          {activeTab === "inventory" && renderInventoryContent()}
-          {activeTab === "maintenance" && renderMaintenanceRequestContent()}
-          {activeTab === "staff" && renderStaffContent()}
-          {activeTab === "supplier" && renderSupplierContent()}
-        </div>
+      <div className="d-flex justify-content-between align-items-center bg-light border-bottom p-3">
+  <h1 className="h5 m-0">{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h1>
+</div>
+<div className="container mt-3">
+  {activeTab === "guests" && renderGuestsContent()}
+  {activeTab === "inventory" && renderInventoryContent()}
+</div>
+
+
       </div>
+      
+      {editInventory && (
+  <div style={styles.modalBackdrop}>
+ 
+  </div>
+)}
+
+{notification && (
+  <div className="alert alert-success position-fixed top-0 end-0 m-3" style={{ zIndex: 2000 }}>
+    {notification}
+  </div>
+)}
+
     </div>
   );
 };

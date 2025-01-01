@@ -10,6 +10,10 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<GuestContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register the InventoryContext with dependency injection
+builder.Services.AddDbContext<InventoryContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Add Swagger for API documentation (useful for testing during development)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
