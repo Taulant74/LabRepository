@@ -79,6 +79,9 @@ const AdminDashboard = () => {
   const [inventory, setInventory] = useState([]);
 const [editInventory, setEditInventory] = useState(null);
 const [newInventory, setNewInventory] = useState(null);
+const [showSupplierModal, setShowSupplierModal] = useState(false);
+const [suppliers, setSuppliers] = useState([]);
+const [editSupplier, setEditSupplier] = useState(null); // For editing supplier
 
 
 useEffect(() => {
@@ -101,7 +104,15 @@ useEffect(() => {
       console.error("Error fetching guests:", error);
     }
   };
-
+  const fetchSuppliers = async () => {
+    try {
+      const response = await axios.get("https://localhost:7085/api/Supplier");
+      setSuppliers(response.data);
+    } catch (error) {
+      console.error("Error fetching suppliers:", error);
+    }
+  };
+  
   const fetchInventory = async () => {
     try {
       const response = await axios.get("https://localhost:7085/api/Inventory");
@@ -123,12 +134,21 @@ useEffect(() => {
     }
   };
   
-  
-  
-  
-  
-  
-  
+  const handleEditSupplier = (supplier) => {
+    setEditSupplier(supplier); // Open edit modal with selected supplier
+  };
+
+  const handleDeleteSupplier = async (supplierID) => {
+    try {
+      await axios.delete(`https://localhost:7085/api/Supplier/${supplierID}`); // API call to delete
+      fetchSuppliers(); // Refresh suppliers list
+      showNotification("Supplier deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting supplier:", error);
+      showNotification("Failed to delete supplier.");
+    }
+  };
+    
 
 const handleDeleteGuest = async (id) => {
   try {
@@ -143,6 +163,11 @@ const handleDeleteGuest = async (id) => {
     console.error("Error deleting guest:", error);
     showNotification("Error deleting guest. Please try again.", "danger");
   }
+};
+
+const handleShowSupplierModal = () => {
+  fetchSuppliers(); // Ensure suppliers are fetched when opening the modal
+  setShowSupplierModal(true); // Open the modal
 };
 
   const handleUpdateGuest = async () => {
@@ -203,26 +228,25 @@ const handleUpdateInventory = async () => {
       <div className="card-header bg-primary text-white d-flex justify-content-between">
         <h3 className="m-0">Inventory</h3>
         <button
-  className="btn btn-light text-primary"
-  onClick={() => {
-    const nextInventoryID = 
-      inventory.length > 0 
-        ? Math.max(...inventory.map(item => item.inventoryID)) + 1 
-        : 1;
-
-    setNewInventory({
-      inventoryID: nextInventoryID,
-      hotelID: "",
-      itemName: "",
-      quantity: "",
-      price: "",
-      supplierID: "",
-    });
-  }}
->
-  Add New Inventory
-</button>
-
+          className="btn btn-light text-primary"
+          onClick={() => {
+            const nextInventoryID =
+              inventory.length > 0
+                ? Math.max(...inventory.map((item) => item.inventoryID)) + 1
+                : 1;
+  
+            setNewInventory({
+              inventoryID: nextInventoryID,
+              hotelID: "",
+              itemName: "",
+              quantity: "",
+              price: "",
+              supplierID: "",
+            });
+          }}
+        >
+          Add New Inventory
+        </button>
       </div>
       <div className="table-responsive">
         <table className="table table-bordered">
@@ -233,7 +257,15 @@ const handleUpdateInventory = async () => {
               <th>Name</th>
               <th>Quantity</th>
               <th>Price</th>
-              <th>Supplier ID</th>
+              <th>
+                Supplier ID
+                <button
+                  className="btn btn-sm btn-outline-secondary ms-2"
+                  onClick={handleShowSupplierModal}
+                >
+                  &#x25BC;
+                </button>
+              </th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -373,32 +405,276 @@ const handleUpdateInventory = async () => {
   
       {/* Add New Inventory Modal */}
       {newInventory && (
-  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Inventory</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setNewInventory(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Inventory ID"
+                  value={newInventory.inventoryID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Hotel ID"
+                  value={newInventory.hotelID}
+                  onChange={(e) =>
+                    setNewInventory({
+                      ...newInventory,
+                      hotelID: parseInt(e.target.value, 10),
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Item Name"
+                  value={newInventory.itemName}
+                  onChange={(e) =>
+                    setNewInventory({
+                      ...newInventory,
+                      itemName: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Quantity"
+                  value={newInventory.quantity}
+                  onChange={(e) =>
+                    setNewInventory({
+                      ...newInventory,
+                      quantity: parseInt(e.target.value, 10),
+                    })
+                  }
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Price"
+                  value={newInventory.price}
+                  onChange={(e) =>
+                    setNewInventory({
+                      ...newInventory,
+                      price: parseFloat(e.target.value),
+                    })
+                  }
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Supplier ID"
+                  value={newInventory.supplierID || ""}
+                  onChange={(e) =>
+                    setNewInventory({
+                      ...newInventory,
+                      supplierID: parseInt(e.target.value, 10),
+                    })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleAddInventory}
+                >
+                  Add
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setNewInventory(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Supplier Modal */}
+    {/* Supplier Modal */}
+{/* Supplier Modal */}
+{showSupplierModal && (
+  <div
+    className="modal d-block"
+    style={{
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    }}
+  >
+    <div
+      className="modal-dialog"
+      style={{
+        maxWidth: "80%", // Adjust modal width
+        width: "80%", // Adjust modal width
+        maxHeight: "90vh", // Ensure the modal doesn't exceed viewport height
+      }}
+    >
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Suppliers</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setShowSupplierModal(false)}
+          ></button>
+        </div>
+        <div
+          className="modal-body"
+          style={{
+            overflowY: "auto", // Add scroll if content exceeds height
+          }}
+        >
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th>Supplier ID</th>
+                <th>Name</th>
+                <th>Contact Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {suppliers.map((supplier) => (
+                <tr key={supplier.supplierID}>
+                  <td>{supplier.supplierID}</td>
+                  <td>{supplier.name}</td>
+                  <td>{supplier.contactName}</td>
+                  <td>{supplier.phone}</td>
+                  <td>{supplier.email}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => handleEditSupplier(supplier)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteSupplier(supplier.supplierID)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+{/* Edit Supplier Modal */}
+{editSupplier && (
+  <div
+    className="modal d-block"
+    style={{
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    }}
+  >
     <div className="modal-dialog">
       <div className="modal-content">
         <div className="modal-header">
-          <h5 className="modal-title">Add New Inventory</h5>
-          <button type="button" className="btn-close" onClick={() => setNewInventory(null)}></button>
+          <h5 className="modal-title">Edit Supplier</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setEditSupplier(null)} // Close modal
+          ></button>
         </div>
         <div className="modal-body">
-          <input type="number" className="form-control mb-3" placeholder="Inventory ID" value={newInventory.inventoryID} readOnly />
-          <input type="number" className="form-control mb-3" placeholder="Hotel ID" value={newInventory.hotelID} onChange={(e) => setNewInventory({ ...newInventory, hotelID: parseInt(e.target.value, 10) })} />
-          <input type="text" className="form-control mb-3" placeholder="Item Name" value={newInventory.itemName} onChange={(e) => setNewInventory({ ...newInventory, itemName: e.target.value })} />
-          <input type="number" className="form-control mb-3" placeholder="Quantity" value={newInventory.quantity} onChange={(e) => setNewInventory({ ...newInventory, quantity: parseInt(e.target.value, 10) })} />
-          <input type="number" className="form-control mb-3" placeholder="Price" value={newInventory.price} onChange={(e) => setNewInventory({ ...newInventory, price: parseFloat(e.target.value) })} />
-          <input type="number" className="form-control mb-3" placeholder="Supplier ID" value={newInventory.supplierID} onChange={(e) => setNewInventory({ ...newInventory, supplierID: parseInt(e.target.value, 10) })} />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Name"
+            value={editSupplier.name}
+            onChange={(e) =>
+              setEditSupplier({ ...editSupplier, name: e.target.value })
+            }
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Contact Name"
+            value={editSupplier.contactName}
+            onChange={(e) =>
+              setEditSupplier({ ...editSupplier, contactName: e.target.value })
+            }
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Phone"
+            value={editSupplier.phone}
+            onChange={(e) =>
+              setEditSupplier({ ...editSupplier, phone: e.target.value })
+            }
+          />
+          <input
+            type="email"
+            className="form-control mb-3"
+            placeholder="Email"
+            value={editSupplier.email}
+            onChange={(e) =>
+              setEditSupplier({ ...editSupplier, email: e.target.value })
+            }
+          />
         </div>
         <div className="modal-footer">
-          <button className="btn btn-primary" onClick={handleAddInventory}>Add</button>
-          <button className="btn btn-secondary" onClick={() => setNewInventory(null)}>Cancel</button>
+          <button
+            className="btn btn-primary"
+            onClick={async () => {
+              try {
+                await axios.put(
+                  `https://localhost:7085/api/Supplier/${editSupplier.supplierID}`,
+                  editSupplier
+                ); // API call to update
+                fetchSuppliers(); // Refresh suppliers list
+                setEditSupplier(null); // Close modal
+                showNotification("Supplier updated successfully!");
+              } catch (error) {
+                console.error("Error updating supplier:", error);
+                showNotification("Failed to update supplier.");
+              }
+            }}
+          >
+            Save
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setEditSupplier(null)}
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
   </div>
 )}
 
+
     </div>
   );
+  
+  
   
   
   

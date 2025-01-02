@@ -6,6 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddControllers();
 
+// Register InventoryContext with the DI container
+builder.Services.AddDbContext<InventoryContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Register ReviewContext with the DI container
 builder.Services.AddDbContext<ReviewContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -20,6 +24,10 @@ builder.Services.AddDbContext<FeedbackContext>(options =>
 
 // Register AmenityContext with the DI container
 builder.Services.AddDbContext<AmenityContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register SupplierContext with the DI container
+builder.Services.AddDbContext<SupplierContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Enable Swagger for API documentation

@@ -2759,23 +2759,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Dell-Center\\.nuget\\packages\\": {},
+    "C:\\Users\\taula\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
+      "projectUniqueName": "C:\\Users\\taula\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
       "projectName": "labbackend",
-      "projectPath": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
-      "packagesPath": "C:\\Users\\Dell-Center\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\obj\\",
+      "projectPath": "C:\\Users\\taula\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
+      "packagesPath": "C:\\Users\\taula\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\taula\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Dell-Center\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\taula\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2797,11 +2797,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -2854,7 +2849,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }
