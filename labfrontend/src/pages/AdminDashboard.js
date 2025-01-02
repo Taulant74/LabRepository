@@ -82,6 +82,7 @@ const [newInventory, setNewInventory] = useState(null);
 const [showSupplierModal, setShowSupplierModal] = useState(false);
 const [suppliers, setSuppliers] = useState([]);
 const [editSupplier, setEditSupplier] = useState(null); // For editing supplier
+const [newSupplier, setNewSupplier] = useState(null); // State for adding new supplier
 
 
 useEffect(() => {
@@ -134,6 +135,18 @@ useEffect(() => {
     }
   };
   
+  const handleAddSupplier = async () => {
+    try {
+      await axios.post("https://localhost:7085/api/Supplier", newSupplier); // API call to add supplier
+      fetchSuppliers(); // Refresh the suppliers list
+      setNewSupplier(null); // Close the modal
+      showNotification("Supplier added successfully!");
+    } catch (error) {
+      console.error("Error adding supplier:", error);
+      showNotification("Failed to add supplier.");
+    }
+  };
+  
   const handleEditSupplier = (supplier) => {
     setEditSupplier(supplier); // Open edit modal with selected supplier
   };
@@ -169,6 +182,13 @@ const handleShowSupplierModal = () => {
   fetchSuppliers(); // Ensure suppliers are fetched when opening the modal
   setShowSupplierModal(true); // Open the modal
 };
+
+const getNextSupplierID = () => {
+  return suppliers.length > 0
+    ? Math.max(...suppliers.map((supplier) => supplier.supplierID)) + 1
+    : 1; // Default to 1 if no suppliers exist
+};
+
 
   const handleUpdateGuest = async () => {
     try {
@@ -510,6 +530,7 @@ const handleUpdateInventory = async () => {
       {/* Supplier Modal */}
     {/* Supplier Modal */}
 {/* Supplier Modal */}
+{/* Supplier Modal */}
 {showSupplierModal && (
   <div
     className="modal d-block"
@@ -521,7 +542,7 @@ const handleUpdateInventory = async () => {
       className="modal-dialog"
       style={{
         maxWidth: "80%", // Adjust modal width
-        width: "80%", // Adjust modal width
+        width: "80%",
         maxHeight: "90vh", // Ensure the modal doesn't exceed viewport height
       }}
     >
@@ -540,6 +561,21 @@ const handleUpdateInventory = async () => {
             overflowY: "auto", // Add scroll if content exceeds height
           }}
         >
+       <button
+  className="btn btn-primary mb-3"
+  onClick={() =>
+    setNewSupplier({
+      supplierID: getNextSupplierID(), // Automatically calculate the next ID
+      name: "",
+      contactName: "",
+      phone: "",
+      email: "",
+    })
+  }
+>
+  Add New Supplier
+</button>
+
           <table className="table table-bordered">
             <thead>
               <tr>
@@ -582,6 +618,94 @@ const handleUpdateInventory = async () => {
     </div>
   </div>
 )}
+{/* Add Supplier Modal */}
+{/* Add Supplier Modal */}
+{newSupplier && (
+  <div
+    className="modal d-block"
+    style={{
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    }}
+  >
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Add Supplier</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setNewSupplier(null)}
+          ></button>
+        </div>
+        <div className="modal-body">
+          {/* Supplier ID Field */}
+          <input
+            type="number"
+            className="form-control mb-3"
+            placeholder="Supplier ID"
+            value={newSupplier.supplierID} // Read-only value
+            readOnly
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Name"
+            value={newSupplier.name}
+            onChange={(e) =>
+              setNewSupplier({ ...newSupplier, name: e.target.value })
+            }
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Contact Name"
+            value={newSupplier.contactName}
+            onChange={(e) =>
+              setNewSupplier({
+                ...newSupplier,
+                contactName: e.target.value,
+              })
+            }
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Phone"
+            value={newSupplier.phone}
+            onChange={(e) =>
+              setNewSupplier({ ...newSupplier, phone: e.target.value })
+            }
+          />
+          <input
+            type="email"
+            className="form-control mb-3"
+            placeholder="Email"
+            value={newSupplier.email}
+            onChange={(e) =>
+              setNewSupplier({ ...newSupplier, email: e.target.value })
+            }
+          />
+        </div>
+        <div className="modal-footer">
+          <button
+            className="btn btn-primary"
+            onClick={handleAddSupplier}
+          >
+            Add
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setNewSupplier(null)}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+
 {/* Edit Supplier Modal */}
 {editSupplier && (
   <div
