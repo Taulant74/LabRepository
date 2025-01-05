@@ -117,6 +117,10 @@ const Rooms = () => {
         </div>
       </nav>
 
+      <div className="hero">
+        <h1></h1>
+      </div>
+
       <div className="text-center mt-3">
         <h2>Explore Our Rooms</h2>
       </div>
@@ -138,7 +142,7 @@ const Rooms = () => {
       <footer className="bg-light py-4">
         <div className="container text-center">
           <p>&copy; {new Date().getFullYear()} Dardania Heights. All rights reserved.</p>
-         
+      
         </div>
       </footer>
     </div>

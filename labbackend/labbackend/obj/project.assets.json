@@ -2759,23 +2759,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Dell-Center\\.nuget\\packages\\": {},
+    "C:\\Users\\rinaq\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
+      "projectUniqueName": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
       "projectName": "labbackend",
-      "projectPath": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
-      "packagesPath": "C:\\Users\\Dell-Center\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Dell-Center\\Desktop\\srcde\\LabRepository\\labbackend\\labbackend\\obj\\",
+      "projectPath": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
+      "packagesPath": "C:\\Users\\rinaq\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Dell-Center\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\rinaq\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2846,6 +2846,24 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[6.0.28, 6.0.28]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[6.0.28, 6.0.28]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[6.0.28, 6.0.28]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[6.0.28, 6.0.28]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -2854,7 +2872,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
       }
     }
   }
