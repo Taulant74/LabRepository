@@ -7,12 +7,13 @@ import EventBooking from './pages/EventBooking';
 import MainPage from './pages/MainPage';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
+import Rooms from './pages/Rooms';
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={< MainPage />} />
+        <Route path="/" element={<Rooms />} />
         <Route path="/eventbooking" element={<EventBooking />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -21,5 +22,6 @@ const App = () => {
     </Router>
   );
 };
+
 
 export default App;
