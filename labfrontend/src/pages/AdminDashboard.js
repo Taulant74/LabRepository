@@ -83,6 +83,27 @@ const [showSupplierModal, setShowSupplierModal] = useState(false);
 const [suppliers, setSuppliers] = useState([]);
 const [editSupplier, setEditSupplier] = useState(null); // For editing supplier
 const [newSupplier, setNewSupplier] = useState(null); // State for adding new supplier
+const [staff, setStaff] = useState([]);
+const [editStaff, setEditStaff] = useState(null);
+const [newStaff, setNewStaff] = useState(null);
+const [maintenanceRequests, setMaintenanceRequests] = useState([]);
+const [editMaintenanceRequest, setEditMaintenanceRequest] = useState(null);
+const [newMaintenanceRequest, setNewMaintenanceRequest] = useState(null);
+const [employeeSchedules, setEmployeeSchedules] = useState([]);
+const [editSchedule, setEditSchedule] = useState(null);
+const [newSchedule, setNewSchedule] = useState(null);
+const [schedules, setSchedules] = useState([]);
+
+
+
+const fetchSchedules = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/EmployeeSchedule");
+    setSchedules(response.data);
+  } catch (error) {
+    console.error("Error fetching schedules:", error.message);
+  }
+};
 
 
 useEffect(() => {
@@ -96,6 +117,25 @@ useEffect(() => {
       fetchGuests();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === "staff") {
+      fetchStaff();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === "employeeSchedule") {
+      fetchEmployeeSchedules();
+    }
+  }, [activeTab]);
+  
+  useEffect(() => {
+    if (activeTab === "maintenanceRequests") {
+      fetchMaintenanceRequests();
+    }
+  }, [activeTab]);
+  
 
   const fetchGuests = async () => {
     try {
@@ -122,6 +162,68 @@ useEffect(() => {
       console.error("Error fetching inventory:", error);
     }
   };
+  const fetchStaff = async () => {
+    try {
+      const response = await axios.get("https://localhost:7085/api/Staff");
+      setStaff(response.data);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+    }
+  };
+  const fetchEmployeeSchedules = async () => {
+    try {
+      const response = await axios.get("https://localhost:7085/api/EmployeeSchedule");
+      setEmployeeSchedules(response.data);
+    } catch (error) {
+      console.error("Error fetching employee schedules:", error);
+    }
+  };
+  const fetchMaintenanceRequests = async () => {
+    try {
+      const response = await axios.get("https://localhost:7085/api/MaintenanceRequest");
+      setMaintenanceRequests(response.data);
+    } catch (error) {
+      console.error("Error fetching maintenance requests:", error);
+    }
+  };
+  const handleAddMaintenanceRequest = async () => {
+    try {
+      await axios.post("https://localhost:7085/api/MaintenanceRequest", newMaintenanceRequest);
+      fetchMaintenanceRequests();
+      setNewMaintenanceRequest(null);
+      showNotification("Maintenance request added successfully!");
+    } catch (error) {
+      console.error("Error adding maintenance request:", error);
+      showNotification("Failed to add maintenance request.");
+    }
+  };
+  const handleUpdateMaintenanceRequest = async () => {
+    try {
+      await axios.put(
+        `https://localhost:7085/api/MaintenanceRequest/${editMaintenanceRequest.requestID}`,
+        editMaintenanceRequest
+      );
+      fetchMaintenanceRequests();
+      setEditMaintenanceRequest(null);
+      showNotification("Maintenance request updated successfully!");
+    } catch (error) {
+      console.error("Error updating maintenance request:", error);
+      showNotification("Failed to update maintenance request.");
+    }
+  };
+  const handleDeleteMaintenanceRequest = async (id) => {
+    try {
+      await axios.delete(`https://localhost:7085/api/MaintenanceRequest/${id}`);
+      fetchMaintenanceRequests();
+      showNotification("Maintenance request deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting maintenance request:", error);
+      showNotification("Failed to delete maintenance request.");
+    }
+  };
+        
+  
+  
   const handleAddInventory = async () => {
     try {
       const inventoryData = { ...newInventory }; // Prepare new inventory data
@@ -146,6 +248,41 @@ useEffect(() => {
       showNotification("Failed to add supplier.");
     }
   };
+  const handleAddStaff = async () => {
+    console.log("New Staff Data:", newStaff); // Debugging
+    try {
+      await axios.post("https://localhost:7085/api/Staff", newStaff);
+      fetchStaff();
+      setNewStaff(null);
+      showNotification("Staff member added successfully!");
+    } catch (error) {
+      console.error("Error adding staff:", error);
+      showNotification("Failed to add staff.");
+    }
+  };
+  
+  const handleUpdateStaff = async () => {
+    try {
+      await axios.put(`https://localhost:7085/api/Staff/${editStaff.staffID}`, editStaff);
+      fetchStaff();
+      setEditStaff(null);
+      showNotification("Staff member updated successfully!");
+    } catch (error) {
+      console.error("Error updating staff:", error);
+      showNotification("Failed to update staff.");
+    }
+  };
+  const handleDeleteStaff = async (id) => {
+    try {
+      await axios.delete(`https://localhost:7085/api/Staff/${id}`);
+      fetchStaff();
+      showNotification("Staff member deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting staff:", error);
+      showNotification("Failed to delete staff.");
+    }
+  };
+      
   
   const handleEditSupplier = (supplier) => {
     setEditSupplier(supplier); // Open edit modal with selected supplier
@@ -161,7 +298,65 @@ useEffect(() => {
       showNotification("Failed to delete supplier.");
     }
   };
-    
+const handleAddSchedule = async () => {
+  try {
+    const scheduleData = {
+      scheduleID: newSchedule.scheduleID,
+      staffID: parseInt(newSchedule.staffID, 10), // Ensure it's an integer
+      date: newSchedule.date, // Ensure ISO 8601 format
+      startTime: `${newSchedule.startTime}:00`, // Ensure HH:mm:ss format
+      endTime: `${newSchedule.endTime}:00`, // Ensure HH:mm:ss format
+    };
+
+    const response = await axios.post(
+      "https://localhost:7085/api/EmployeeSchedule",
+      scheduleData
+    );
+
+    console.log("Server Response:", response.data);
+    fetchSchedules(); // Refresh the schedule list
+    setNewSchedule(null); // Close the modal
+    showNotification("Schedule added successfully!");
+  } catch (error) {
+    if (error.response) {
+      console.error("Error adding schedule:", error.response.data); // Log server response
+    } else {
+      console.error("Error adding schedule:", error.message); // Log error message
+    }
+    showNotification("Failed to add schedule. Check console for details.");
+  }
+};
+
+
+
+
+
+
+const handleUpdateSchedule = async () => {
+  try {
+    await axios.put(
+      `https://localhost:7085/api/EmployeeSchedule/${editSchedule.scheduleID}`,
+      editSchedule
+    );
+    fetchEmployeeSchedules();
+    setEditSchedule(null);
+    showNotification("Employee schedule updated successfully!");
+  } catch (error) {
+    console.error("Error updating employee schedule:", error);
+    showNotification("Failed to update employee schedule.");
+  }
+};
+
+const handleDeleteSchedule = async (id) => {
+  try {
+    await axios.delete(`https://localhost:7085/api/EmployeeSchedule/${id}`);
+    fetchEmployeeSchedules();
+    showNotification("Employee schedule deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting employee schedule:", error);
+    showNotification("Failed to delete employee schedule.");
+  }
+};
 
 const handleDeleteGuest = async (id) => {
   try {
@@ -242,6 +437,739 @@ const handleUpdateInventory = async () => {
     setNotification(message);
     setTimeout(() => setNotification(""), 2000);
   };
+  const renderStaffContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Staff</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewStaff({
+              staffID: staff.length > 0 ? Math.max(...staff.map((s) => s.staffID)) + 1 : 1,
+              firstName: "",
+              lastName: "",
+              position: "",
+              email: "",
+              phone: "",
+              hotelID: "",
+            })
+          }
+        >
+          Add New Staff
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Position</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Hotel ID</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {staff.length > 0 ? (
+              staff.map((member) => (
+                <tr key={member.staffID}>
+                  <td>{member.staffID}</td>
+                  <td>{member.firstName}</td>
+                  <td>{member.lastName}</td>
+                  <td>{member.position}</td>
+                  <td>{member.email}</td>
+                  <td>{member.phone}</td>
+                  <td>{member.hotelID}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditStaff(member)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteStaff(member.staffID)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center text-muted">
+                  No staff members found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Staff Modal */}
+      {editStaff && (
+  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Edit Staff Member</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setEditStaff(null)}
+          ></button>
+        </div>
+        <div className="modal-body">
+          {/* Read-only ID Field */}
+          <input
+            type="number"
+            className="form-control mb-3"
+            placeholder="Staff ID"
+            value={editStaff.staffID} // Read-only value
+            readOnly
+          />
+          {/* Other fields */}
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="First Name"
+            value={editStaff.firstName}
+            onChange={(e) => setEditStaff({ ...editStaff, firstName: e.target.value })}
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Last Name"
+            value={editStaff.lastName}
+            onChange={(e) => setEditStaff({ ...editStaff, lastName: e.target.value })}
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Position"
+            value={editStaff.position}
+            onChange={(e) => setEditStaff({ ...editStaff, position: e.target.value })}
+          />
+          <input
+            type="email"
+            className="form-control mb-3"
+            placeholder="Email"
+            value={editStaff.email}
+            onChange={(e) => setEditStaff({ ...editStaff, email: e.target.value })}
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Phone"
+            value={editStaff.phone}
+            onChange={(e) => setEditStaff({ ...editStaff, phone: e.target.value })}
+          />
+          <input
+            type="number"
+            className="form-control mb-3"
+            placeholder="Hotel ID"
+            value={editStaff.hotelID}
+            onChange={(e) => setEditStaff({ ...editStaff, hotelID: e.target.value })}
+          />
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={handleUpdateStaff}>
+            Save
+          </button>
+          <button className="btn btn-secondary" onClick={() => setEditStaff(null)}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+  
+      {/* Add New Staff Modal */}
+      {newStaff && (
+  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Add New Staff Member</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setNewStaff(null)}
+          ></button>
+        </div>
+        <div className="modal-body">
+          {/* Read-only ID Field */}
+          <input
+            type="number"
+            className="form-control mb-3"
+            placeholder="Staff ID"
+            value={newStaff.staffID} // Read-only value
+            readOnly
+          />
+          {/* Other fields */}
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="First Name"
+            value={newStaff.firstName}
+            onChange={(e) => setNewStaff({ ...newStaff, firstName: e.target.value })}
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Last Name"
+            value={newStaff.lastName}
+            onChange={(e) => setNewStaff({ ...newStaff, lastName: e.target.value })}
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Position"
+            value={newStaff.position}
+            onChange={(e) => setNewStaff({ ...newStaff, position: e.target.value })}
+          />
+          <input
+            type="email"
+            className="form-control mb-3"
+            placeholder="Email"
+            value={newStaff.email}
+            onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
+          />
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Phone"
+            value={newStaff.phone}
+            onChange={(e) => setNewStaff({ ...newStaff, phone: e.target.value })}
+          />
+          <input
+            type="number"
+            className="form-control mb-3"
+            placeholder="Hotel ID"
+            value={newStaff.hotelID}
+            onChange={(e) => setNewStaff({ ...newStaff, hotelID: e.target.value })}
+          />
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={handleAddStaff}>
+            Add
+          </button>
+          <button className="btn btn-secondary" onClick={() => setNewStaff(null)}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+    </div>
+  );
+  const renderEmployeeScheduleContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Employee Schedules</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewSchedule({
+              scheduleID: employeeSchedules.length > 0
+                ? Math.max(...employeeSchedules.map((s) => s.scheduleID)) + 1
+                : 1,
+              staffID: "",
+              date: "",
+              startTime: "",
+              endTime: "",
+            })
+          }
+        >
+          Add New Schedule
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Schedule ID</th>
+              <th>Staff ID</th>
+              <th>Date</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {employeeSchedules.length > 0 ? (
+              employeeSchedules.map((schedule) => (
+                <tr key={schedule.scheduleID}>
+                  <td>{schedule.scheduleID}</td>
+                  <td>{schedule.staffID}</td>
+                  <td>{schedule.date}</td>
+                  <td>{schedule.startTime}</td>
+                  <td>{schedule.endTime}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditSchedule(schedule)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteSchedule(schedule.scheduleID)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center text-muted">
+                  No employee schedules found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Modal */}
+      {editSchedule && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Employee Schedule</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setEditSchedule(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Schedule ID"
+                  value={editSchedule.scheduleID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Staff ID"
+                  value={editSchedule.staffID}
+                  onChange={(e) =>
+                    setEditSchedule({ ...editSchedule, staffID: e.target.value })
+                  }
+                />
+                <input
+                  type="date"
+                  className="form-control mb-3"
+                  placeholder="Date"
+                  value={editSchedule.date}
+                  onChange={(e) =>
+                    setEditSchedule({ ...editSchedule, date: e.target.value })
+                  }
+                />
+                <input
+                  type="time"
+                  className="form-control mb-3"
+                  placeholder="Start Time"
+                  value={editSchedule.startTime}
+                  onChange={(e) =>
+                    setEditSchedule({ ...editSchedule, startTime: e.target.value })
+                  }
+                />
+                <input
+                  type="time"
+                  className="form-control mb-3"
+                  placeholder="End Time"
+                  value={editSchedule.endTime}
+                  onChange={(e) =>
+                    setEditSchedule({ ...editSchedule, endTime: e.target.value })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateSchedule}>
+                  Save
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditSchedule(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add Modal */}
+      {newSchedule && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Employee Schedule</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setNewSchedule(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Schedule ID"
+                  value={newSchedule.scheduleID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Staff ID"
+                  value={newSchedule.staffID}
+                  onChange={(e) =>
+                    setNewSchedule({ ...newSchedule, staffID: e.target.value })
+                  }
+                />
+                <input
+                  type="date"
+                  className="form-control mb-3"
+                  placeholder="Date"
+                  value={newSchedule.date}
+                  onChange={(e) =>
+                    setNewSchedule({ ...newSchedule, date: e.target.value })
+                  }
+                />
+                <input
+                  type="time"
+                  className="form-control mb-3"
+                  placeholder="Start Time"
+                  value={newSchedule.startTime}
+                  onChange={(e) =>
+                    setNewSchedule({ ...newSchedule, startTime: e.target.value })
+                  }
+                />
+                <input
+                  type="time"
+                  className="form-control mb-3"
+                  placeholder="End Time"
+                  value={newSchedule.endTime}
+                  onChange={(e) =>
+                    setNewSchedule({ ...newSchedule, endTime: e.target.value })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddSchedule}>
+                  Add
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setNewSchedule(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  const renderMaintenanceRequestsContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Maintenance Requests</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewMaintenanceRequest({
+              requestID: maintenanceRequests.length > 0
+                ? Math.max(...maintenanceRequests.map((r) => r.requestID)) + 1
+                : 1,
+              hotelID: "",
+              description: "",
+              requestDate: "",
+              priority: "",
+              status: "",
+            })
+          }
+        >
+          Add New Request
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Request ID</th>
+              <th>Hotel ID</th>
+              <th>Description</th>
+              <th>Request Date</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {maintenanceRequests.length > 0 ? (
+              maintenanceRequests.map((request) => (
+                <tr key={request.requestID}>
+                  <td>{request.requestID}</td>
+                  <td>{request.hotelID}</td>
+                  <td>{request.description}</td>
+                  <td>{request.requestDate}</td>
+                  <td>{request.priority}</td>
+                  <td>{request.status}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditMaintenanceRequest(request)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteMaintenanceRequest(request.requestID)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center text-muted">
+                  No maintenance requests found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Maintenance Request Modal */}
+      {editMaintenanceRequest && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Maintenance Request</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setEditMaintenanceRequest(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Hotel ID"
+                  value={editMaintenanceRequest.hotelID || ""}
+                  onChange={(e) =>
+                    setEditMaintenanceRequest({
+                      ...editMaintenanceRequest,
+                      hotelID: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Description"
+                  value={editMaintenanceRequest.description || ""}
+                  onChange={(e) =>
+                    setEditMaintenanceRequest({
+                      ...editMaintenanceRequest,
+                      description: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="date"
+                  className="form-control mb-3"
+                  placeholder="Request Date"
+                  value={editMaintenanceRequest.requestDate || ""}
+                  onChange={(e) =>
+                    setEditMaintenanceRequest({
+                      ...editMaintenanceRequest,
+                      requestDate: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Priority"
+                  value={editMaintenanceRequest.priority || ""}
+                  onChange={(e) =>
+                    setEditMaintenanceRequest({
+                      ...editMaintenanceRequest,
+                      priority: e.target.value,
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Status"
+                  value={editMaintenanceRequest.status || ""}
+                  onChange={(e) =>
+                    setEditMaintenanceRequest({
+                      ...editMaintenanceRequest,
+                      status: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateMaintenanceRequest}>
+                  Save
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditMaintenanceRequest(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add New Maintenance Request Modal */}
+      {newMaintenanceRequest && (
+  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Add New Maintenance Request</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setNewMaintenanceRequest(null)}
+          ></button>
+        </div>
+        <div className="modal-body">
+          {/* Request ID - Read-Only */}
+          <input
+            type="number"
+            className="form-control mb-3"
+            placeholder="Request ID"
+            value={
+              newMaintenanceRequest.requestID ||
+              (maintenanceRequests.length > 0
+                ? Math.max(...maintenanceRequests.map((r) => r.requestID)) + 1
+                : 1)
+            }
+            readOnly
+          />
+
+          {/* Hotel ID */}
+          <input
+            type="number"
+            className="form-control mb-3"
+            placeholder="Hotel ID"
+            value={newMaintenanceRequest.hotelID || ""}
+            onChange={(e) =>
+              setNewMaintenanceRequest({
+                ...newMaintenanceRequest,
+                hotelID: e.target.value,
+              })
+            }
+          />
+
+          {/* Description */}
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Description"
+            value={newMaintenanceRequest.description || ""}
+            onChange={(e) =>
+              setNewMaintenanceRequest({
+                ...newMaintenanceRequest,
+                description: e.target.value,
+              })
+            }
+          />
+
+          {/* Request Date */}
+          <input
+            type="date"
+            className="form-control mb-3"
+            placeholder="Request Date"
+            value={newMaintenanceRequest.requestDate || ""}
+            onChange={(e) =>
+              setNewMaintenanceRequest({
+                ...newMaintenanceRequest,
+                requestDate: e.target.value,
+              })
+            }
+          />
+
+          {/* Priority */}
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Priority"
+            value={newMaintenanceRequest.priority || ""}
+            onChange={(e) =>
+              setNewMaintenanceRequest({
+                ...newMaintenanceRequest,
+                priority: e.target.value,
+              })
+            }
+          />
+
+          {/* Status */}
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Status"
+            value={newMaintenanceRequest.status || ""}
+            onChange={(e) =>
+              setNewMaintenanceRequest({
+                ...newMaintenanceRequest,
+                status: e.target.value,
+              })
+            }
+          />
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={handleAddMaintenanceRequest}>
+            Add
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setNewMaintenanceRequest(null)}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+    </div>
+  );
+  
+  
 
   const renderInventoryContent = () => (
     <div className="card shadow-sm border-0">
@@ -939,6 +1867,26 @@ const handleUpdateInventory = async () => {
     <li className={`nav-item p-2 ${activeTab === "inventory" ? "bg-primary text-white" : ""}`} onClick={() => setActiveTab("inventory")}>
       Inventory
     </li>
+    <li
+  className={`nav-item p-2 ${activeTab === "staff" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("staff")}
+>
+  Staff
+</li>
+<li
+  className={`nav-item p-2 ${activeTab === "maintenanceRequests" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("maintenanceRequests")}
+>
+  Maintenance Requests
+</li>
+
+<li
+  className={`nav-item p-2 ${activeTab === "employeeSchedule" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("employeeSchedule")}
+>
+  Employee Schedules
+</li>
+
   </ul>
 </div>
 
@@ -947,8 +1895,13 @@ const handleUpdateInventory = async () => {
   <h1 className="h5 m-0">{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h1>
 </div>
 <div className="container mt-3">
-  {activeTab === "guests" && renderGuestsContent()}
-  {activeTab === "inventory" && renderInventoryContent()}
+{activeTab === "guests" && renderGuestsContent()}
+{activeTab === "inventory" && renderInventoryContent()}
+{activeTab === "staff" && renderStaffContent()}
+{activeTab === "maintenanceRequests" && renderMaintenanceRequestsContent()}
+{activeTab === "employeeSchedule" && renderEmployeeScheduleContent()}
+
+
 </div>
 
 

@@ -3,38 +3,43 @@ using labbackend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
+// Add services to the container.
 builder.Services.AddControllers();
 
-// Register InventoryContext with the DI container
 builder.Services.AddDbContext<InventoryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register ReviewContext with the DI container
 builder.Services.AddDbContext<ReviewContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register EventBookingContext with the DI container
+builder.Services.AddDbContext<StaffContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddDbContext<EventBookingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register FeedbackContext with the DI container
 builder.Services.AddDbContext<FeedbackContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register AmenityContext with the DI container
 builder.Services.AddDbContext<AmenityContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register SupplierContext with the DI container
 builder.Services.AddDbContext<SupplierContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Enable Swagger for API documentation
+builder.Services.AddDbContext<MaintenanceRequestContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<RoomContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<EmployeeScheduleContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Add EmployeeScheduleContext
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure CORS Policy
+// Configure CORS to allow all origins, methods, and headers.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
@@ -47,10 +52,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Use CORS policy
+// Enable CORS
 app.UseCors("AllowAll");
 
-// Configure the HTTP request pipeline
+// Enable Swagger only in development mode.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

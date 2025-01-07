@@ -248,9 +248,11 @@ const Signup = () => {
             onChange={handleChange}
             required
           />
+          <br></br>
           <InputInfo show={showInfo.Passi}>Password must be at least 8 characters long.</InputInfo>
           <Button type="submit">Sign Up</Button>
         </Form>
+        <br></br>
         {message && <Message error={error}>{message}</Message>}
         <p>Already have an account?</p>
         <LoginLink href="/login">Login here</LoginLink>

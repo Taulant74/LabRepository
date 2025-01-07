@@ -130,6 +130,7 @@ const Login = () => {
     <PageContainer>
       <LoginBox>
         <Title>Login</Title>
+        
         <Form onSubmit={handleSubmit}>
           <Input
             type="email"
@@ -147,9 +148,12 @@ const Login = () => {
             onChange={handleChange}
             required
           />
+
           <Button type="submit">Log In</Button>
+          
         </Form>
         {message && <Message error={error}>{message}</Message>}
+        <br></br>
         <p>Don't have an account?</p>
         <SignupLink href="/signup">Continue here</SignupLink>
       </LoginBox>
