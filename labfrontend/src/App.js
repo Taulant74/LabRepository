@@ -7,6 +7,8 @@ import MainPage from './pages/MainPage';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import Rooms from './pages/Rooms';
+import EventBooking from './pages/EventBooking';
+
 
 const App = () => {
   return (
@@ -16,6 +18,7 @@ const App = () => {
         
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/eventbooking" element={<EventBooking />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
