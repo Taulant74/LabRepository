@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { FaEdit, FaTrashAlt, FaCheckCircle } from 'react-icons/fa'; // Adding icons for interactions
 
 const EventBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [newBooking, setNewBooking] = useState({ name: '', event: '', date: '' });
   const [editingBooking, setEditingBooking] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(''); // Error message for form validation
 
   const predefinedEvents = [
     { name: 'Wine Tasting', description: 'Enjoy an exclusive selection of premium wines with expert guidance.', image: '/images/wine.jpeg' },
@@ -21,6 +23,12 @@ const EventBooking = () => {
   };
 
   const saveBooking = () => {
+    if (!newBooking.name || !newBooking.event || !newBooking.date) {
+      setErrorMessage('Please fill in all the fields!');
+      return;
+    }
+    setErrorMessage('');
+
     if (editingBooking) {
       setBookings(
         bookings.map((booking) =>
@@ -65,64 +73,60 @@ const EventBooking = () => {
         </div>
       </nav>
 
-     {/* New Image Before Cards */}
-<div 
-  className="container text-center my-4" 
-  style={{
-    backgroundImage: 'url(/images/recep.webp)',  // Replace with your image path
-    backgroundSize: 'cover',  // Ensures the image covers the entire container
-    backgroundPosition: 'center',  // Keeps the image centered
-    height: '600px',  // Adjust the height as needed
-    marginTop: '400px',  // Pushes the image lower, adjust this as needed
-    width: '120%',  // Ensures the image takes up the full width of the screen
-  }}
->
-  {/* Optional content over the image */}
-  <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
-    <h2 className="text-white">Events of Dardania Heights</h2>
-  </div>
-</div>
+      {/* Event Banner Section */}
+      <div
+        className="container text-center my-4"
+        style={{
+          backgroundImage: 'url(/images/recep.webp)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '600px',
+          marginTop: '400px',
+          width: '120%',
+        }}
+      >
+        <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
+          <h2 className="text-white">Events of Dardania Heights</h2>
+        </div>
+      </div>
 
-
-{/* Text Below the Image but Above Events */}
-<div className="container text-center my-5">
+     <div className="container text-center my-5">
   <h3 className="text-primary mb-3">Why Choose Our Events?</h3>
   <p className="lead">
-    At Dardania Heights, we believe that every moment is an opportunity to create lasting memories. Our carefully curated events offer something for everyone—whether you're seeking relaxation, excitement, or a bit of both. From indulgent wine tastings and soothing yoga sessions to lively karaoke nights and fun-filled pool parties, our events provide the perfect atmosphere to unwind and connect with others. 
+    At Dardania Heights, we don’t just host events – we create unforgettable experiences designed to leave you with memories that last a lifetime. Whether you're seeking relaxation, adventure, or an opportunity to bond with loved ones, our diverse range of curated events promises to deliver just that. 
   </p>
   <p>
-    Choose Dardania Heights for your next celebration and let us take care of the details while you enjoy the moment. With expert guidance, top-tier amenities, and unforgettable experiences, we guarantee that you’ll leave with more than just great memories—you’ll leave with a smile!
+    Picture yourself sipping on premium wines during an exclusive tasting, unwinding with a rejuvenating yoga session surrounded by nature, or unleashing your inner performer at a high-energy karaoke night. Or perhaps you're craving a fun, laid-back atmosphere at a pool party or a cozy movie night under the stars – we’ve got you covered! 
+  </p>
+  <p>
+    Each event is tailored to provide the perfect balance of fun, relaxation, and connection. With expert hosts, top-tier amenities, and an inviting atmosphere, you’ll feel right at home. At Dardania Heights, we believe that every moment is an opportunity to celebrate life. So come, make new friends, create cherished memories, and let us take care of the rest. 
+  </p>
+  <p className="fw-bold text-danger">
+    Don't just attend an event – experience it with us!
   </p>
 </div>
 
 
-
-
-      {/* Events Section */}
-      <div className="row" id="events">
-        {predefinedEvents.map((event, index) => (
-          <div key={index} className="col-md-4 mb-4">
-            <div className="card">
-              {event.image && (
-                <img
-                  src={event.image}
-                  alt={event.name}
-                  className="card-img-top"
-                  style={{ height: '200px', objectFit: 'cover' }}
-                />
-              )}
-              <div className="card-body">
-                <h5 className="card-title">{event.name}</h5>
-                <p className="card-text">{event.description}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+{/* Events Cards */}
+<div className="row" id="events">
+  {predefinedEvents.map((event, index) => (
+    <div key={index} className="col-md-4 mb-4">
+      <div className="card shadow-lg hover-shadow">
+        <img src={event.image} alt={event.name} className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
+        <div className="card-body">
+          <h5 className="card-title">{event.name}</h5>
+          <p className="card-text">{event.description}</p>
+          <button className="btn btn-outline-primary">Book This Event</button> {/* Changed text here */}
+        </div>
       </div>
+    </div>
+  ))}
+</div>
 
       {/* Booking Form */}
       <div className="container py-5">
         <h2 className="text-center mb-4">{editingBooking ? 'Edit Booking' : 'Book an Event'}</h2>
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
         <div className="row">
           <div className="col-md-4 mb-3">
             <input
@@ -160,7 +164,7 @@ const EventBooking = () => {
           </div>
           <div className="col-12">
             <button onClick={saveBooking} className="btn btn-outline-primary w-100">
-              {editingBooking ? 'Update Booking' : 'Book'}
+              {editingBooking ? 'Update Booking' : 'Book Now'}
             </button>
           </div>
         </div>
@@ -188,15 +192,15 @@ const EventBooking = () => {
                   <td>
                     <button
                       onClick={() => editBooking(booking)}
-                      className="btn btn-sm btn-warning me-2"
+                      className="btn btn-warning btn-sm me-2"
                     >
-                      Edit
+                      <FaEdit /> Edit
                     </button>
                     <button
                       onClick={() => deleteBooking(booking.id)}
-                      className="btn btn-sm btn-danger"
+                      className="btn btn-danger btn-sm"
                     >
-                      Delete
+                      <FaTrashAlt /> Delete
                     </button>
                   </td>
                 </tr>
