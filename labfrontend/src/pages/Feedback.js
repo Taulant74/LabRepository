@@ -71,6 +71,11 @@ const Feedback = () => {
         </div>
       </nav>
 
+      {/* Cover Photo */}
+      <div className="cover-photo">
+        <img src="/images/review.jpg" alt="Cover Photo" className="img-fluid" />
+      </div>
+
       <div className="container mt-5">
         <h2 className="text-center mb-4 animated-title">Top 5 Forbes Hotels of 2025</h2>
 
@@ -186,6 +191,14 @@ const Feedback = () => {
       </footer>
 
       <style jsx>{`
+        .cover-photo img {
+          width: 100%;
+          height: 400px;
+          object-fit: cover;
+          object-position: top;
+          margin-bottom: 20px;
+        }
+
         .animated-title {
           animation: fadeIn 2s ease-in-out;
         }
