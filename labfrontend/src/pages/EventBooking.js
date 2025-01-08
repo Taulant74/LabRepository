@@ -1,10 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { FaEdit, FaTrashAlt, FaCheckCircle } from 'react-icons/fa'; // Adding icons for interactions
+
+// Current Time Component
+const CurrentTime = () => {
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+
+    return () => clearInterval(intervalId); // Clear interval on component unmount
+  }, []);
+
+  return (
+    <div className="alert alert-info d-inline-block p-3">
+      <h5 className="mb-0">Current Time</h5>
+      <p className="lead">{time}</p>
+    </div>
+  );
+};
+
+// Weather Component
+const Weather = () => {
+  const [weather, setWeather] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const response = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=Pristina&appid=YOUR_API_KEY&units=metric`
+        );
+        
+        if (!response.ok) {
+          throw new Error(`Weather data not available. Status: ${response.status}`);
+        }
+    
+        const data = await response.json();
+        setWeather(data);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    
+    fetchWeather();
+  }, []);
+
+  if (error) {
+    return <div className="alert alert-danger">{`Error: ${error}`}</div>;
+  }
+
+  if (!weather) {
+    return <div className="alert alert-warning">Loading weather...</div>;
+  }
+
+  return (
+    <div className="alert alert-success d-inline-block p-3">
+      <h5 className="mb-0">Weather in {weather.name}</h5>
+      <p className="lead">Temperature: {weather.main.temp}°C</p>
+      <p className="small">Condition: {weather.weather[0].description}</p>
+    </div>
+  );
+};
 
 const EventBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [newBooking, setNewBooking] = useState({ name: '', event: '', date: '' });
   const [editingBooking, setEditingBooking] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(''); // Error message for form validation
+  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [selectedEvent, setSelectedEvent] = useState(null); // Selected event for booking
 
   const predefinedEvents = [
     { name: 'Wine Tasting', description: 'Enjoy an exclusive selection of premium wines with expert guidance.', image: '/images/wine.jpeg' },
@@ -21,17 +88,26 @@ const EventBooking = () => {
   };
 
   const saveBooking = () => {
+    if (!newBooking.name || !newBooking.event || !newBooking.date) {
+      setErrorMessage('Please fill in all the fields!');
+      return;
+    }
+    setErrorMessage('');
+
+    // If editing an existing booking, update it
     if (editingBooking) {
       setBookings(
         bookings.map((booking) =>
           booking.id === editingBooking.id ? { ...editingBooking, ...newBooking } : booking
         )
       );
-      setEditingBooking(null);
+      setEditingBooking(null); // Reset the editing state
     } else {
+      // If not editing, create a new booking
       setBookings([...bookings, { id: Date.now(), ...newBooking }]);
     }
-    setNewBooking({ name: '', event: '', date: '' });
+    setNewBooking({ name: '', event: '', date: '' }); // Reset the form
+    setModalVisible(false); // Close the modal
   };
 
   const deleteBooking = (id) => {
@@ -41,6 +117,11 @@ const EventBooking = () => {
   const editBooking = (booking) => {
     setEditingBooking(booking);
     setNewBooking({ name: booking.name, event: booking.event, date: booking.date });
+  };
+
+  const openModal = (event) => {
+    setSelectedEvent(event);
+    setModalVisible(true);
   };
 
   return (
@@ -65,148 +146,88 @@ const EventBooking = () => {
         </div>
       </nav>
 
-     {/* New Image Before Cards */}
-<div 
-  className="container text-center my-4" 
-  style={{
-    backgroundImage: 'url(/images/recep.webp)',  // Replace with your image path
-    backgroundSize: 'cover',  // Ensures the image covers the entire container
-    backgroundPosition: 'center',  // Keeps the image centered
-    height: '600px',  // Adjust the height as needed
-    marginTop: '400px',  // Pushes the image lower, adjust this as needed
-    width: '120%',  // Ensures the image takes up the full width of the screen
-  }}
->
-  {/* Optional content over the image */}
-  <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
-    <h2 className="text-white">Events of Dardania Heights</h2>
-  </div>
-</div>
+      {/* Event Banner Section */}
+      <div
+        className="container text-center my-4"
+        style={{
+          backgroundImage: 'url(/images/recep.webp)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '600px',
+          marginTop: '400px',
+          width: '120%',
+        }}
+      >
+        <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
+          <h2 className="text-white">Events of Dardania Heights</h2>
+        </div>
+      </div>
 
+      <div className="container text-center my-5">
+        <h3 className="text-primary mb-3">Why Choose Our Events?</h3>
+        <p className="lead">
+          At Dardania Heights, we don’t just host events – we create unforgettable experiences designed to leave you with memories that last a lifetime.
+        </p>
+      </div>
 
-{/* Text Below the Image but Above Events */}
-<div className="container text-center my-5">
-  <h3 className="text-primary mb-3">Why Choose Our Events?</h3>
-  <p className="lead">
-    At Dardania Heights, we believe that every moment is an opportunity to create lasting memories. Our carefully curated events offer something for everyone—whether you're seeking relaxation, excitement, or a bit of both. From indulgent wine tastings and soothing yoga sessions to lively karaoke nights and fun-filled pool parties, our events provide the perfect atmosphere to unwind and connect with others. 
-  </p>
-  <p>
-    Choose Dardania Heights for your next celebration and let us take care of the details while you enjoy the moment. With expert guidance, top-tier amenities, and unforgettable experiences, we guarantee that you’ll leave with more than just great memories—you’ll leave with a smile!
-  </p>
-</div>
-
-
-
-
-      {/* Events Section */}
+      {/* Events Cards */}
       <div className="row" id="events">
         {predefinedEvents.map((event, index) => (
           <div key={index} className="col-md-4 mb-4">
-            <div className="card">
-              {event.image && (
-                <img
-                  src={event.image}
-                  alt={event.name}
-                  className="card-img-top"
-                  style={{ height: '200px', objectFit: 'cover' }}
-                />
-              )}
+            <div className="card shadow-lg hover-shadow">
+              <img src={event.image} alt={event.name} className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />
               <div className="card-body">
                 <h5 className="card-title">{event.name}</h5>
                 <p className="card-text">{event.description}</p>
+                <button onClick={() => openModal(event)} className="btn btn-outline-primary">Book This Event</button>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Booking Form */}
-      <div className="container py-5">
-        <h2 className="text-center mb-4">{editingBooking ? 'Edit Booking' : 'Book an Event'}</h2>
-        <div className="row">
-          <div className="col-md-4 mb-3">
-            <input
-              type="text"
-              name="name"
-              placeholder="Your Name"
-              value={newBooking.name}
-              onChange={handleInputChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <select
-              name="event"
-              value={newBooking.event}
-              onChange={handleInputChange}
-              className="form-control"
-            >
-              <option value="">Select Event</option>
-              {predefinedEvents.map((event, index) => (
-                <option key={index} value={event.name}>
-                  {event.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-md-4 mb-3">
-            <input
-              type="date"
-              name="date"
-              value={newBooking.date}
-              onChange={handleInputChange}
-              className="form-control"
-            />
-          </div>
-          <div className="col-12">
-            <button onClick={saveBooking} className="btn btn-outline-primary w-100">
-              {editingBooking ? 'Update Booking' : 'Book'}
-            </button>
-          </div>
+      {/* Current Time and Weather */}
+      <div className="container text-center my-5">
+        <div className="d-flex justify-content-center gap-4">
+          <CurrentTime />
+          <Weather />
         </div>
       </div>
 
-      {/* Bookings List */}
-      <div className="container py-5" id="bookings">
-        <h2 className="text-center mb-4">All Bookings</h2>
-        {bookings.length > 0 ? (
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Event</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((booking) => (
-                <tr key={booking.id}>
-                  <td>{booking.name}</td>
-                  <td>{booking.event}</td>
-                  <td>{booking.date}</td>
-                  <td>
-                    <button
-                      onClick={() => editBooking(booking)}
-                      className="btn btn-sm btn-warning me-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => deleteBooking(booking.id)}
-                      className="btn btn-sm btn-danger"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-center">No bookings yet. Be the first to book an event!</p>
-        )}
-      </div>
+      {/* Booking Modal */}
+      {modalVisible && (
+        <div className="modal show d-block" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Book {selectedEvent.name}</h5>
+                <button type="button" className="close" onClick={() => setModalVisible(false)}>&times;</button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                  value={newBooking.name}
+                  onChange={handleInputChange}
+                  className="form-control mb-3"
+                />
+                <input
+                  type="date"
+                  name="date"
+                  value={newBooking.date}
+                  onChange={handleInputChange}
+                  className="form-control mb-3"
+                />
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setModalVisible(false)}>Close</button>
+                <button type="button" className="btn btn-primary" onClick={saveBooking}>Book Now</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-light py-4">
