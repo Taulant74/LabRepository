@@ -361,17 +361,24 @@ const handleDeleteSchedule = async (id) => {
 const handleDeleteGuest = async (id) => {
   try {
     const response = await axios.delete(`https://localhost:7085/api/Guest/${id}`);
+    console.log("Server Response:", response);
     if (response.status === 200 || response.status === 204) {
       fetchGuests(); // Refresh the guests list
-      showNotification("Guest deleted successfully!", "danger");
+      showNotification("Guest deleted successfully!", "success");
     } else {
       throw new Error("Failed to delete guest.");
     }
   } catch (error) {
-    console.error("Error deleting guest:", error);
+    if (error.response) {
+      // Log the server response for debugging
+      console.error("Error deleting guest:", error.response.data);
+    } else {
+      console.error("Error deleting guest:", error.message);
+    }
     showNotification("Error deleting guest. Please try again.", "danger");
   }
 };
+
 
 const handleShowSupplierModal = () => {
   fetchSuppliers(); // Ensure suppliers are fetched when opening the modal
