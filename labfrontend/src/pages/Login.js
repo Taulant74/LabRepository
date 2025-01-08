@@ -113,16 +113,18 @@ const Login = () => {
         setError(false);
 
         // Redirect to the main page
-        navigate("/");
+        setTimeout(() => navigate("/"), 1000);
       }
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);
+      setError(true);
       if (err.response?.status === 401) {
         setMessage("Invalid email or password.");
+      } else if (err.response?.status === 400) {
+        setMessage(err.response.data?.message || "An error occurred.");
       } else {
         setMessage("An error occurred. Please try again.");
       }
-      setError(true);
     }
   };
 
@@ -150,12 +152,11 @@ const Login = () => {
           />
 
           <Button type="submit">Log In</Button>
-          
         </Form>
         {message && <Message error={error}>{message}</Message>}
-        <br></br>
+        <br />
         <p>Don't have an account?</p>
-        <SignupLink href="/signup">Continue here</SignupLink>
+        <SignupLink href="/signup">Sign up here</SignupLink>
       </LoginBox>
     </PageContainer>
   );
