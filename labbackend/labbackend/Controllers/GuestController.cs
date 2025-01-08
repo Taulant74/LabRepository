@@ -192,25 +192,43 @@ namespace labbackend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGuest(int id)
         {
-            string query = "DELETE FROM Guest WHERE GuestID = @GuestID;";
-
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            try
             {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@GuestID", id);
-
-                await connection.OpenAsync();
-                int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                if (rowsAffected == 0)
+                using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    return NotFound();
+                    await connection.OpenAsync();
+
+                    // Delete dependent Feedback rows first
+                    string deleteFeedbackQuery = "DELETE FROM Feedback WHERE GuestID = @GuestID";
+                    using (SqlCommand deleteFeedbackCommand = new SqlCommand(deleteFeedbackQuery, connection))
+                    {
+                        deleteFeedbackCommand.Parameters.AddWithValue("@GuestID", id);
+                        await deleteFeedbackCommand.ExecuteNonQueryAsync();
+                    }
+
+                    // Then delete the Guest
+                    string deleteGuestQuery = "DELETE FROM Guest WHERE GuestID = @GuestID";
+                    using (SqlCommand deleteGuestCommand = new SqlCommand(deleteGuestQuery, connection))
+                    {
+                        deleteGuestCommand.Parameters.AddWithValue("@GuestID", id);
+                        int rowsAffected = await deleteGuestCommand.ExecuteNonQueryAsync();
+
+                        if (rowsAffected == 0)
+                        {
+                            return NotFound(new { Message = "Guest not found." });
+                        }
+                    }
                 }
+
+                return Ok(new { Message = "Guest deleted successfully." });
             }
-
-
-            return new JsonResult("Deleted Succesfully");
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred.", Error = ex.Message });
+            }
         }
+
+
     }
 
 }
