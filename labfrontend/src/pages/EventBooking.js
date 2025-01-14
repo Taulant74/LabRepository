@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaEdit, FaTrashAlt, FaCheckCircle } from 'react-icons/fa'; // Adding icons for interactions
 
 // Current Time Component
 const CurrentTime = () => {
@@ -15,55 +14,31 @@ const CurrentTime = () => {
   }, []);
 
   return (
-    <div className="alert alert-info d-inline-block p-3">
-      <h5 className="mb-0">Current Time</h5>
-      <p className="lead">{time}</p>
+    <div
+      className="d-inline-block p-5"
+      style={{
+        border: '1px solid #ddd',
+        borderRadius: '10px',
+        backgroundColor: '#f8f9fa',
+        minHeight: '150px', // Ensures enough space vertically
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <div>
+        <h5 className="mb-1" style={{ fontWeight: '500', fontSize: '1.2rem' }}>Current Time</h5>
+        <p className="lead" style={{ fontSize: '3rem', marginBottom: '0' }}>{time}</p> {/* Increased font size */}
+        <p className="mt-3" style={{ fontStyle: 'italic', fontSize: '1rem', color: '#555' }}>
+          "There is never a wrong time for a new event ,one book away!." 
+        </p>
+      </div>
     </div>
   );
 };
 
-// Weather Component
-const Weather = () => {
-  const [weather, setWeather] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=Pristina&appid=YOUR_API_KEY&units=metric`
-        );
-        
-        if (!response.ok) {
-          throw new Error(`Weather data not available. Status: ${response.status}`);
-        }
-    
-        const data = await response.json();
-        setWeather(data);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-    
-    fetchWeather();
-  }, []);
-
-  if (error) {
-    return <div className="alert alert-danger">{`Error: ${error}`}</div>;
-  }
-
-  if (!weather) {
-    return <div className="alert alert-warning">Loading weather...</div>;
-  }
-
-  return (
-    <div className="alert alert-success d-inline-block p-3">
-      <h5 className="mb-0">Weather in {weather.name}</h5>
-      <p className="lead">Temperature: {weather.main.temp}°C</p>
-      <p className="small">Condition: {weather.weather[0].description}</p>
-    </div>
-  );
-};
+//export default CurrentTime;
 
 const EventBooking = () => {
   const [bookings, setBookings] = useState([]);
@@ -186,11 +161,10 @@ const EventBooking = () => {
         ))}
       </div>
 
-      {/* Current Time and Weather */}
+      {/* Current Time */}
       <div className="container text-center my-5">
         <div className="d-flex justify-content-center gap-4">
           <CurrentTime />
-          <Weather />
         </div>
       </div>
 
