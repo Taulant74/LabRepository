@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Rooms = () => {
@@ -22,6 +22,22 @@ const Rooms = () => {
       imageUrl: '/images/room3.jpg',
     },
   ];
+
+  const [selectedRoom, setSelectedRoom] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedAdults, setSelectedAdults] = useState(1);
+
+  const handleRoomChange = (e) => {
+    setSelectedRoom(e.target.value);
+  };
+
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
+
+  const handleAdultsChange = (e) => {
+    setSelectedAdults(e.target.value);
+  };
 
   return (
     <div>
@@ -89,6 +105,26 @@ const Rooms = () => {
             color: #007bff;
             font-weight: bold;
           }
+
+          .booking-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+          }
+
+          .booking-controls select, .booking-controls input {
+            margin-right: 10px;
+          }
+
+          .booking-controls button {
+            margin-left: 10px;
+          }
+
+          .room-info {
+            text-align: center;
+          }
         `}
       </style>
 
@@ -125,24 +161,50 @@ const Rooms = () => {
         <h2>Explore Our Rooms</h2>
       </div>
 
-      <div className="container my-5 room-section">
-        {rooms.map((room, index) => (
-          <div key={index} className="room">
-            <img src={room.imageUrl} alt={room.name} />
-            <div className="room-details">
-              <h5 className="room-title">{room.name}</h5>
-              <p>{room.description}</p>
-              <p className="room-price">{room.price}</p>
-              <a href="#" className="btn btn-outline-primary">Book Now</a>
-            </div>
+      <div className="container my-5">
+        <div className="row justify-content-center booking-section">
+          <div className="col-md-3">
+            <select className="form-select" onChange={handleRoomChange} value={selectedRoom}>
+              <option value="">Select Room</option>
+              {rooms.map((room, index) => (
+                <option key={index} value={room.name}>{room.name}</option>
+              ))}
+            </select>
           </div>
-        ))}
+          <div className="col-md-3">
+            <input type="date" className="form-control" onChange={handleDateChange} value={selectedDate} />
+          </div>
+          <div className="col-md-3">
+            <select className="form-select" onChange={handleAdultsChange} value={selectedAdults}>
+              <option value="1">1 Adult</option>
+              <option value="2">2 Adults</option>
+              <option value="3">3 Adults</option>
+              <option value="4">4 Adults</option>
+            </select>
+          </div>
+          <div className="col-md-3">
+            <button className="btn btn-primary w-100">Book Now</button>
+          </div>
+        </div>
+
+        <div className="room-section">
+          {rooms.map((room, index) => (
+            <div key={index} className="room">
+              <img src={room.imageUrl} alt={room.name} />
+              <div className="room-details">
+                <h5 className="room-title">{room.name}</h5>
+                <p>{room.description}</p>
+                <p className="room-price">{room.price}</p>
+                <a href="#" className="btn btn-outline-primary">Book Now</a>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <footer className="bg-light py-4">
         <div className="container text-center">
           <p>&copy; {new Date().getFullYear()} Dardania Heights. All rights reserved.</p>
-      
         </div>
       </footer>
     </div>
