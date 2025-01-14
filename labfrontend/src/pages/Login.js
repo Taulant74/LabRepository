@@ -70,7 +70,7 @@ const Button = styled.button`
 const Message = styled.p`
   font-size: 0.9rem;
   margin-top: 15px;
-  color: ${(props) => (props.error ? "red" : "green")};
+  color: ${(props) => (props.$error ? "red" : "green")};
 `;
 
 const SignupLink = styled.a`
@@ -102,37 +102,46 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("https://localhost:7085/api/Guest/login", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        const response = await axios.post(
+            "https://localhost:7085/api/Guest/login",
+            {
+                Email: formData.Email,
+                Passi: formData.Passi,
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
-      if (response.status === 200) {
-        setMessage("Login successful!");
-        setError(false);
+        const user = response.data.user;
+        console.log("User Role:", user.role); // Debug role value
 
-        // Redirect to the main page
-        setTimeout(() => navigate("/"), 1000);
-      }
+        // Save user data to localStorage
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // Redirect based on role
+        if (user.role?.toLowerCase() === "admin") {
+            navigate("/admin");
+        } else {
+            navigate("/");
+        }
     } catch (err) {
-      console.error("Login error:", err.response?.data || err.message);
-      setError(true);
-      if (err.response?.status === 401) {
-        setMessage("Invalid email or password.");
-      } else if (err.response?.status === 400) {
-        setMessage(err.response.data?.message || "An error occurred.");
-      } else {
-        setMessage("An error occurred. Please try again.");
-      }
+        console.error("Login error:", err.response?.data || err.message);
+        setError(true);
+        setMessage(err.response?.data?.message || "An error occurred. Please try again.");
     }
-  };
+};
+
+
+
+
 
   return (
     <PageContainer>
       <LoginBox>
         <Title>Login</Title>
-        
         <Form onSubmit={handleSubmit}>
           <Input
             type="email"
@@ -150,10 +159,9 @@ const Login = () => {
             onChange={handleChange}
             required
           />
-
           <Button type="submit">Log In</Button>
         </Form>
-        {message && <Message error={error}>{message}</Message>}
+        {message && <Message $error={error}>{message}</Message>}
         <br />
         <p>Don't have an account?</p>
         <SignupLink href="/signup">Sign up here</SignupLink>

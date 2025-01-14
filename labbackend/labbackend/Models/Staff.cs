@@ -12,6 +12,4 @@ public class Staff
     public string Email { get; set; }
     public string Phone { get; set; }
 
-    [JsonIgnore] // Prevent circular reference
-    public ICollection<EmployeeSchedule> EmployeeSchedules { get; set; }
 }

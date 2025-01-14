@@ -1,8 +1,6 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 
- namespace labbackend.Models
+namespace labbackend.Models
 {
     public class GuestContext : DbContext
     {
@@ -14,10 +12,12 @@ using System.Collections.Generic;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Guest>().ToTable("Guest"); // Map to the correct table name
+            modelBuilder.Entity<Guest>().ToTable("Guest");
+
+            // Ensure the Role column defaults to "User" if not specified
+            modelBuilder.Entity<Guest>()
+                .Property(g => g.Role)
+                .HasDefaultValue("User");
         }
     }
-
-
-
 }

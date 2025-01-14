@@ -36,6 +36,9 @@ builder.Services.AddDbContext<RoomContext>(options =>
 builder.Services.AddDbContext<EmployeeScheduleContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Add EmployeeScheduleContext
 
+builder.Services.AddDbContext<GuestContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Add GuestContext
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

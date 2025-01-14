@@ -1,10 +1,11 @@
-import React from "react";
 import ReactDOM from "react-dom";
 import Slider from "react-slick";
 import styled from "styled-components";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import React, { useState, useEffect } from "react";
 
+import { Link } from 'react-router-dom';
 // Styled-components
 const Container = styled.div`
   font-family: 'Poppins', sans-serif;
@@ -369,7 +370,9 @@ const RoomsSectionComponent = () => {
           equipped with modern amenities to provide the utmost comfort and
           convenience during your stay.
         </RoomsText>
+        <Link to={'/rooms'}>
         <RoomsButton>View All Rooms</RoomsButton>
+        </Link>
       </RoomsContent>
     </RoomsSection>
   );
@@ -379,9 +382,10 @@ const FeedbackSectionComponent = () => {
   return (
     <FeedbackSection id="feedback">
       <FeedbackTitle>We Value Your Feedback</FeedbackTitle>
-      <FeedbackButton href="/feedback">
+      <Link to={'/review'}>
+      <FeedbackButton>
         Share Feedback <i className="fas fa-comment-alt"></i>
-      </FeedbackButton>
+      </FeedbackButton></Link>
     </FeedbackSection>
   );
 };
@@ -394,6 +398,14 @@ const Footer = styled.footer`
 `;
 
 const MainPage = () => {
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      setLoggedInUser(JSON.parse(user));
+    }
+  }, []);
+  
   return (
     <Container>
       {/* Header */}
@@ -406,7 +418,20 @@ const MainPage = () => {
           <NavLink href="#gallery">Gallery</NavLink>
           <NavLink href="#contact">Contact</NavLink>
         </Nav>
-        <LoginButton>Login</LoginButton>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+  {loggedInUser ? (
+    // If user is logged in, show "View Profile" button
+    <Link to="/profile">
+      <LoginButton>View Profile</LoginButton>
+    </Link>
+  ) : (
+    // If no user is logged in, show "Login" button
+    <Link to="/login">
+      <LoginButton>Login</LoginButton>
+    </Link>
+  )}
+</div>
+
       </Header>
 
       {/* Hero Section */}
