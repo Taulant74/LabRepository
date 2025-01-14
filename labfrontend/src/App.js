@@ -11,12 +11,13 @@ import Feedback from './pages/Feedback';
 import Review from './pages/Review';
 import EventBooking from './pages/EventBooking';
 import Profile from './pages/Profile';
+import Amenities from './pages/Amenities';
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={< MainPage />} />
+        <Route path="/" element={< Amenities/>} />
         <Route path="/rooms" element={< Rooms />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/event" element={<EventBooking />} /> 
         <Route path="/profile" element={<Profile />} />
+      
 
         
       </Routes>
