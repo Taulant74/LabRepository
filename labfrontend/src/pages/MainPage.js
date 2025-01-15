@@ -4,6 +4,7 @@ import styled from "styled-components";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import { Link } from 'react-router-dom';
 // Styled-components
@@ -13,9 +14,9 @@ const Container = styled.div`
   line-height: 1.6;
 `;
 const Header = styled.header`
-  background-color: #1a1a1a;
-  color: #f8f8f8;
-  padding: 5px 0; /* Short height */
+  background-color: #5C6AC4; /* Royal Blue */
+  color: #f9f9fc; /* Soft Gray */
+  padding: 10px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,47 +34,50 @@ const Nav = styled.nav`
 `;
 
 const NavLink = styled.a`
-  color: #f8f8f8;
+  color: #f9f9fc; /* Soft Gray */
   text-decoration: none;
-  font-weight: 600; /* Increased font weight */
-  padding: 3px 8px; /* Compact padding */
-  font-size: 1.1rem; /* Larger font size for links */
-  border-radius: 15px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 5px 10px;
+  border-radius: 10px;
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #f8f8f8;
-    color: #1a1a1a;
+    background-color: #A3A1F7; /* Lavender */
+    color: #1f2937; /* Dark Gray */
   }
 `;
 
 const LoginButton = styled.button`
-  background-color: #e67e22;
-  color: #fff;
-  padding: 5px 12px; /* Compact padding */
-  font-size: 1.1rem; /* Larger font size for the button */
+  background-color: #ECC94B; /* Gold */
+  color: #1f2937; /* Dark Gray */
+  padding: 8px 15px;
+  font-size: 1rem;
   font-weight: 600;
   border: none;
-  border-radius: 15px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-right: 15px;
 
   &:hover {
-    background-color: #d35400;
+    background-color: #F4A261; /* Peach Orange */
   }
 `;
 
 
 const Hero = styled.section`
-  background-image: url('/images/background1.jpg');
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ),
+    url('/images/background1.jpg');
   background-size: cover;
   background-position: center;
-  height: 70vh;
+  height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #f8f8f8;
+  color: #f9f9fc; /* Soft Gray */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 `;
 
@@ -109,34 +113,34 @@ const AboutContent = styled.div`
   padding: 20px;
   text-align: left;
 `;
-
 const AboutTitle = styled.h2`
   font-size: 2.5rem;
+  color:rgb(0, 0, 0); /* Royal Blue */
+  font-weight: bold;
   margin-bottom: 20px;
-  color: #333;
 `;
 
 const AboutText = styled.p`
   font-size: 1.2rem;
-  color: #666;
+  color: #1F2937; /* Dark Gray */
   line-height: 1.8;
-  max-width: 600px;
 `;
 
 const AboutButton = styled.button`
-  background-color: #e67e22;
-  color: #fff;
-  padding: 10px 20px;
+  background-color:rgb(238, 164, 44); /* Gold */
+  color:rgb(255, 255, 255); /* Dark Gray */
+  padding: 12px 24px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: bold;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
   margin-top: 20px;
 
   &:hover {
-    background-color: #d35400;
+    background-color: #F4A261; /* Peach Orange */
+    transform: translateY(-3px);
   }
 `;
 
@@ -206,9 +210,10 @@ const AmenitiesSection = styled.section`
 `;
 
 const AmenitiesTitle = styled.h2`
-  font-size: 3rem;
-  margin-bottom: 20px;
-  color: #333;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #5C6AC4; /* Royal Blue */
+  margin-bottom: 30px;
 `;
 
 const AmenitiesGrid = styled.div`
@@ -233,33 +238,39 @@ const AmenityIcon = styled.div`
 `;
 
 const AmenityName = styled.h3`
-  font-size: 1.8rem;
-  color: #333;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1F2937; /* Dark Gray */
   margin-bottom: 10px;
 `;
 
 const AmenityDescription = styled.p`
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #666;
-  line-height: 1.6;
+  line-height: 1.8;
+  max-width: 300px;
+  margin: 0 auto;
 `;
+
 
 const AmenitiesButton = styled.button`
-  background-color: #e67e22;
-  color: #fff;
+  background-color:rgb(242, 168, 65); /* Gold */
+  color:rgb(255, 255, 255); /* Dark Gray */
   padding: 12px 24px;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: bold;
   border: none;
-  border-radius: 30px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
   margin-top: 40px;
-  transition: background-color 0.3s;
 
   &:hover {
-    background-color: #d35400;
+    background-color: #F4A261; /* Peach Orange */
+    transform: translateY(-3px);
   }
 `;
+
 const FeedbackSection = styled.section`
   padding: 80px 20px;
   background-color: #f8f8f8;
@@ -299,7 +310,6 @@ const FeedbackButton = styled.a`
 `;
 
 
-
 const AmenitiesComponent = () => {
   const amenities = [
     { icon: "🛏️", name: "Luxury Suites", description: "Spacious and elegantly designed suites." },
@@ -309,6 +319,7 @@ const AmenitiesComponent = () => {
     { icon: "💻", name: "Business Center", description: "Fully equipped for all your business needs." },
     { icon: "🌴", name: "Spa Services", description: "Experience ultimate relaxation with our spa treatments." },
   ];
+
   return (
     <AmenitiesSection id="amenities">
       <AmenitiesTitle>Our Amenities</AmenitiesTitle>
@@ -337,7 +348,7 @@ const RoomsSectionComponent = () => {
     autoplaySpeed: 3000,
   };
   return (
-    <RoomsSection id="rooms">
+    <RoomsSection id="rooms"  style={{ minHeight: "90vh" }}>
       <RoomsImageSlider>
         <Slider {...sliderSettings}>
           <div>
@@ -380,13 +391,15 @@ const RoomsSectionComponent = () => {
 
 const FeedbackSectionComponent = () => {
   return (
-    <FeedbackSection id="feedback">
-      <FeedbackTitle>We Value Your Feedback</FeedbackTitle>
-      <Link to={'/review'}>
-      <FeedbackButton>
+    <FeedbackSection id="feedback" className="text-center py-5 bg-light"  style={{ minHeight: "20vh" }}>
+    <h2 className="mb-4">We Value Your Feedback</h2>
+    <Link to="/review">
+      <button className="btn btn-warning btn-lg">
         Share Feedback <i className="fas fa-comment-alt"></i>
-      </FeedbackButton></Link>
-    </FeedbackSection>
+      </button>
+    </Link>
+  </FeedbackSection>
+  
   );
 };
 const Footer = styled.footer`
@@ -409,66 +422,59 @@ const MainPage = () => {
   return (
     <Container>
       {/* Header */}
-      <Header>
-        <Logo>Dardania Heights</Logo>
-        <Nav>
-          <NavLink href="#about">About Us</NavLink>
-          <NavLink href="#rooms">Rooms</NavLink>
-          <NavLink href="#amenities">Amenities</NavLink>
-          <NavLink href="#gallery">Gallery</NavLink>
-          <NavLink href="#contact">Contact</NavLink>
-        </Nav>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-  {loggedInUser ? (
-    // If user is logged in, show "View Profile" button
-    <Link to="/profile">
-      <LoginButton>View Profile</LoginButton>
-    </Link>
-  ) : (
-    // If no user is logged in, show "Login" button
-    <Link to="/login">
-      <LoginButton>Login</LoginButton>
-    </Link>
-  )}
-</div>
+      <Header className="d-flex justify-content-between align-items-center p-3 bg-dark text-white">
+  <Logo className="m-0">Dardania Heights</Logo>
+  <Nav className="d-flex gap-3">
+    <a href="#about" className="text-white text-decoration-none">About Us</a>
+    <a href="#rooms" className="text-white text-decoration-none">Rooms</a>
+    <a href="#amenities" className="text-white text-decoration-none">Amenities</a>
+    <a href="#feedback" className="text-white text-decoration-none">Feedback</a>
+  </Nav>
+  <div>
+    {loggedInUser ? (
+      <Link to="/profile">
+        <button className="btn btn-warning">View Profile</button>
+      </Link>
+    ) : (
+      <Link to="/login">
+        <button className="btn btn-warning">Login</button>
+      </Link>
+    )}
+  </div>
+</Header>
 
-      </Header>
 
       {/* Hero Section */}
-      <Hero>
-        <HeroContent>
-          <h1>Welcome to Dardania Heights</h1>
-          <p>Discover comfort, elegance, and exceptional service.</p>
-          <button
-            style={{
-              backgroundColor: "#e67e22",
-              color: "#fff",
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "5px",
-              fontWeight: "600",
-              cursor: "pointer",
-            }}
-          >
-            Book Now
-          </button>
-        </HeroContent>
-      </Hero>
+      <Hero className="d-flex justify-content-center align-items-center text-center text-white" style={{ minHeight: "90vh" }}>
+  <div className="bg-dark bg-opacity-50 p-4 rounded">
+    <h1>Welcome to Dardania Heights</h1>
+    <p>Discover comfort, elegance, and exceptional service.</p>
+    
+    <Link to={'/reservation'}>
+    <button className="btn btn-warning btn-lg">Book Now</button>
+    </Link>
+  </div>
+</Hero>
+
 
       {/* About Us Section */}
       <AboutSection id="about">
-        <AboutImage />
-        <AboutContent>
-          <AboutTitle>About Us</AboutTitle>
-          <AboutText>
-            Nestled in the heart of the city, our hotel offers unparalleled
-            luxury and exceptional service. Whether you're here for business or
-            leisure, we ensure a memorable stay with world-class amenities and
-            personalized attention.
-          </AboutText>
-          <AboutButton>Learn More</AboutButton>
-        </AboutContent>
-      </AboutSection>
+  <AboutImage />
+  <AboutContent>
+    <AboutTitle>About Us</AboutTitle>
+    <AboutText>
+      Nestled in the heart of the city, our hotel offers unparalleled luxury
+      and exceptional service. Whether you're here for business or leisure, we
+      ensure a memorable stay with world-class amenities and personalized
+      attention.
+    </AboutText>
+    <Link to="/about">
+      <AboutButton>Learn More</AboutButton>
+    </Link>
+  </AboutContent>
+</AboutSection>
+
+
 
       {/* Amenities Section */}
       <AmenitiesComponent />
@@ -478,9 +484,10 @@ const MainPage = () => {
 
       <FeedbackSectionComponent />
       {/* Footer */}
-      <Footer>
-        &copy; {new Date().getFullYear()} Luxury Stay. All rights reserved.
-      </Footer>
+      <Footer className="bg-dark text-white py-3 text-center">
+  &copy; {new Date().getFullYear()} Dardania Heights. All rights reserved.
+</Footer>
+
     </Container>
   );
 };
