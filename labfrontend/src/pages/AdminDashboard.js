@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt  } from "react-icons/fa";
 
 // Inline styles for components
 const styles = {
@@ -56,6 +57,7 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
   },
+  
   content: {
     padding: "16px",
     flex: 1,
@@ -93,7 +95,7 @@ const [employeeSchedules, setEmployeeSchedules] = useState([]);
 const [editSchedule, setEditSchedule] = useState(null);
 const [newSchedule, setNewSchedule] = useState(null);
 const [schedules, setSchedules] = useState([]);
-
+const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
 
 const fetchSchedules = async () => {
@@ -105,6 +107,27 @@ const fetchSchedules = async () => {
   }
 };
 
+useEffect(() => {
+  switch (activeTab) {
+    case "inventory":
+      fetchInventory();
+      break;
+    case "guests":
+      fetchGuests();
+      break;
+    case "staff":
+      fetchStaff();
+      break;
+    case "maintenanceRequests":
+      fetchMaintenanceRequests();
+      break;
+    case "employeeSchedule":
+      fetchEmployeeSchedules();
+      break;
+    default:
+      break;
+  }
+}, [activeTab]);
 
 useEffect(() => {
     if (activeTab === "inventory") {
@@ -491,19 +514,22 @@ const handleUpdateInventory = async () => {
                   <td>{member.phone}</td>
                   <td>{member.hotelID}</td>
                   <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      onClick={() => setEditStaff(member)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteStaff(member.staffID)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+  <button
+    className="btn btn-sm btn-primary me-2"
+    title="Edit Staff"
+    onClick={() => setEditStaff(member)} // Opens the Edit modal
+  >
+    <FaEdit />
+  </button>
+  <button
+    className="btn btn-sm btn-danger"
+    title="Delete Staff"
+    onClick={() => handleDeleteStaff(member.staffID)} // Deletes the staff member
+  >
+    <FaTrashAlt />
+  </button>
+</td>
+
                 </tr>
               ))
             ) : (
@@ -721,19 +747,22 @@ const handleUpdateInventory = async () => {
                   <td>{schedule.startTime}</td>
                   <td>{schedule.endTime}</td>
                   <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      onClick={() => setEditSchedule(schedule)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteSchedule(schedule.scheduleID)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+  <button
+    className="btn btn-sm btn-primary me-2"
+    title="Edit Schedule"
+    onClick={() => setEditSchedule(schedule)} // Opens the Edit modal
+  >
+    <FaEdit />
+  </button>
+  <button
+    className="btn btn-sm btn-danger"
+    title="Delete Schedule"
+    onClick={() => handleDeleteSchedule(schedule.scheduleID)} // Deletes the schedule
+  >
+    <FaTrashAlt />
+  </button>
+</td>
+
                 </tr>
               ))
             ) : (
@@ -942,19 +971,22 @@ const handleUpdateInventory = async () => {
                   <td>{request.priority}</td>
                   <td>{request.status}</td>
                   <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      onClick={() => setEditMaintenanceRequest(request)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteMaintenanceRequest(request.requestID)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+  <button
+    className="btn btn-sm btn-primary me-2"
+    title="Edit Request"
+    onClick={() => setEditMaintenanceRequest(request)} // Opens the Edit modal
+  >
+    <FaEdit />
+  </button>
+  <button
+    className="btn btn-sm btn-danger"
+    title="Delete Request"
+    onClick={() => handleDeleteMaintenanceRequest(request.requestID)} // Deletes the request
+  >
+    <FaTrashAlt />
+  </button>
+</td>
+
                 </tr>
               ))
             ) : (
@@ -1235,19 +1267,22 @@ const handleUpdateInventory = async () => {
                   <td>{item.price || "N/A"}</td>
                   <td>{item.supplierID || "N/A"}</td>
                   <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      onClick={() => setEditInventory(item)} // Open Edit Modal
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteInventory(item.inventoryID)} // Delete Inventory Item
-                    >
-                      Delete
-                    </button>
-                  </td>
+  <button
+    className="btn btn-sm btn-primary me-2"
+    title="Edit Inventory"
+    onClick={() => setEditInventory(item)} // Opens the Edit modal
+  >
+    <FaEdit />
+  </button>
+  <button
+    className="btn btn-sm btn-danger"
+    title="Delete Inventory"
+    onClick={() => handleDeleteInventory(item.inventoryID)} // Deletes the inventory item
+  >
+    <FaTrashAlt />
+  </button>
+</td>
+
                 </tr>
               ))
             ) : (
@@ -1531,19 +1566,22 @@ const handleUpdateInventory = async () => {
                   <td>{supplier.phone}</td>
                   <td>{supplier.email}</td>
                   <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      onClick={() => handleEditSupplier(supplier)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteSupplier(supplier.supplierID)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+  <button
+    className="btn btn-sm btn-primary me-2"
+    title="Edit Supplier"
+    onClick={() => handleEditSupplier(supplier)} // Opens the Edit modal
+  >
+    <FaEdit />
+  </button>
+  <button
+    className="btn btn-sm btn-danger"
+    title="Delete Supplier"
+    onClick={() => handleDeleteSupplier(supplier.supplierID)} // Deletes the supplier
+  >
+    <FaTrashAlt />
+  </button>
+</td>
+
                 </tr>
               ))}
             </tbody>
@@ -1767,21 +1805,22 @@ const handleUpdateInventory = async () => {
                   <td>{guest.email || "N/A"}</td>
                   <td>{guest.phone || "N/A"}</td>
                   <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      style={{ borderRadius: "4px" }}
-                      onClick={() => setEditGuest(guest)} // Opens the Edit modal
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      style={{ borderRadius: "4px" }}
-                      onClick={() => handleDeleteGuest(guest.guestID)} // Deletes the guest
-                    >
-                      Delete
-                    </button>
-                  </td>
+  <button
+    className="btn btn-sm btn-primary me-2"
+    title="Edit Guest"
+    onClick={() => setEditGuest(guest)} // Opens the Edit modal
+  >
+    <FaEdit />
+  </button>
+  <button
+    className="btn btn-sm btn-danger"
+    title="Delete Guest"
+    onClick={() => handleDeleteGuest(guest.guestID)} // Deletes the guest
+  >
+    <FaTrashAlt />
+  </button>
+</td>
+
                 </tr>
               ))
             ) : (
@@ -1865,35 +1904,71 @@ const handleUpdateInventory = async () => {
 
   return (
     <div style={styles.layout}>
-      <div className="d-flex flex-column bg-dark text-white vh-100" style={{ width: "240px" }}>
-  <div className="p-3 border-bottom text-center fw-bold">Admin Dashboard</div>
+    
+<div
+  className="bg-dark text-white vh-100 d-flex flex-column"
+  style={{
+    width: isSidebarCollapsed ? "60px" : "240px",
+    transition: "width 0.3s ease",
+  }}
+>
+  <button
+    className="btn btn-light m-2 align-self-end"
+    onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+    style={{
+      width: "30px",
+      height: "30px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    {isSidebarCollapsed ? <FaArrowRight /> : <FaArrowLeft />}
+  </button>
+
+  <div
+    className="p-3 text-center fw-bold"
+    style={{ display: isSidebarCollapsed ? "none" : "block" }}
+  >
+    Admin Dashboard
+  </div>
+
   <ul className="nav flex-column">
-    <li className={`nav-item p-2 ${activeTab === "guests" ? "bg-primary text-white" : ""}`} onClick={() => setActiveTab("guests")}>
-      Guests
-    </li>
-    <li className={`nav-item p-2 ${activeTab === "inventory" ? "bg-primary text-white" : ""}`} onClick={() => setActiveTab("inventory")}>
-      Inventory
+    <li
+      className={`nav-item p-2 ${activeTab === "guests" ? "bg-primary text-white" : ""}`}
+      onClick={() => setActiveTab("guests")}
+    >
+      <FaUser className="me-2" />
+      {!isSidebarCollapsed && "Guests"}
     </li>
     <li
-  className={`nav-item p-2 ${activeTab === "staff" ? "bg-primary text-white" : ""}`}
-  onClick={() => setActiveTab("staff")}
->
-  Staff
-</li>
-<li
-  className={`nav-item p-2 ${activeTab === "maintenanceRequests" ? "bg-primary text-white" : ""}`}
-  onClick={() => setActiveTab("maintenanceRequests")}
->
-  Maintenance Requests
-</li>
-
-<li
-  className={`nav-item p-2 ${activeTab === "employeeSchedule" ? "bg-primary text-white" : ""}`}
-  onClick={() => setActiveTab("employeeSchedule")}
->
-  Employee Schedules
-</li>
-
+      className={`nav-item p-2 ${activeTab === "inventory" ? "bg-primary text-white" : ""}`}
+      onClick={() => setActiveTab("inventory")}
+    >
+      <FaBox className="me-2" />
+      {!isSidebarCollapsed && "Inventory"}
+    </li>
+    <li
+      className={`nav-item p-2 ${activeTab === "staff" ? "bg-primary text-white" : ""}`}
+      onClick={() => setActiveTab("staff")}
+    >
+      <FaUsers className="me-2" />
+      {!isSidebarCollapsed && "Staff"}
+    </li>
+    <li
+      className={`nav-item p-2 ${activeTab === "maintenanceRequests" ? "bg-primary text-white" : ""}`}
+      onClick={() => setActiveTab("maintenanceRequests")}
+    >
+      <FaTools className="me-2" />
+      {!isSidebarCollapsed && "Maintenance Requests"}
+    </li>
+    <li
+      className={`nav-item p-2 ${activeTab === "employeeSchedule" ? "bg-primary text-white" : ""}`}
+      onClick={() => setActiveTab("employeeSchedule")}
+    >
+      <FaCalendarAlt className="me-2" />
+      {!isSidebarCollapsed && "Employee Schedules"}
+    </li>
   </ul>
 </div>
 
@@ -1921,10 +1996,14 @@ const handleUpdateInventory = async () => {
 )}
 
 {notification && (
-  <div className="alert alert-success position-fixed top-0 end-0 m-3" style={{ zIndex: 2000 }}>
-    {notification}
+  <div
+    className="alert alert-success position-fixed top-0 end-0 m-3"
+    style={{ zIndex: 2000 }}
+  >
+    <i className="me-2 fa fa-check-circle"></i> {notification}
   </div>
 )}
+
 
     </div>
   );

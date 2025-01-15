@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 // Styled Components
 const PageContainer = styled.div`
@@ -31,23 +33,28 @@ const Title = styled.h1`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 `;
 
 const Input = styled.input`
   font-size: 0.9rem;
-  padding: 10px 12px;
+  padding: 12px 15px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   outline: none;
   transition: border 0.3s, box-shadow 0.3s;
-  width: 90%;
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 
   &:focus {
     border-color: #3b82f6;
     box-shadow: 0px 4px 6px rgba(59, 130, 246, 0.2);
   }
+`;
+
+const InputWrapper = styled.div`
+  position: relative;
+  width: 100%;
 `;
 
 const Button = styled.button`
@@ -64,6 +71,11 @@ const Button = styled.button`
   &:hover {
     background: #2563eb;
     transform: translateY(-2px);
+  }
+
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
   }
 `;
 
@@ -92,6 +104,8 @@ const Login = () => {
   const [formData, setFormData] = useState({ Email: "", Passi: "" });
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -100,69 +114,81 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-        const response = await axios.post(
-            "https://localhost:7085/api/Guest/login",
-            {
-                Email: formData.Email,
-                Passi: formData.Passi,
-            },
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+      const response = await axios.post("https://localhost:7085/api/Guest/login", {
+        Email: formData.Email,
+        Passi: formData.Passi,
+      });
 
-        const user = response.data.user;
-        console.log("User Role:", user.role); // Debug role value
+      const user = response.data.user;
+      localStorage.setItem("user", JSON.stringify(user));
 
-        // Save user data to localStorage
-        localStorage.setItem("user", JSON.stringify(user));
-
-        // Redirect based on role
-        if (user.role?.toLowerCase() === "admin") {
-            navigate("/admin");
-        } else {
-            navigate("/");
-        }
+      if (user.role?.toLowerCase() === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-        console.error("Login error:", err.response?.data || err.message);
-        setError(true);
-        setMessage(err.response?.data?.message || "An error occurred. Please try again.");
+      console.error("Login error:", err.response?.data || err.message);
+      setError(true);
+      setMessage(err.response?.data?.message || "An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
-};
-
-
-
-
+  };
 
   return (
     <PageContainer>
       <LoginBox>
         <Title>Login</Title>
         <Form onSubmit={handleSubmit}>
-          <Input
-            type="email"
-            name="Email"
-            placeholder="Email Address"
-            value={formData.Email}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            type="password"
-            name="Passi"
-            placeholder="Password"
-            value={formData.Passi}
-            onChange={handleChange}
-            required
-          />
-          <Button type="submit">Log In</Button>
+          {/* Email Input */}
+          <InputWrapper>
+            <Input
+              type="email"
+              name="Email"
+              placeholder="Email Address"
+              value={formData.Email}
+              onChange={handleChange}
+              required
+            />
+          </InputWrapper>
+
+          {/* Password Input */}
+          <InputWrapper>
+            <Input
+              type={showPassword ? "text" : "password"}
+              name="Passi"
+              placeholder="Password"
+              value={formData.Passi}
+              onChange={handleChange}
+              required
+            />
+            <FontAwesomeIcon
+              icon={showPassword ? faEyeSlash : faEye}
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                right: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                color: "#3b82f6",
+                fontSize: "1.2rem",
+              }}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            />
+          </InputWrapper>
+
+          {/* Submit Button */}
+          <Button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Log In"}
+          </Button>
         </Form>
+
         {message && <Message $error={error}>{message}</Message>}
-        <br />
         <p>Don't have an account?</p>
         <SignupLink href="/signup">Sign up here</SignupLink>
       </LoginBox>

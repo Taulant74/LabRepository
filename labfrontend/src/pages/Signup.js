@@ -41,7 +41,7 @@ const Form = styled.form`
 
 const Input = styled.input`
   font-size: 0.9rem;
-  padding: 10px 12px;
+  padding: 12px 15px;
   border: 1px solid ${(props) => (props.error ? "red" : "#d1d5db")};
   border-radius: 8px;
   outline: none;
@@ -54,21 +54,19 @@ const Input = styled.input`
     box-shadow: 0px 4px 6px
       ${(props) => (props.error ? "rgba(255, 0, 0, 0.3)" : "rgba(59, 130, 246, 0.2)")};
   }
-
-  &:disabled {
-    background-color: #f0f0f0;
-    color: #999;
-    cursor: not-allowed;
-  }
 `;
 
-const InputInfo = styled.p`
-  font-size: 0.75rem;
-  color: #6b7280;
+const PasswordStrength = styled.p`
+  font-size: 0.9rem;
+  color: ${(props) =>
+    props.strength === "Weak"
+      ? "red"
+      : props.strength === "Medium"
+      ? "orange"
+      : "green"};
   margin: -10px auto 10px;
   text-align: left;
   width: 90%;
-  display: ${(props) => (props.show ? "block" : "none")};
 `;
 
 const Button = styled.button`
@@ -86,6 +84,11 @@ const Button = styled.button`
     background: #2563eb;
     transform: translateY(-2px);
   }
+
+  &:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+  }
 `;
 
 const Message = styled.p`
@@ -100,7 +103,6 @@ const LoginLink = styled.a`
   font-size: 0.85rem;
   color: #3b82f6;
   text-decoration: none;
-  transition: color 0.3s;
 
   &:hover {
     color: #2563eb;
@@ -121,12 +123,8 @@ const Signup = () => {
   const [nextGuestID, setNextGuestID] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
-
-  const [showInfo, setShowInfo] = useState({
-    Email: false,
-    Phone: false,
-    Passi: false,
-  });
+  const [loading, setLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState("");
 
   // Fetch the next available GuestID
   useEffect(() => {
@@ -150,7 +148,17 @@ const Signup = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setShowInfo((prevState) => ({ ...prevState, [name]: true }));
+
+    if (name === "Passi") {
+      // Password strength logic
+      if (value.length < 6) {
+        setPasswordStrength("Weak");
+      } else if (value.length < 10) {
+        setPasswordStrength("Medium");
+      } else {
+        setPasswordStrength("Strong");
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -158,34 +166,36 @@ const Signup = () => {
     setError(false);
     setMessage("");
 
-    if (formData.Passi.length < 8) {
-      setMessage("Password must be at least 8 characters long.");
+    if (passwordStrength === "Weak") {
+      setMessage("Password is too weak. Please choose a stronger password.");
       setError(true);
       return;
     }
 
+    setLoading(true);
     try {
-      const response = await axios.post("https://localhost:7085/api/Guest", formData, {
+      await axios.post("https://localhost:7085/api/Guest", formData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
       setMessage("Signup successful!");
-    } catch (err) {
-      if (err.response?.data?.errors) {
-        const errorDetails = err.response.data.errors;
+      setError(false);
 
-        if (errorDetails.Email) {
-          setMessage("Email is already in use.");
-        } else if (errorDetails.Phone) {
-          setMessage("Phone number is already in use.");
-        } else {
-          setMessage("Failed to register. Please check your input.");
-        }
-      } else {
-        setMessage("Failed to register. Please check your input.");
-      }
+      // Clear input fields
+      setFormData({
+        GuestID: nextGuestID,
+        FirstName: "",
+        LastName: "",
+        Email: "",
+        Phone: "",
+        Passi: "",
+      });
+    } catch (err) {
+      setMessage("Failed to register. Please check your input.");
       setError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -198,14 +208,7 @@ const Signup = () => {
           The next available Guest ID is <strong>{nextGuestID}</strong>.
         </SubTitle>
         <Form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            name="GuestID"
-            placeholder="Guest ID"
-            value={formData.GuestID}
-            disabled
-            required
-          />
+          <Input type="text" name="GuestID" value={formData.GuestID} disabled required />
           <Input
             type="text"
             name="FirstName"
@@ -230,7 +233,6 @@ const Signup = () => {
             onChange={handleChange}
             required
           />
-          <InputInfo show={showInfo.Email}>Email must be unique.</InputInfo>
           <Input
             type="text"
             name="Phone"
@@ -239,7 +241,6 @@ const Signup = () => {
             onChange={handleChange}
             required
           />
-          <InputInfo show={showInfo.Phone}>Phone number must be unique.</InputInfo>
           <Input
             type="password"
             name="Passi"
@@ -248,11 +249,13 @@ const Signup = () => {
             onChange={handleChange}
             required
           />
-          <br></br>
-          <InputInfo show={showInfo.Passi}>Password must be at least 8 characters long.</InputInfo>
-          <Button type="submit">Sign Up</Button>
+          <PasswordStrength strength={passwordStrength}>
+            {passwordStrength && `Password Strength: ${passwordStrength}`}
+          </PasswordStrength>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Signing Up..." : "Sign Up"}
+          </Button>
         </Form>
-        <br></br>
         {message && <Message error={error}>{message}</Message>}
         <p>Already have an account?</p>
         <LoginLink href="/login">Login here</LoginLink>
