@@ -21,14 +21,17 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Rooms />} />
-        <Route path="/rooms" element={<Amenities />} />
+
+        <Route path="/" element={<MainPage />} />
+        <Route path="/rooms" element={<Rooms />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/review" element={<Review />} />
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/event" element={<EventBooking />} />
+        <Route path="/amenities" element={<Amenities />} />
+
         <Route path="/profile" element={<Profile />} />
 
         {/* Add the Reservation route */}

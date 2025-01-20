@@ -254,3 +254,7 @@ C:\Users\taula\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin
 C:\Users\taula\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 C:\Users\taula\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin\Debug\net6.0\Newtonsoft.Json.dll
 C:\Users\taula\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
+C:\Users\Dell-Center\Desktop\srcde\LabRepository\labbackend\labbackend\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\Dell-Center\Desktop\srcde\LabRepository\labbackend\labbackend\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\Dell-Center\Desktop\srcde\LabRepository\labbackend\labbackend\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\Dell-Center\Desktop\srcde\LabRepository\labbackend\labbackend\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
