@@ -45,7 +45,7 @@ const Reservation = () => {
   }, [roomId]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center mt-5">Loading...</div>;
   }
 
   if (!roomDetails) {
@@ -53,38 +53,38 @@ const Reservation = () => {
       <div className="container mt-5 text-center">
         <h2>Room not found</h2>
         <p>The room you're looking for does not exist. Please go back and select a valid room.</p>
-        <Link to="/" className="btn btn-primary">Back to Rooms</Link>
+        <Link to="/rooms" className="btn btn-primary">Back to Rooms</Link>
       </div>
     );
   }
 
-  const handleReservation = () => {
-    alert(`Reservation for ${roomDetails.name} completed successfully!`);
-  };
-
   return (
     <div className="container mt-5">
-      <h2 className="reservation-header">{roomDetails.name}</h2>
+      <h2 className="reservation-header text-center">{roomDetails.name}</h2>
       <div className="row">
-        <div className="col-md-6">
+        <div className="col-md-6 text-center">
           <img
             src={roomDetails.imageUrl}
             alt={roomDetails.name}
-            className="img-fluid"
+            className="img-fluid reservation-image"
           />
         </div>
         <div className="col-md-6 reservation-details">
           <p><strong>Description:</strong> {roomDetails.description}</p>
           <p><strong>Max Occupancy:</strong> {roomDetails.maxOccupancy}</p>
           <p><strong>Price:</strong> ${roomDetails.price} per night</p>
-          <p><strong>Status:</strong> {roomDetails.status}</p>
-          <button
-            className="btn btn-primary btn-reserve"
-            onClick={handleReservation}
-          >
-            Reserve Now
-          </button>
-          <Link to="/" className="btn btn-secondary btn-back">Back to Rooms</Link>
+          <p><strong>Status:</strong> <span className="text-success">{roomDetails.status}</span></p>
+          <div className="d-flex">
+            <button
+              className="btn btn-primary btn-reserve"
+              onClick={() => alert("Reservation completed successfully!")}
+            >
+              Reserve Now
+            </button>
+            <Link to="/rooms" className="btn btn-secondary btn-back">
+              Back to Rooms
+            </Link>
+          </div>
         </div>
       </div>
     </div>
