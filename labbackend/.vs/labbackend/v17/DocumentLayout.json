@@ -3,16 +3,28 @@
   "WorkspaceRootPath": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\weatherforecast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\weatherforecast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\models\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\models\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\weatherforecast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|solutionrelative:labbackend\\weatherforecast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{3D67F8D9-E1FC-4859-8786-9D09E686FFED}|labbackend\\labbackend.csproj|c:\\users\\rinaq\\onedrive\\documents\\github\\labrepository\\labbackend\\labbackend\\labbackend.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
@@ -47,6 +59,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "labbackend\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "labbackend\\Controllers\\AuthController.cs",
+              "ViewState": "AQIAAA8AAAAAAAAAAAA1wBYAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T20:58:41.952Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UserDto.cs",
+              "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\UserDto.cs",
+              "RelativeDocumentMoniker": "labbackend\\Models\\UserDto.cs",
+              "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\UserDto.cs",
+              "RelativeToolTip": "labbackend\\Models\\UserDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T21:12:21.416Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "WeatherForecast.cs",
               "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\WeatherForecast.cs",
               "RelativeDocumentMoniker": "labbackend\\WeatherForecast.cs",
@@ -59,31 +97,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Program.cs",
               "RelativeDocumentMoniker": "labbackend\\Program.cs",
               "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Program.cs",
               "RelativeToolTip": "labbackend\\Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAowEgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-04T15:41:10.482Z"
+              "WhenOpened": "2025-01-04T15:41:10.482Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\appsettings.json",
               "RelativeDocumentMoniker": "labbackend\\appsettings.json",
               "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\appsettings.json",
               "RelativeToolTip": "labbackend\\appsettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAEAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-01-04T15:41:03.387Z"
+              "WhenOpened": "2025-01-04T15:41:03.387Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\User.cs",
+              "RelativeDocumentMoniker": "labbackend\\Models\\User.cs",
+              "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\User.cs",
+              "RelativeToolTip": "labbackend\\Models\\User.cs",
+              "ViewState": "AQIAAAEAAAAAAAAAAAAQwAcAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T21:12:48.911Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "labbackend",
               "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\labbackend.csproj",
               "RelativeDocumentMoniker": "labbackend\\labbackend.csproj",
@@ -94,7 +147,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "Supplier.cs",
               "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\Supplier.cs",
               "RelativeDocumentMoniker": "labbackend\\Models\\Supplier.cs",
@@ -106,7 +159,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "RoomType.cs",
               "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\RoomType.cs",
               "RelativeDocumentMoniker": "labbackend\\Models\\RoomType.cs",
@@ -118,7 +171,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "RoomTypeContext.cs",
               "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\RoomTypeContext.cs",
               "RelativeDocumentMoniker": "labbackend\\Models\\RoomTypeContext.cs",
