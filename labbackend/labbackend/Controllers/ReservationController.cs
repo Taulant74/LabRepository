@@ -65,17 +65,17 @@ namespace labbackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Validate RoomID before inserting
-            if (!await DoesRoomExist(reservation.RoomID))
+            // Check for room availability
+            if (await IsRoomBooked(reservation.RoomID, reservation.CheckInDate, reservation.CheckOutDate))
             {
-                return BadRequest("The specified RoomID does not exist.");
+                return BadRequest("The room is already booked for the selected dates.");
             }
 
             // Generate a unique ReservationID
             reservation.ReservationID = GenerateUniqueReservationID();
 
             string query = @"INSERT INTO Reservation (ReservationID, GuestID, HotelID, RoomID, CheckInDate, CheckOutDate, TotalPrice)
-                             VALUES (@ReservationID, @GuestID, @HotelID, @RoomID, @CheckInDate, @CheckOutDate, @TotalPrice);";
+                     VALUES (@ReservationID, @GuestID, @HotelID, @RoomID, @CheckInDate, @CheckOutDate, @TotalPrice);";
 
             using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
@@ -95,6 +95,7 @@ namespace labbackend.Controllers
             return new JsonResult("Added Successfully");
         }
 
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReservation(int id, Reservation reservation)
         {
@@ -103,16 +104,21 @@ namespace labbackend.Controllers
                 return BadRequest("Reservation ID mismatch");
             }
 
-            // Validate RoomID before updating
-            if (!await DoesRoomExist(reservation.RoomID))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("The specified RoomID does not exist.");
+                return BadRequest(ModelState);
+            }
+
+            // Check for room availability, excluding the current reservation being updated
+            if (await IsRoomBooked(reservation.RoomID, reservation.CheckInDate, reservation.CheckOutDate, id))
+            {
+                return BadRequest("The room is already booked for the selected dates.");
             }
 
             string query = @"UPDATE Reservation
-                             SET GuestID = @GuestID, HotelID = @HotelID, RoomID = @RoomID, 
-                                 CheckInDate = @CheckInDate, CheckOutDate = @CheckOutDate, TotalPrice = @TotalPrice
-                             WHERE ReservationID = @ReservationID;";
+                     SET GuestID = @GuestID, HotelID = @HotelID, RoomID = @RoomID, 
+                         CheckInDate = @CheckInDate, CheckOutDate = @CheckOutDate, TotalPrice = @TotalPrice
+                     WHERE ReservationID = @ReservationID;";
 
             using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
@@ -136,6 +142,40 @@ namespace labbackend.Controllers
 
             return new JsonResult("Updated Successfully");
         }
+
+        private async Task<bool> IsRoomBooked(int roomId, DateTime checkInDate, DateTime checkOutDate, int? excludeReservationId = null)
+        {
+            string query = @"
+        SELECT COUNT(1)
+        FROM Reservation
+        WHERE RoomID = @RoomID 
+        AND @CheckOutDate > CheckInDate 
+        AND @CheckInDate < CheckOutDate";
+
+            if (excludeReservationId.HasValue)
+            {
+                query += " AND ReservationID != @ExcludeReservationID";
+            }
+
+            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@RoomID", roomId);
+                command.Parameters.AddWithValue("@CheckInDate", checkInDate);
+                command.Parameters.AddWithValue("@CheckOutDate", checkOutDate);
+
+                if (excludeReservationId.HasValue)
+                {
+                    command.Parameters.AddWithValue("@ExcludeReservationID", excludeReservationId.Value);
+                }
+
+                await connection.OpenAsync();
+                int count = (int)await command.ExecuteScalarAsync();
+                return count > 0;
+            }
+        }
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReservation(int id)

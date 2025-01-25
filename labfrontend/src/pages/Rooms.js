@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from "react-router-dom"; // Import Link for navigation
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Rooms = () => {
@@ -195,7 +196,10 @@ const Rooms = () => {
                 <h5 className="room-title">{room.name}</h5>
                 <p>{room.description}</p>
                 <p className="room-price">{room.price}</p>
-                <a href="#" className="btn btn-outline-primary">Book Now</a>
+                {/* Updated Link for Book Now */}
+                <Link to={`/reservation/${index + 1}`} className="btn btn-outline-primary">
+                  Book Now
+                </Link>
               </div>
             </div>
           ))}

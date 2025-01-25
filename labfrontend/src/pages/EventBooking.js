@@ -1,45 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Current Time Component
-const CurrentTime = () => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTime(new Date().toLocaleTimeString());
-    }, 1000);
-
-    return () => clearInterval(intervalId); // Clear interval on component unmount
-  }, []);
-
-  return (
-    <div
-      className="d-inline-block p-5"
-      style={{
-        border: '1px solid #ddd',
-        borderRadius: '10px',
-        backgroundColor: '#f8f9fa',
-        minHeight: '150px', // Ensures enough space vertically
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <div>
-        <h5 className="mb-1" style={{ fontWeight: '500', fontSize: '1.2rem' }}>Current Time</h5>
-        <p className="lead" style={{ fontSize: '3rem', marginBottom: '0' }}>{time}</p> {/* Increased font size */}
-        <p className="mt-3" style={{ fontStyle: 'italic', fontSize: '1rem', color: '#555' }}>
-          "There is never a wrong time for a new event ,one book away!." 
-        </p>
-      </div>
-    </div>
-  );
-};
-
-//export default CurrentTime;
-
+// EventBooking Component
 const EventBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [newBooking, setNewBooking] = useState({ name: '', event: '', date: '' });
@@ -62,36 +24,40 @@ const EventBooking = () => {
     setNewBooking({ ...newBooking, [name]: value });
   };
 
-  const saveBooking = () => {
+  // Save Booking with Conflict Handling
+  const saveBooking = async () => {
     if (!newBooking.name || !newBooking.event || !newBooking.date) {
       setErrorMessage('Please fill in all the fields!');
       return;
     }
     setErrorMessage('');
 
-    // If editing an existing booking, update it
-    if (editingBooking) {
-      setBookings(
-        bookings.map((booking) =>
-          booking.id === editingBooking.id ? { ...editingBooking, ...newBooking } : booking
-        )
-      );
-      setEditingBooking(null); // Reset the editing state
-    } else {
-      // If not editing, create a new booking
-      setBookings([...bookings, { id: Date.now(), ...newBooking }]);
+    try {
+      const response = await fetch('/api/EventBooking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newBooking),
+      });
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          const error = await response.json();
+          setErrorMessage(error.message); // Display the error message
+        } else {
+          setErrorMessage('Failed to book the event. Please try again later.');
+        }
+        return;
+      }
+
+      const data = await response.json();
+      setBookings([...bookings, data]);
+      setNewBooking({ name: '', event: '', date: '' }); // Reset the form
+      setModalVisible(false); // Close the modal
+    } catch (error) {
+      setErrorMessage('An error occurred. Please try again.');
     }
-    setNewBooking({ name: '', event: '', date: '' }); // Reset the form
-    setModalVisible(false); // Close the modal
-  };
-
-  const deleteBooking = (id) => {
-    setBookings(bookings.filter((booking) => booking.id !== id));
-  };
-
-  const editBooking = (booking) => {
-    setEditingBooking(booking);
-    setNewBooking({ name: booking.name, event: booking.event, date: booking.date });
   };
 
   const openModal = (event) => {
@@ -122,17 +88,14 @@ const EventBooking = () => {
       </nav>
 
       {/* Event Banner Section */}
-      <div
-        className="container text-center my-4"
-        style={{
-          backgroundImage: 'url(/images/recep.webp)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '600px',
-          marginTop: '400px',
-          width: '120%',
-        }}
-      >
+      <div className="container text-center my-4" style={{
+        backgroundImage: 'url(/images/recep.webp)', 
+        backgroundSize: 'cover', 
+        backgroundPosition: 'center', 
+        height: '600px', 
+        marginTop: '400px',
+        width: '120%',
+      }}>
         <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
           <h2 className="text-white">Events of Dardania Heights</h2>
         </div>
@@ -161,12 +124,12 @@ const EventBooking = () => {
         ))}
       </div>
 
-      {/* Current Time */}
-      <div className="container text-center my-5">
-        <div className="d-flex justify-content-center gap-4">
-          <CurrentTime />
+      {/* Error Message */}
+      {errorMessage && (
+        <div className="alert alert-danger text-center" role="alert">
+          {errorMessage}
         </div>
-      </div>
+      )}
 
       {/* Booking Modal */}
       {modalVisible && (
