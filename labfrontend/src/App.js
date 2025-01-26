@@ -15,7 +15,8 @@ import Feedback from './pages/Feedback';
 import Review from './pages/Review';
 import Profile from './pages/Profile';
 import Amenities from './pages/Amenities';
-
+import AboutUs from './pages/AboutUs';
+import Reservation from './pages/Reservation';
 const App = () => {
   return (
     <Router>
@@ -30,8 +31,8 @@ const App = () => {
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/event" element={<EventBooking />} /> 
         <Route path="/profile" element={<Profile />} />
-      
-
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/reservation" element={<Reservation />} />
         
       </Routes>
     </Router>

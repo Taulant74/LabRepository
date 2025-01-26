@@ -332,7 +332,9 @@ const AmenitiesComponent = () => {
           </AmenityCard>
         ))}
       </AmenitiesGrid>
+      <Link to ="/amenities">
       <AmenitiesButton>View All Amenities</AmenitiesButton>
+      </Link>
     </AmenitiesSection>
   );
 };
