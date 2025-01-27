@@ -15,30 +15,29 @@ import Feedback from './pages/Feedback';
 import Review from './pages/Review';
 import Profile from './pages/Profile';
 import Amenities from './pages/Amenities';
-import Reservation from './pages/Reservation'; // Import the Reservation page
-
+import AboutUs from './pages/AboutUs';
+import Reservation from './pages/Reservation';
 const App = () => {
   return (
     <Router>
       <Routes>
-
-        <Route path="/" element={<MainPage />} />
-        <Route path="/rooms" element={<Rooms />} />
+        <Route path="/" element={< MainPage/>} />
+        <Route path="/rooms" element={< Rooms/>} />
+        <Route path="/amenities" element={< Amenities/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/review" element={<Review />} />
         <Route path="/feedback" element={<Feedback />} />
-        <Route path="/event" element={<EventBooking />} />
-        <Route path="/amenities" element={<Amenities />} />
-
+        <Route path="/event" element={<EventBooking />} /> 
         <Route path="/profile" element={<Profile />} />
-
-        {/* Add the Reservation route */}
-        <Route path="/reservation/:roomId" element={<Reservation />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/reservation" element={<Reservation />} />
+        
       </Routes>
     </Router>
   );
 };
+
 
 export default App;

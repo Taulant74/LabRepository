@@ -212,7 +212,7 @@ const AmenitiesSection = styled.section`
 const AmenitiesTitle = styled.h2`
   font-size: 2.5rem;
   font-weight: bold;
-  color: #5C6AC4; /* Royal Blue */
+  color:rgb(0, 0, 0); /* Royal Blue */
   margin-bottom: 30px;
 `;
 
@@ -332,7 +332,9 @@ const AmenitiesComponent = () => {
           </AmenityCard>
         ))}
       </AmenitiesGrid>
+      <Link to ="/amenities">
       <AmenitiesButton>View All Amenities</AmenitiesButton>
+      </Link>
     </AmenitiesSection>
   );
 };
