@@ -96,6 +96,18 @@ const [editSchedule, setEditSchedule] = useState(null);
 const [newSchedule, setNewSchedule] = useState(null);
 const [schedules, setSchedules] = useState([]);
 const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+const [rooms, setRooms] = useState([]);
+const [newRoom, setNewRoom] = useState(null); // For adding a new room
+const [editRoom, setEditRoom] = useState(null); // For editing a room
+
+const fetchRooms = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Room");
+    setRooms(response.data);
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
+  }
+};
 
 
 const fetchSchedules = async () => {
@@ -126,6 +138,12 @@ useEffect(() => {
       break;
     default:
       break;
+  }
+}, [activeTab]);
+
+useEffect(() => {
+  if (activeTab === "rooms") {
+    fetchRooms();
   }
 }, [activeTab]);
 
@@ -244,7 +262,39 @@ useEffect(() => {
       showNotification("Failed to delete maintenance request.");
     }
   };
-        
+  const handleAddRoom = async () => {
+    try {
+      await axios.post("https://localhost:7085/api/Room", newRoom);
+      fetchRooms();
+      setNewRoom(null);
+      showNotification("Room added successfully!");
+    } catch (error) {
+      console.error("Error adding room:", error);
+      showNotification("Failed to add room.");
+    }
+  };
+  const handleUpdateRoom = async () => {
+    try {
+      await axios.put(`https://localhost:7085/api/Room/${editRoom.roomID}`, editRoom);
+      fetchRooms();
+      setEditRoom(null);
+      showNotification("Room updated successfully!");
+    } catch (error) {
+      console.error("Error updating room:", error);
+      showNotification("Failed to update room.");
+    }
+  };
+  const handleDeleteRoom = async (id) => {
+    try {
+      await axios.delete(`https://localhost:7085/api/Room/${id}`);
+      fetchRooms();
+      showNotification("Room deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting room:", error);
+      showNotification("Failed to delete room.");
+    }
+  };
+      
   
   
   const handleAddInventory = async () => {
@@ -467,6 +517,200 @@ const handleUpdateInventory = async () => {
     setNotification(message);
     setTimeout(() => setNotification(""), 2000);
   };
+  const renderRoomsContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Rooms</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewRoom({
+              roomID: rooms.length > 0 ? Math.max(...rooms.map((r) => r.roomID)) + 1 : 1,
+              hotelID: "",
+              roomNumber: "",
+              roomTypeID: "",
+            })
+          }
+        >
+          Add New Room
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Room ID</th>
+              <th>Hotel ID</th>
+              <th>Room Number</th>
+              <th>Room Type ID</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rooms.length > 0 ? (
+              rooms.map((room) => (
+                <tr key={room.roomID}>
+                  <td>{room.roomID}</td>
+                  <td>{room.hotelID}</td>
+                  <td>{room.roomNumber}</td>
+                  <td>{room.roomTypeID}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditRoom(room)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteRoom(room.roomID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted">
+                  No rooms found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Room Modal */}
+      {editRoom && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Room</h5>
+                <button type="button" className="btn-close" onClick={() => setEditRoom(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Hotel ID"
+                  value={editRoom.hotelID}
+                  onChange={(e) => setEditRoom({ ...editRoom, hotelID: e.target.value })}
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Room Number"
+                  value={editRoom.roomNumber}
+                  onChange={(e) => setEditRoom({ ...editRoom, roomNumber: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Room Type ID"
+                  value={editRoom.roomTypeID}
+                  onChange={(e) => setEditRoom({ ...editRoom, roomTypeID: e.target.value })}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateRoom}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditRoom(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add Room Modal */}
+      {newRoom && (
+  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Add New Room</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setNewRoom(null)}
+          ></button>
+        </div>
+        <div className="modal-body">
+          {/* Room ID (Read-only) */}
+          <div className="mb-3">
+            <label className="form-label">Room ID </label>
+            <input
+              type="number"
+              className="form-control"
+              value={newRoom.roomID} // Read-only value
+              readOnly
+            />
+          </div>
+
+          {/* Hotel ID */}
+          <div className="mb-3">
+            <label className="form-label">Hotel ID</label>
+            <input
+              type="number"
+              className="form-control"
+              placeholder="Enter Hotel ID"
+              value={newRoom.hotelID}
+              onChange={(e) =>
+                setNewRoom({ ...newRoom, hotelID: parseInt(e.target.value, 10) || "" })
+              }
+            />
+          </div>
+
+          {/* Room Number */}
+          <div className="mb-3">
+            <label className="form-label">Room Number</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter Room Number"
+              value={newRoom.roomNumber}
+              onChange={(e) => setNewRoom({ ...newRoom, roomNumber: e.target.value })}
+            />
+          </div>
+
+          {/* Room Type ID */}
+          <div className="mb-3">
+            <label className="form-label">Room Type ID</label>
+            <input
+              type="number"
+              className="form-control"
+              placeholder="Enter Room Type ID (1-3)"
+              value={newRoom.roomTypeID}
+              onChange={(e) => {
+                const value = parseInt(e.target.value, 10);
+                if (value >= 1 && value <= 3) {
+                  setNewRoom({ ...newRoom, roomTypeID: value });
+                }
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={handleAddRoom}>
+            Add
+          </button>
+          <button className="btn btn-secondary" onClick={() => setNewRoom(null)}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+    </div>
+  );
+  
   const renderStaffContent = () => (
     <div className="card shadow-sm border-0">
       <div className="card-header bg-primary text-white d-flex justify-content-between">
@@ -1969,6 +2213,14 @@ const handleUpdateInventory = async () => {
       <FaCalendarAlt className="me-2" />
       {!isSidebarCollapsed && "Employee Schedules"}
     </li>
+    <li
+  className={`nav-item p-2 ${activeTab === "rooms" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("rooms")}
+>
+  <FaBox className="me-2" />
+  {!isSidebarCollapsed && "Rooms"}
+</li>
+
   </ul>
 </div>
 
@@ -1982,6 +2234,7 @@ const handleUpdateInventory = async () => {
 {activeTab === "staff" && renderStaffContent()}
 {activeTab === "maintenanceRequests" && renderMaintenanceRequestsContent()}
 {activeTab === "employeeSchedule" && renderEmployeeScheduleContent()}
+{activeTab === "rooms" && renderRoomsContent()}
 
 
 </div>
