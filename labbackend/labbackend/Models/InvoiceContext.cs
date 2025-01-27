@@ -9,6 +9,7 @@ namespace labbackend.Models
         }
 
         public DbSet<Invoice> Invoices { get; set; }
+
     }
 
 

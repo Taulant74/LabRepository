@@ -1,92 +1,149 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useParams, Link } from "react-router-dom";
+import axios from "axios";
 
 const Reservation = () => {
-  const { roomId } = useParams(); // Extract room ID from URL
-  const [roomDetails, setRoomDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [roomTypes, setRoomTypes] = useState([
+    { id: 1, name: "Standard", price: 90, imageUrl: "/images/standard.png" },
+    { id: 2, name: "Deluxe", price: 120, imageUrl: "/images/deluxe.png" },
+    { id: 3, name: "Suite", price: 200, imageUrl: "/images/suite.png" },
+  ]);
+  const [rooms, setRooms] = useState([]);
+  const [selectedRoomType, setSelectedRoomType] = useState(null);
+  const [checkInDate, setCheckInDate] = useState("");
+  const [checkOutDate, setCheckOutDate] = useState("");
 
-  // Simulate fetching data
+  // Fetch rooms from the backend
   useEffect(() => {
-    const roomsData = [
-      {
-        id: 1,
-        name: "Deluxe Room",
-        description: "Luxurious room with modern amenities and city views.",
-        maxOccupancy: 2,
-        price: 120,
-        status: "Available",
-        imageUrl: "/images/room1.jpg",
-      },
-      {
-        id: 2,
-        name: "Suite Room",
-        description: "Spacious suite with a king-size bed and premium services.",
-        maxOccupancy: 3,
-        price: 200,
-        status: "Available",
-        imageUrl: "/images/room2.jpg",
-      },
-      {
-        id: 3,
-        name: "Standard Room",
-        description: "Comfortable room with all essential amenities.",
-        maxOccupancy: 2,
-        price: 90,
-        status: "Available",
-        imageUrl: "/images/room3.jpg",
-      },
-    ];
+    const fetchRooms = async () => {
+      try {
+        const response = await axios.get("https://localhost:7085/api/Room");
+        setRooms(response.data);
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      }
+    };
 
-    const roomData = roomsData.find((room) => room.id.toString() === roomId); // Match roomId
-    setRoomDetails(roomData);
-    setLoading(false);
-  }, [roomId]);
+    fetchRooms();
+  }, []);
 
-  if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
-  }
+  // Handle room type selection
+  const handleRoomTypeClick = (roomType) => {
+    setSelectedRoomType(roomType);
+  };
 
-  if (!roomDetails) {
-    return (
-      <div className="container mt-5 text-center">
-        <h2>Room not found</h2>
-        <p>The room you're looking for does not exist. Please go back and select a valid room.</p>
-        <Link to="/rooms" className="btn btn-primary">Back to Rooms</Link>
-      </div>
-    );
-  }
+  // Handle reservation
+  const handleReserveNow = async (roomId) => {
+    if (!checkInDate || !checkOutDate) {
+      alert("Please select check-in and check-out dates.");
+      return;
+    }
+
+    const reservationData = {
+      guestID: 1, // Replace with dynamic guest ID
+      hotelID: 1, // Replace with the appropriate hotel ID
+      roomID: roomId,
+      checkInDate,
+      checkOutDate,
+      totalPrice: selectedRoomType.price, // Calculate based on room price
+    };
+
+    try {
+      await axios.post("https://localhost:7085/api/Reservation", reservationData);
+      alert("Reservation successful!");
+    } catch (error) {
+      console.error("Error making reservation:", error);
+      alert("Failed to make reservation.");
+    }
+  };
 
   return (
     <div className="container mt-5">
-      <h2 className="reservation-header text-center">{roomDetails.name}</h2>
-      <div className="row">
-        <div className="col-md-6 text-center">
-          <img
-            src={roomDetails.imageUrl}
-            alt={roomDetails.name}
-            className="img-fluid reservation-image"
-          />
+      <h1 className="text-center">Make a Reservation</h1>
+
+      {/* Room Type Boxes */}
+      {!selectedRoomType && (
+        <div className="row text-center mt-5">
+          {roomTypes.map((roomType) => (
+            <div key={roomType.id} className="col-md-4 mb-4">
+              <div
+                className="card"
+                onClick={() => handleRoomTypeClick(roomType)}
+                style={{ cursor: "pointer" }}
+              >
+                <img
+                  src={roomType.imageUrl}
+                  className="card-img-top"
+                  alt={roomType.name}
+                  style={{ height: "200px", objectFit: "cover" }}
+                />
+                <div className="card-body">
+                  <h5 className="card-title">{roomType.name}</h5>
+                  <p className="card-text">Price: €{roomType.price} / night</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="col-md-6 reservation-details">
-          <p><strong>Description:</strong> {roomDetails.description}</p>
-          <p><strong>Max Occupancy:</strong> {roomDetails.maxOccupancy}</p>
-          <p><strong>Price:</strong> ${roomDetails.price} per night</p>
-          <p><strong>Status:</strong> <span className="text-success">{roomDetails.status}</span></p>
-          <div className="d-flex">
-            <button
-              className="btn btn-primary btn-reserve"
-              onClick={() => alert("Reservation completed successfully!")}
-            >
-              Reserve Now
-            </button>
-            <Link to="/rooms" className="btn btn-secondary btn-back">
-              Back to Rooms
-            </Link>
+      )}
+
+      {/* Room Availability Table */}
+      {selectedRoomType && (
+        <div className="mt-5">
+          <button
+            className="btn btn-secondary mb-4"
+            onClick={() => setSelectedRoomType(null)}
+          >
+            Back to Room Types
+          </button>
+          <h3 className="text-center mb-4">
+            Available Rooms: {selectedRoomType.name}
+          </h3>
+
+          <div className="row">
+            {rooms
+              .filter((room) => room.roomTypeID === selectedRoomType.id)
+              .map((room) => (
+                <div key={room.roomID} className="col-md-4 mb-4">
+                  <div className="card">
+                    <div
+                      className={`card-body ${
+                        room.occupiedByGuestID ? "bg-danger text-white" : "bg-success text-white"
+                      }`}
+                    >
+                      <h5 className="card-title">Room {room.roomNumber}</h5>
+                      <p className="card-text">
+                        Status: {room.occupiedByGuestID ? "Unavailable" : "Available"}
+                      </p>
+                      {!room.occupiedByGuestID && (
+                        <>
+                          <input
+                            type="date"
+                            className="form-control mb-3"
+                            value={checkInDate}
+                            onChange={(e) => setCheckInDate(e.target.value)}
+                          />
+                          <input
+                            type="date"
+                            className="form-control mb-3"
+                            value={checkOutDate}
+                            onChange={(e) => setCheckOutDate(e.target.value)}
+                          />
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => handleReserveNow(room.roomID)}
+                          >
+                            Reserve Now
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

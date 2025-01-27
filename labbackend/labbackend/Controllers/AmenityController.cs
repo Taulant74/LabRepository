@@ -46,7 +46,7 @@ namespace labbackend.Controllers
             _context.Amenities.Add(amenity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAmenity", new { id = amenity.AmenityID }, amenity);
+            return CreatedAtAction(nameof(GetAmenity), new { id = amenity.AmenityID }, amenity);
         }
 
         // PUT: api/Amenity/{id}
