@@ -64,7 +64,7 @@
               "RelativeDocumentMoniker": "labbackend\\Controllers\\AuthController.cs",
               "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Controllers\\AuthController.cs",
               "RelativeToolTip": "labbackend\\Controllers\\AuthController.cs",
-              "ViewState": "AQIAAA8AAAAAAAAAAAA1wBYAAAAJAAAA",
+              "ViewState": "AQIAABAAAAAAAAAAAAAQwBYAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-25T20:58:41.952Z",
               "EditorCaption": ""
@@ -79,8 +79,7 @@
               "RelativeToolTip": "labbackend\\Models\\UserDto.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-25T21:12:21.416Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-25T21:12:21.416Z"
             },
             {
               "$type": "Document",
@@ -92,8 +91,7 @@
               "RelativeToolTip": "labbackend\\WeatherForecast.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-04T15:41:14.452Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-04T15:41:14.452Z"
             },
             {
               "$type": "Document",
@@ -105,8 +103,7 @@
               "RelativeToolTip": "labbackend\\Program.cs",
               "ViewState": "AQIAAAkAAAAAAAAAAAAowEgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-04T15:41:10.482Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-04T15:41:10.482Z"
             },
             {
               "$type": "Document",
@@ -118,8 +115,7 @@
               "RelativeToolTip": "labbackend\\appsettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAEAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-01-04T15:41:03.387Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-04T15:41:03.387Z"
             },
             {
               "$type": "Document",
@@ -131,8 +127,7 @@
               "RelativeToolTip": "labbackend\\Models\\User.cs",
               "ViewState": "AQIAAAEAAAAAAAAAAAAQwAcAAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-25T21:12:48.911Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-25T21:12:48.911Z"
             },
             {
               "$type": "Document",
