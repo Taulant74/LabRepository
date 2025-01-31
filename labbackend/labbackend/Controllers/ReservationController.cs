@@ -23,7 +23,8 @@ namespace labbackend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Reservation>>> Get()
         {
-            string query = @"SELECT ReservationID, GuestID, HotelID, RoomID, CheckInDate, CheckOutDate, TotalPrice FROM dbo.Reservation";
+            string query = @"SELECT ReservationID, GuestID, HotelID, RoomID, CheckInDate, CheckOutDate, TotalPrice 
+                             FROM dbo.Reservation";
 
             List<Reservation> reservations = new List<Reservation>();
             string sqlDataSource = _configuration.GetConnectionString("DefaultConnection");
@@ -65,17 +66,20 @@ namespace labbackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Check for room availability
+            // 1. Check for room availability
             if (await IsRoomBooked(reservation.RoomID, reservation.CheckInDate, reservation.CheckOutDate))
             {
                 return BadRequest("The room is already booked for the selected dates.");
             }
 
-            // Generate a unique ReservationID
+            // 2. Generate a unique ReservationID
             reservation.ReservationID = GenerateUniqueReservationID();
 
-            string query = @"INSERT INTO Reservation (ReservationID, GuestID, HotelID, RoomID, CheckInDate, CheckOutDate, TotalPrice)
-                     VALUES (@ReservationID, @GuestID, @HotelID, @RoomID, @CheckInDate, @CheckOutDate, @TotalPrice);";
+            // 3. Insert into the database
+            string query = @"INSERT INTO Reservation 
+                             (ReservationID, GuestID, HotelID, RoomID, CheckInDate, CheckOutDate, TotalPrice)
+                             VALUES
+                             (@ReservationID, @GuestID, @HotelID, @RoomID, @CheckInDate, @CheckOutDate, @TotalPrice);";
 
             using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
@@ -92,9 +96,13 @@ namespace labbackend.Controllers
                 await command.ExecuteNonQueryAsync();
             }
 
-            return new JsonResult("Added Successfully");
+            // 4. Return JSON including new ReservationID
+            return Ok(new
+            {
+                message = "Reservation added successfully.",
+                reservationID = reservation.ReservationID
+            });
         }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReservation(int id, Reservation reservation)
@@ -116,9 +124,13 @@ namespace labbackend.Controllers
             }
 
             string query = @"UPDATE Reservation
-                     SET GuestID = @GuestID, HotelID = @HotelID, RoomID = @RoomID, 
-                         CheckInDate = @CheckInDate, CheckOutDate = @CheckOutDate, TotalPrice = @TotalPrice
-                     WHERE ReservationID = @ReservationID;";
+                             SET GuestID = @GuestID,
+                                 HotelID = @HotelID,
+                                 RoomID = @RoomID,
+                                 CheckInDate = @CheckInDate,
+                                 CheckOutDate = @CheckOutDate,
+                                 TotalPrice = @TotalPrice
+                             WHERE ReservationID = @ReservationID;";
 
             using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
@@ -140,17 +152,61 @@ namespace labbackend.Controllers
                 }
             }
 
-            return new JsonResult("Updated Successfully");
+            return Ok("Reservation updated successfully");
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteReservation(int id)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    await conn.OpenAsync();
+
+                    // 1️⃣ Delete related invoices first (to avoid FK constraint issue)
+                    string deleteInvoicesQuery = "DELETE FROM Invoice WHERE ReservationID = @ReservationID";
+                    using (SqlCommand cmdInvoices = new SqlCommand(deleteInvoicesQuery, conn))
+                    {
+                        cmdInvoices.Parameters.AddWithValue("@ReservationID", id);
+                        await cmdInvoices.ExecuteNonQueryAsync();
+                    }
+
+                    // 2️⃣ Now delete the reservation
+                    string deleteReservationQuery = "DELETE FROM Reservation WHERE ReservationID = @ReservationID";
+                    using (SqlCommand cmdReservation = new SqlCommand(deleteReservationQuery, conn))
+                    {
+                        cmdReservation.Parameters.AddWithValue("@ReservationID", id);
+                        int rowsAffected = await cmdReservation.ExecuteNonQueryAsync();
+
+                        if (rowsAffected == 0)
+                        {
+                            return NotFound("Reservation not found.");
+                        }
+                    }
+                }
+
+                return Ok("Reservation deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+
+        // --- Helper Methods ---
 
         private async Task<bool> IsRoomBooked(int roomId, DateTime checkInDate, DateTime checkOutDate, int? excludeReservationId = null)
         {
             string query = @"
-        SELECT COUNT(1)
-        FROM Reservation
-        WHERE RoomID = @RoomID 
-        AND @CheckOutDate > CheckInDate 
-        AND @CheckInDate < CheckOutDate";
+                SELECT COUNT(1)
+                FROM Reservation
+                WHERE RoomID = @RoomID
+                  AND @CheckOutDate > CheckInDate
+                  AND @CheckInDate < CheckOutDate
+            ";
 
             if (excludeReservationId.HasValue)
             {
@@ -175,47 +231,9 @@ namespace labbackend.Controllers
             }
         }
 
-
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReservation(int id)
-        {
-            string query = "DELETE FROM Reservation WHERE ReservationID = @ReservationID;";
-
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@ReservationID", id);
-
-                await connection.OpenAsync();
-                int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                if (rowsAffected == 0)
-                {
-                    return NotFound();
-                }
-            }
-
-            return new JsonResult("Deleted Successfully");
-        }
-
-        private async Task<bool> DoesRoomExist(int roomId)
-        {
-            string query = "SELECT COUNT(1) FROM Room WHERE RoomID = @RoomID;";
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@RoomID", roomId);
-
-                await connection.OpenAsync();
-                int count = (int)await command.ExecuteScalarAsync();
-                return count > 0;
-            }
-        }
-
         private int GenerateUniqueReservationID()
         {
-            // Generate a pseudo-unique ID for the ReservationID (customize as needed)
+            // Generate a pseudo-unique ReservationID (ensure this aligns with DB constraints)
             return new Random().Next(1, int.MaxValue);
         }
     }

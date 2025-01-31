@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt  } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt,FaClipboardList  } from "react-icons/fa";
+
+
 
 // Inline styles for components
 const styles = {
@@ -105,6 +107,12 @@ const [editReview, setEditReview] = useState(null);
 const [amenities, setAmenities] = useState([]);
 const [newAmenity, setNewAmenity] = useState(null);
 const [editAmenity, setEditAmenity] = useState(null);
+const [currentPage, setCurrentPage] = useState(0);
+const rowsPerPage = 7; // Show 7 rooms per page
+const [reservations, setReservations] = useState([]);
+const [editReservation, setEditReservation] = useState(null);
+const [newReservation, setNewReservation] = useState(null);
+
 
 const fetchAmenities = async () => {
   try {
@@ -116,6 +124,68 @@ console.log("Updated amenities state:", response.data);
     console.error("Error fetching amenities:", error); // Log errors
   }
 };
+
+const fetchReservations = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Reservation");
+    setReservations(response.data);
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+  }
+};
+
+// Fetch when tab is active
+useEffect(() => {
+  if (activeTab === "reservations") {
+    fetchReservations();
+  }
+}, [activeTab]);
+const handleAddReservation = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Reservation", newReservation);
+    fetchReservations();
+    setNewReservation(null);
+    alert("Reservation added successfully!");
+  } catch (error) {
+    console.error("Error adding reservation:", error);
+    alert("Failed to add reservation.");
+  }
+};
+const handleUpdateReservation = async () => {
+  try {
+    await axios.put(
+      `https://localhost:7085/api/Reservation/${editReservation.reservationID}`,
+      editReservation
+    );
+    fetchReservations();
+    setEditReservation(null);
+    alert("Reservation updated successfully!");
+  } catch (error) {
+    console.error("Error updating reservation:", error);
+    alert("Failed to update reservation.");
+  }
+};
+const handleDeleteReservation = async (reservationID) => {
+  if (!window.confirm("Are you sure you want to delete this reservation?")) return;
+
+  try {
+    await axios.delete(`https://localhost:7085/api/Reservation/${reservationID}`);
+
+    // Remove the deleted reservation from state
+    setReservations((prevReservations) =>
+      prevReservations.filter((reservation) => reservation.reservationID !== reservationID)
+    );
+
+    // Show notification
+    setNotification(`Reservation ${reservationID} deleted successfully.`);
+    setTimeout(() => setNotification(""), 2000); // Hide after 2 seconds
+
+  } catch (error) {
+    console.error("Error deleting reservation:", error);
+    alert("Failed to delete reservation. Please try again.");
+  }
+};
+
 
 
 const handleAddAmenity = async () => {
@@ -632,6 +702,143 @@ const handleUpdateInventory = async () => {
     setNotification(message);
     setTimeout(() => setNotification(""), 2000);
   };
+  const renderReservationsContent = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time for comparison
+  
+    const sortedReservations = [...reservations].sort(
+      (a, b) => new Date(a.checkInDate) - new Date(b.checkInDate)
+    );
+  
+    return (
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-primary text-white d-flex justify-content-between">
+          <h3 className="m-0">Reservations</h3>
+          <button
+            className="btn btn-light text-primary"
+            onClick={() =>
+              setNewReservation({
+                reservationID: 0, // Auto-increment
+                guestID: "",
+                hotelID: "",
+                roomID: "",
+                checkInDate: "",
+                checkOutDate: "",
+                totalPrice: 0,
+                paymentStatus: "Pending", // Default to Pending
+                invoiceID: null, // No payment yet
+              })
+            }
+          >
+            Add Reservation
+          </button>
+        </div>
+  
+        {notification && (
+          <div className="alert alert-success text-center fade show">
+            <strong>{notification}</strong>
+          </div>
+        )}
+  
+        <div className="table-responsive">
+          <table className="table table-bordered text-center">
+            <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+              <tr>
+                <th>Reservation ID</th>
+                <th>Guest ID</th>
+                <th>Hotel ID</th>
+                <th>Room ID</th>
+                <th>Check-In Date</th>
+                <th>Check-Out Date</th>
+                <th>Total Price (€)</th>
+                <th>Days Until Check-In</th>
+                <th>Payment Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedReservations.length > 0 ? (
+                sortedReservations.map((reservation) => {
+                  const checkInDate = new Date(reservation.checkInDate);
+                  checkInDate.setHours(0, 0, 0, 0);
+                  
+                  // Calculate days until check-in
+                  const daysUntilCheckIn = Math.ceil(
+                    (checkInDate - today) / (1000 * 60 * 60 * 24)
+                  );
+  
+                  let rowStyle = {};
+                  let statusText = `${daysUntilCheckIn} days left`;
+  
+                  if (daysUntilCheckIn === 0) {
+                    rowStyle = { backgroundColor: "#28a745", color: "#fff", fontWeight: "bold" };
+                    statusText = "Happening Today";
+                  } else if (daysUntilCheckIn < 0) {
+                    rowStyle = { backgroundColor: "#ff4d4f", color: "#fff", fontWeight: "bold" };
+                    statusText = "Expired";
+                  }
+  
+                  return (
+                    <tr key={reservation.reservationID} style={rowStyle}>
+                      <td>{reservation.reservationID}</td>
+                      <td>{reservation.guestID}</td>
+                      <td>{reservation.hotelID}</td>
+                      <td>{reservation.roomID}</td>
+                      <td>{reservation.checkInDate.split("T")[0]}</td>
+                      <td>{reservation.checkOutDate.split("T")[0]}</td>
+                      <td>€{reservation.totalPrice.toFixed(2)}</td>
+                      <td>{statusText}</td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            reservation.paymentStatus === "Paid"
+                              ? "bg-success"
+                              : "bg-danger"
+                          }`}
+                        >
+                          {reservation.paymentStatus}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-primary me-2"
+                          onClick={() => setEditReservation(reservation)}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() =>
+                            handleDeleteReservation(reservation.reservationID)
+                          }
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="10" className="text-center text-muted">
+                    No reservations found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+  
+  
+  
+  
+  
+
+
+
   const renderAmenitiesContent = () => (
     <div className="card shadow-sm border-0">
       <div className="card-header bg-primary text-white d-flex justify-content-between">
@@ -787,7 +994,13 @@ const handleUpdateInventory = async () => {
   
   
   
-  const renderRoomsContent = () => (
+  const renderRoomsContent = () => {
+    const paginatedRooms = rooms.slice(
+      currentPage * rowsPerPage,
+      (currentPage + 1) * rowsPerPage
+    );
+  
+    return (
     <div className="card shadow-sm border-0">
       <div className="card-header bg-primary text-white d-flex justify-content-between">
         <h3 className="m-0">Rooms</h3>
@@ -820,8 +1033,8 @@ const handleUpdateInventory = async () => {
             </tr>
           </thead>
           <tbody>
-            {rooms.length > 0 ? (
-              rooms.map((room) => (
+            {paginatedRooms.length > 0 ? (
+              paginatedRooms.map((room) => (
                 <tr key={room.roomID}>
                   <td>{room.roomID}</td>
                   <td>{room.hotelID}</td>
@@ -896,6 +1109,23 @@ const handleUpdateInventory = async () => {
             )}
           </tbody>
         </table>
+        
+        <button
+  className="btn btn-primary me-2"
+  onClick={() => setCurrentPage((prev) => prev - 1)}
+  disabled={currentPage === 0}
+>
+  Previous
+</button>
+<button
+  className="btn btn-primary"
+  onClick={() => setCurrentPage((prev) => prev + 1)}
+  disabled={(currentPage + 1) * rowsPerPage >= rooms.length}
+>
+  Next
+</button>
+
+        
       </div>
   
       {/* Edit Room Modal */}
@@ -1053,8 +1283,8 @@ const handleUpdateInventory = async () => {
         </div>
       )}
     </div>
-  );
-  
+  )
+};
   
   
   
@@ -2700,6 +2930,13 @@ const handleUpdateInventory = async () => {
     <FaEdit className="me-2" />
     {!isSidebarCollapsed && "Reviews"}
   </li>
+  <li
+  className={`nav-item p-2 ${activeTab === "reservations" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("reservations")}
+>
+  <FaClipboardList className="me-2" />
+  {!isSidebarCollapsed && "Reservations"}
+</li>
 
 
   </ul>
@@ -2718,6 +2955,7 @@ const handleUpdateInventory = async () => {
 {activeTab === "rooms" && renderRoomsContent()}
 {activeTab === "reviews" && renderReviewsContent()}
 {activeTab === "amenities" && renderAmenitiesContent()}
+{activeTab === "reservations" && renderReservationsContent()}
 
 
 </div>

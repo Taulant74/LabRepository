@@ -38,12 +38,9 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/reservation" element={<Reservation />} />
-        </Route>
-
-        {/* Admin Protected Route */}
-        <Route element={<ProtectedRoute requiredRole="admin" />}>
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
+
       </Routes>
     </Router>
   );

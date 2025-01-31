@@ -3,7 +3,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using labbackend.Models;
 
@@ -42,7 +41,6 @@ namespace labbackend.Controllers
                         ReservationID = reader.GetInt32(1),
                         Amount = reader.GetDecimal(2)
                     };
-
                     invoices.Add(invoice);
                 }
 
@@ -61,9 +59,10 @@ namespace labbackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Generate a unique InvoiceID
+            // 1. Generate a unique InvoiceID
             invoice.InvoiceID = GenerateUniqueInvoiceID();
 
+            // 2. Insert into the database
             string query = @"INSERT INTO Invoice (InvoiceID, ReservationID, Amount)
                              VALUES (@InvoiceID, @ReservationID, @Amount);";
 
@@ -78,7 +77,12 @@ namespace labbackend.Controllers
                 await command.ExecuteNonQueryAsync();
             }
 
-            return new JsonResult("Added Successfully");
+            // 3. Return JSON including new InvoiceID
+            return Ok(new
+            {
+                message = "Invoice added successfully.",
+                invoiceID = invoice.InvoiceID
+            });
         }
 
         [HttpPut("{id}")]
@@ -90,7 +94,8 @@ namespace labbackend.Controllers
             }
 
             string query = @"UPDATE Invoice
-                             SET ReservationID = @ReservationID, Amount = @Amount
+                             SET ReservationID = @ReservationID,
+                                 Amount = @Amount
                              WHERE InvoiceID = @InvoiceID;";
 
             using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
@@ -109,7 +114,7 @@ namespace labbackend.Controllers
                 }
             }
 
-            return new JsonResult("Updated Successfully");
+            return Ok("Invoice updated successfully");
         }
 
         [HttpDelete("{id}")]
@@ -131,7 +136,7 @@ namespace labbackend.Controllers
                 }
             }
 
-            return new JsonResult("Deleted Successfully");
+            return Ok("Invoice deleted successfully");
         }
 
         private int GenerateUniqueInvoiceID()
