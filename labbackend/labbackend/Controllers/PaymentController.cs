@@ -19,132 +19,73 @@ namespace labbackend.Controllers
             _configuration = configuration;
         }
 
-        // Get Payments
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Payment>>> Get()
+        // ✅ Create a Payment (POST)
+        [HttpPost("make-payment")]
+        public async Task<IActionResult> MakePayment([FromBody] Payment payment)
         {
-            string query = @"SELECT PaymentID, InvoiceID, Amount, PaymentDate FROM dbo.Payment";
-
-            List<Payment> payments = new List<Payment>();
-            string sqlDataSource = _configuration.GetConnectionString("DefaultConnection");
-
-            using (SqlConnection connection = new SqlConnection(sqlDataSource))
+            if (payment == null || payment.Amount <= 0)
             {
-                SqlCommand command = new SqlCommand(query, connection);
-                await connection.OpenAsync();
-                SqlDataReader reader = await command.ExecuteReaderAsync();
+                return BadRequest("Invalid payment data.");
+            }
 
-                while (await reader.ReadAsync())
+            // Manually generate a PaymentID if required
+            payment.PaymentID = new Random().Next(1, int.MaxValue);
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    Payment payment = new Payment
-                    {
-                        PaymentID = reader.GetInt32(0),
-                        InvoiceID = reader.GetInt32(1),
-                        Amount = reader.GetDecimal(2),
-                        PaymentDate = reader.GetDateTime(3)
-                    };
+                    await conn.OpenAsync();
 
-                    payments.Add(payment);
+                    string query = @"
+                INSERT INTO Payment (PaymentID, InvoiceID, Amount, PaymentDate)
+                VALUES (@PaymentID, @InvoiceID, @Amount, GETDATE());";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@PaymentID", payment.PaymentID);
+                        cmd.Parameters.AddWithValue("@InvoiceID", payment.InvoiceID);
+                        cmd.Parameters.AddWithValue("@Amount", payment.Amount);
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
                 }
 
-                await reader.CloseAsync();
-                await connection.CloseAsync();
+                return Ok(new { message = "Payment successful.", paymentID = payment.PaymentID });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+
+        // ✅ Get Payments (GET)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
+        {
+            string query = @"SELECT PaymentID, InvoiceID, Amount, PaymentDate FROM dbo.Payment";
+            List<Payment> payments = new List<Payment>();
+
+            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                await connection.OpenAsync();
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        payments.Add(new Payment
+                        {
+                            PaymentID = reader.GetInt32(0),
+                            InvoiceID = reader.GetInt32(1),
+                            Amount = reader.GetDecimal(2),
+                            PaymentDate = reader.GetDateTime(3)
+                        });
+                    }
+                }
             }
 
             return Ok(payments);
-        }
-
-        // Create Payment (Post)
-        [HttpPost]
-        public async Task<IActionResult> PostPayment([FromBody] Payment payment)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            // Generate a unique PaymentID
-            payment.PaymentID = GenerateUniquePaymentID();
-
-            string query = @"INSERT INTO Payment (PaymentID, InvoiceID, Amount, PaymentDate)
-                             VALUES (@PaymentID, @InvoiceID, @Amount, @PaymentDate);";
-
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@PaymentID", payment.PaymentID);
-                command.Parameters.AddWithValue("@InvoiceID", payment.InvoiceID);
-                command.Parameters.AddWithValue("@Amount", payment.Amount);
-                command.Parameters.AddWithValue("@PaymentDate", payment.PaymentDate);
-
-                await connection.OpenAsync();
-                await command.ExecuteNonQueryAsync();
-            }
-
-            return new JsonResult("Added Successfully");
-        }
-
-        // Update Payment (Put)
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPayment(int id, [FromBody] Payment payment)
-        {
-            if (id != payment.PaymentID)
-            {
-                return BadRequest("Payment ID mismatch");
-            }
-
-            string query = @"UPDATE Payment
-                             SET InvoiceID = @InvoiceID, Amount = @Amount, PaymentDate = @PaymentDate
-                             WHERE PaymentID = @PaymentID;";
-
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@PaymentID", payment.PaymentID);
-                command.Parameters.AddWithValue("@InvoiceID", payment.InvoiceID);
-                command.Parameters.AddWithValue("@Amount", payment.Amount);
-                command.Parameters.AddWithValue("@PaymentDate", payment.PaymentDate);
-
-                await connection.OpenAsync();
-                int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                if (rowsAffected == 0)
-                {
-                    return NotFound();
-                }
-            }
-
-            return new JsonResult("Updated Successfully");
-        }
-
-        // Delete Payment
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePayment(int id)
-        {
-            string query = "DELETE FROM Payment WHERE PaymentID = @PaymentID;";
-
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@PaymentID", id);
-
-                await connection.OpenAsync();
-                int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                if (rowsAffected == 0)
-                {
-                    return NotFound();
-                }
-            }
-
-            return new JsonResult("Deleted Successfully");
-        }
-
-        // Helper: Generate unique PaymentID
-        private int GenerateUniquePaymentID()
-        {
-            // Generate a pseudo-unique ID for the PaymentID (customize as needed)
-            return new Random().Next(1, int.MaxValue);
         }
     }
 }

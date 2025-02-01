@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt  } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt,FaClipboardList  } from "react-icons/fa";
+
+
 
 // Inline styles for components
 const styles = {
@@ -99,6 +101,131 @@ const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 const [rooms, setRooms] = useState([]);
 const [newRoom, setNewRoom] = useState(null); // For adding a new room
 const [editRoom, setEditRoom] = useState(null); // For editing a room
+const [reviews, setReviews] = useState([]);
+const [newReview, setNewReview] = useState(null);
+const [editReview, setEditReview] = useState(null);
+const [amenities, setAmenities] = useState([]);
+const [newAmenity, setNewAmenity] = useState(null);
+const [editAmenity, setEditAmenity] = useState(null);
+const [currentPage, setCurrentPage] = useState(0);
+const rowsPerPage = 7; // Show 7 rooms per page
+const [reservations, setReservations] = useState([]);
+const [editReservation, setEditReservation] = useState(null);
+const [newReservation, setNewReservation] = useState(null);
+
+
+const fetchAmenities = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Amenity");
+    console.log("Amenities fetched from API:", response.data); // Log fetched data
+    setAmenities(response.data);
+console.log("Updated amenities state:", response.data);
+  } catch (error) {
+    console.error("Error fetching amenities:", error); // Log errors
+  }
+};
+
+const fetchReservations = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Reservation");
+    setReservations(response.data);
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+  }
+};
+
+// Fetch when tab is active
+useEffect(() => {
+  if (activeTab === "reservations") {
+    fetchReservations();
+  }
+}, [activeTab]);
+const handleAddReservation = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Reservation", newReservation);
+    fetchReservations();
+    setNewReservation(null);
+    alert("Reservation added successfully!");
+  } catch (error) {
+    console.error("Error adding reservation:", error);
+    alert("Failed to add reservation.");
+  }
+};
+const handleUpdateReservation = async () => {
+  try {
+    await axios.put(
+      `https://localhost:7085/api/Reservation/${editReservation.reservationID}`,
+      editReservation
+    );
+    fetchReservations();
+    setEditReservation(null);
+    alert("Reservation updated successfully!");
+  } catch (error) {
+    console.error("Error updating reservation:", error);
+    alert("Failed to update reservation.");
+  }
+};
+const handleDeleteReservation = async (reservationID) => {
+  if (!window.confirm("Are you sure you want to delete this reservation?")) return;
+
+  try {
+    await axios.delete(`https://localhost:7085/api/Reservation/${reservationID}`);
+
+    // Remove the deleted reservation from state
+    setReservations((prevReservations) =>
+      prevReservations.filter((reservation) => reservation.reservationID !== reservationID)
+    );
+
+    // Show notification
+    setNotification(`Reservation ${reservationID} deleted successfully.`);
+    setTimeout(() => setNotification(""), 2000); // Hide after 2 seconds
+
+  } catch (error) {
+    console.error("Error deleting reservation:", error);
+    alert("Failed to delete reservation. Please try again.");
+  }
+};
+
+
+
+const handleAddAmenity = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Amenity", newAmenity);
+    fetchAmenities();
+    setNewAmenity(null);
+    showNotification("Amenity added successfully!");
+  } catch (error) {
+    console.error("Error adding amenity:", error);
+    showNotification("Failed to add amenity.");
+  }
+};
+
+const handleUpdateAmenity = async () => {
+  try {
+    await axios.put(
+      `https://localhost:7085/api/Amenity/${editAmenity.amenityID}`,
+      editAmenity
+    );
+    fetchAmenities();
+    setEditAmenity(null);
+    showNotification("Amenity updated successfully!");
+  } catch (error) {
+    console.error("Error updating amenity:", error);
+    showNotification("Failed to update amenity.");
+  }
+};
+
+const handleDeleteAmenity = async (id) => {
+  try {
+    await axios.delete(`https://localhost:7085/api/Amenity/${id}`);
+    fetchAmenities();
+    showNotification("Amenity deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting amenity:", error);
+    showNotification("Failed to delete amenity.");
+  }
+};
+
 
 const fetchRooms = async () => {
   try {
@@ -148,6 +275,13 @@ useEffect(() => {
 }, [activeTab]);
 
 useEffect(() => {
+  if (activeTab === "amenities") {
+    fetchRooms();
+  }
+}, [activeTab]);
+
+
+useEffect(() => {
     if (activeTab === "inventory") {
       fetchInventory();
     }
@@ -176,7 +310,14 @@ useEffect(() => {
       fetchMaintenanceRequests();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === "reviews") {
+      fetchReviews();
+    }
+  }, [activeTab]);
   
+
 
   const fetchGuests = async () => {
     try {
@@ -219,6 +360,50 @@ useEffect(() => {
       console.error("Error fetching employee schedules:", error);
     }
   };
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get("https://localhost:7085/api/Review");
+      setReviews(response.data);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+  
+  const handleAddReview = async () => {
+    try {
+      await axios.post("https://localhost:7085/api/Review", newReview);
+      fetchReviews();
+      setNewReview(null);
+      showNotification("Review added successfully!");
+    } catch (error) {
+      console.error("Error adding review:", error);
+      showNotification("Failed to add review.");
+    }
+  };
+  
+  const handleUpdateReview = async () => {
+    try {
+      await axios.put(`https://localhost:7085/api/Review/${editReview.reviewID}`, editReview);
+      fetchReviews();
+      setEditReview(null);
+      showNotification("Review updated successfully!");
+    } catch (error) {
+      console.error("Error updating review:", error);
+      showNotification("Failed to update review.");
+    }
+  };
+  
+  const handleDeleteReview = async (id) => {
+    try {
+      await axios.delete(`https://localhost:7085/api/Review/${id}`);
+      fetchReviews();
+      showNotification("Review deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      showNotification("Failed to delete review.");
+    }
+  };
+  
   const fetchMaintenanceRequests = async () => {
     try {
       const response = await axios.get("https://localhost:7085/api/MaintenanceRequest");
@@ -517,7 +702,305 @@ const handleUpdateInventory = async () => {
     setNotification(message);
     setTimeout(() => setNotification(""), 2000);
   };
-  const renderRoomsContent = () => (
+  const renderReservationsContent = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time for comparison
+  
+    const sortedReservations = [...reservations].sort(
+      (a, b) => new Date(a.checkInDate) - new Date(b.checkInDate)
+    );
+  
+    return (
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-primary text-white d-flex justify-content-between">
+          <h3 className="m-0">Reservations</h3>
+          <button
+            className="btn btn-light text-primary"
+            onClick={() =>
+              setNewReservation({
+                reservationID: 0, // Auto-increment
+                guestID: "",
+                hotelID: "",
+                roomID: "",
+                checkInDate: "",
+                checkOutDate: "",
+                totalPrice: 0,
+                paymentStatus: "Pending", // Default to Pending
+                invoiceID: null, // No payment yet
+              })
+            }
+          >
+            Add Reservation
+          </button>
+        </div>
+  
+        {notification && (
+          <div className="alert alert-success text-center fade show">
+            <strong>{notification}</strong>
+          </div>
+        )}
+  
+        <div className="table-responsive">
+          <table className="table table-bordered text-center">
+            <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+              <tr>
+                <th>Reservation ID</th>
+                <th>Guest ID</th>
+                <th>Hotel ID</th>
+                <th>Room ID</th>
+                <th>Check-In Date</th>
+                <th>Check-Out Date</th>
+                <th>Total Price (€)</th>
+                <th>Days Until Check-In</th>
+                <th>Payment Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedReservations.length > 0 ? (
+                sortedReservations.map((reservation) => {
+                  const checkInDate = new Date(reservation.checkInDate);
+                  checkInDate.setHours(0, 0, 0, 0);
+                  
+                  // Calculate days until check-in
+                  const daysUntilCheckIn = Math.ceil(
+                    (checkInDate - today) / (1000 * 60 * 60 * 24)
+                  );
+  
+                  let rowStyle = {};
+                  let statusText = `${daysUntilCheckIn} days left`;
+  
+                  if (daysUntilCheckIn === 0) {
+                    rowStyle = { backgroundColor: "#28a745", color: "#fff", fontWeight: "bold" };
+                    statusText = "Happening Today";
+                  } else if (daysUntilCheckIn < 0) {
+                    rowStyle = { backgroundColor: "#ff4d4f", color: "#fff", fontWeight: "bold" };
+                    statusText = "Expired";
+                  }
+  
+                  return (
+                    <tr key={reservation.reservationID} style={rowStyle}>
+                      <td>{reservation.reservationID}</td>
+                      <td>{reservation.guestID}</td>
+                      <td>{reservation.hotelID}</td>
+                      <td>{reservation.roomID}</td>
+                      <td>{reservation.checkInDate.split("T")[0]}</td>
+                      <td>{reservation.checkOutDate.split("T")[0]}</td>
+                      <td>€{reservation.totalPrice.toFixed(2)}</td>
+                      <td>{statusText}</td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            reservation.paymentStatus === "Paid"
+                              ? "bg-success"
+                              : "bg-danger"
+                          }`}
+                        >
+                          {reservation.paymentStatus}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-primary me-2"
+                          onClick={() => setEditReservation(reservation)}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() =>
+                            handleDeleteReservation(reservation.reservationID)
+                          }
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="10" className="text-center text-muted">
+                    No reservations found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+  
+  
+  
+  
+  
+
+
+
+  const renderAmenitiesContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Amenities</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewAmenity({
+              amenityID: amenities.length > 0
+                ? Math.max(...amenities.map((a) => a.amenityID)) + 1
+                : 1,
+              name: "",
+              description: "",
+            })
+          }
+        >
+          Add New Amenity
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Amenity ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {amenities.length > 0 ? (
+              amenities.map((amenity) => (
+                <tr key={amenity.amenityID}>
+                  <td>{amenity.amenityID}</td>
+                  <td>{amenity.name}</td>
+                  <td>{amenity.description}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditAmenity(amenity)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteAmenity(amenity.amenityID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center text-muted">
+                  No amenities found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Amenity Modal */}
+      {editAmenity && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Amenity</h5>
+                <button type="button" className="btn-close" onClick={() => setEditAmenity(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={editAmenity.amenityID}
+                  readOnly
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Name"
+                  value={editAmenity.name}
+                  onChange={(e) => setEditAmenity({ ...editAmenity, name: e.target.value })}
+                />
+                <textarea
+                  className="form-control mb-3"
+                  placeholder="Description"
+                  value={editAmenity.description}
+                  onChange={(e) => setEditAmenity({ ...editAmenity, description: e.target.value })}
+                ></textarea>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateAmenity}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditAmenity(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add Amenity Modal */}
+      {newAmenity && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Amenity</h5>
+                <button type="button" className="btn-close" onClick={() => setNewAmenity(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={newAmenity.amenityID}
+                  readOnly
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Name"
+                  value={newAmenity.name}
+                  onChange={(e) => setNewAmenity({ ...newAmenity, name: e.target.value })}
+                />
+                <textarea
+                  className="form-control mb-3"
+                  placeholder="Description"
+                  value={newAmenity.description}
+                  onChange={(e) => setNewAmenity({ ...newAmenity, description: e.target.value })}
+                ></textarea>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddAmenity}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewAmenity(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  
+  
+  
+  const renderRoomsContent = () => {
+    const paginatedRooms = rooms.slice(
+      currentPage * rowsPerPage,
+      (currentPage + 1) * rowsPerPage
+    );
+  
+    return (
     <div className="card shadow-sm border-0">
       <div className="card-header bg-primary text-white d-flex justify-content-between">
         <h3 className="m-0">Rooms</h3>
@@ -529,6 +1012,7 @@ const handleUpdateInventory = async () => {
               hotelID: "",
               roomNumber: "",
               roomTypeID: "",
+              occupiedByGuestID: null, // Default to null
             })
           }
         >
@@ -543,17 +1027,63 @@ const handleUpdateInventory = async () => {
               <th>Hotel ID</th>
               <th>Room Number</th>
               <th>Room Type ID</th>
+              <th>Status</th>
+              <th>Occupied By</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {rooms.length > 0 ? (
-              rooms.map((room) => (
+            {paginatedRooms.length > 0 ? (
+              paginatedRooms.map((room) => (
                 <tr key={room.roomID}>
                   <td>{room.roomID}</td>
                   <td>{room.hotelID}</td>
                   <td>{room.roomNumber}</td>
                   <td>{room.roomTypeID}</td>
+                  <td
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "10px",
+    backgroundColor: room.occupiedByGuestID ? "#ff4d4f" : "#52c41a", // Red for Unavailable, Green for Available
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: "14px",
+    borderRadius: "25px",
+    textAlign: "center",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Modern shadow for depth
+    width: "150px",
+    transition: "transform 0.2s, box-shadow 0.2s",
+    cursor: "default",
+  }}
+  onMouseEnter={(e) => {
+    e.target.style.transform = "scale(1.05)";
+    e.target.style.boxShadow = "0 6px 12px rgba(0, 0, 0, 0.15)";
+  }}
+  onMouseLeave={(e) => {
+    e.target.style.transform = "scale(1)";
+    e.target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+  }}
+>
+  {room.occupiedByGuestID ? "Unavailable" : "Available"}
+</td>
+
+
+                  <td>
+                    {room.occupiedByGuestID ? (
+                      <div>
+                        <strong>Name:</strong> {room.occupiedByGuest?.firstName}{" "}
+                        {room.occupiedByGuest?.lastName}
+                        <br />
+                        <strong>Email:</strong> {room.occupiedByGuest?.email}
+                        <br />
+                        <strong>Phone:</strong> {room.occupiedByGuest?.phone}
+                      </div>
+                    ) : (
+                      "N/A"
+                    )}
+                  </td>
                   <td>
                     <button
                       className="btn btn-sm btn-primary me-2"
@@ -572,13 +1102,30 @@ const handleUpdateInventory = async () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center text-muted">
+                <td colSpan="7" className="text-center text-muted">
                   No rooms found.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        
+        <button
+  className="btn btn-primary me-2"
+  onClick={() => setCurrentPage((prev) => prev - 1)}
+  disabled={currentPage === 0}
+>
+  Previous
+</button>
+<button
+  className="btn btn-primary"
+  onClick={() => setCurrentPage((prev) => prev + 1)}
+  disabled={(currentPage + 1) * rowsPerPage >= rooms.length}
+>
+  Next
+</button>
+
+        
       </div>
   
       {/* Edit Room Modal */}
@@ -608,10 +1155,32 @@ const handleUpdateInventory = async () => {
                 <input
                   type="number"
                   className="form-control mb-3"
-                  placeholder="Room Type ID"
+                  placeholder="Room Type ID (1-3)"
                   value={editRoom.roomTypeID}
-                  onChange={(e) => setEditRoom({ ...editRoom, roomTypeID: e.target.value })}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    if (value >= 1 && value <= 3) {
+                      setEditRoom({ ...editRoom, roomTypeID: value });
+                    }
+                  }}
                 />
+                <select
+                  className="form-control mb-3"
+                  value={editRoom.occupiedByGuestID || ""}
+                  onChange={(e) =>
+                    setEditRoom({
+                      ...editRoom,
+                      occupiedByGuestID: e.target.value ? parseInt(e.target.value, 10) : null,
+                    })
+                  }
+                >
+                  <option value="">Available</option>
+                  {guests.map((guest) => (
+                    <option key={guest.guestID} value={guest.guestID}>
+                      {guest.firstName} {guest.lastName} ({guest.email})
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="modal-footer">
                 <button className="btn btn-primary" onClick={handleUpdateRoom}>
@@ -628,88 +1197,96 @@ const handleUpdateInventory = async () => {
   
       {/* Add Room Modal */}
       {newRoom && (
-  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-    <div className="modal-dialog">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title">Add New Room</h5>
-          <button
-            type="button"
-            className="btn-close"
-            onClick={() => setNewRoom(null)}
-          ></button>
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Room</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setNewRoom(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Room ID</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={newRoom.roomID}
+                    readOnly
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Hotel ID</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={newRoom.hotelID}
+                    onChange={(e) =>
+                      setNewRoom({ ...newRoom, hotelID: parseInt(e.target.value, 10) || "" })
+                    }
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Room Number</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newRoom.roomNumber}
+                    onChange={(e) => setNewRoom({ ...newRoom, roomNumber: e.target.value })}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Room Type ID (1-3)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={newRoom.roomTypeID}
+                    onChange={(e) =>
+                      setNewRoom({ ...newRoom, roomTypeID: parseInt(e.target.value, 10) || "" })
+                    }
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Occupied By Guest</label>
+                  <select
+                    className="form-control"
+                    value={newRoom.occupiedByGuestID || ""}
+                    onChange={(e) =>
+                      setNewRoom({
+                        ...newRoom,
+                        occupiedByGuestID: e.target.value ? parseInt(e.target.value, 10) : null,
+                      })
+                    }
+                  >
+                    <option value="">Available</option>
+                    {guests.map((guest) => (
+                      <option key={guest.guestID} value={guest.guestID}>
+                        {guest.firstName} {guest.lastName} ({guest.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddRoom}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewRoom(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="modal-body">
-          {/* Room ID (Read-only) */}
-          <div className="mb-3">
-            <label className="form-label">Room ID </label>
-            <input
-              type="number"
-              className="form-control"
-              value={newRoom.roomID} // Read-only value
-              readOnly
-            />
-          </div>
-
-          {/* Hotel ID */}
-          <div className="mb-3">
-            <label className="form-label">Hotel ID</label>
-            <input
-              type="number"
-              className="form-control"
-              placeholder="Enter Hotel ID"
-              value={newRoom.hotelID}
-              onChange={(e) =>
-                setNewRoom({ ...newRoom, hotelID: parseInt(e.target.value, 10) || "" })
-              }
-            />
-          </div>
-
-          {/* Room Number */}
-          <div className="mb-3">
-            <label className="form-label">Room Number</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Room Number"
-              value={newRoom.roomNumber}
-              onChange={(e) => setNewRoom({ ...newRoom, roomNumber: e.target.value })}
-            />
-          </div>
-
-          {/* Room Type ID */}
-          <div className="mb-3">
-            <label className="form-label">Room Type ID</label>
-            <input
-              type="number"
-              className="form-control"
-              placeholder="Enter Room Type ID (1-3)"
-              value={newRoom.roomTypeID}
-              onChange={(e) => {
-                const value = parseInt(e.target.value, 10);
-                if (value >= 1 && value <= 3) {
-                  setNewRoom({ ...newRoom, roomTypeID: value });
-                }
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="modal-footer">
-          <button className="btn btn-primary" onClick={handleAddRoom}>
-            Add
-          </button>
-          <button className="btn btn-secondary" onClick={() => setNewRoom(null)}>
-            Cancel
-          </button>
-        </div>
-      </div>
+      )}
     </div>
-  </div>
-)}
-
-    </div>
-  );
+  )
+};
+  
+  
   
   const renderStaffContent = () => (
     <div className="card shadow-sm border-0">
@@ -1230,7 +1807,6 @@ const handleUpdateInventory = async () => {
     <FaTrashAlt />
   </button>
 </td>
-
                 </tr>
               ))
             ) : (
@@ -2015,12 +2591,131 @@ const handleUpdateInventory = async () => {
     </div>
   );
   
+  const renderReviewsContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white">
+        <h3 className="m-0">Reviews</h3>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Review ID</th>
+              <th>Hotel ID</th>
+              <th>Guest ID</th>
+              <th>Rating</th>
+              <th>Comment</th>
+              <th>Review Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <tr key={review.reviewID}>
+                  <td>{review.reviewID}</td>
+                  <td>{review.hotelID}</td>
+                  <td>{review.guestID}</td>
+                  <td>{review.rating}</td>
+                  <td>{review.comment}</td>
+                  <td>{review.reviewDate}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditReview(review)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteReview(review.reviewID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center text-muted">
+                  No reviews found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Review Modal */}
+      {editReview && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Review</h5>
+                <button type="button" className="btn-close" onClick={() => setEditReview(null)}></button>
+              </div>
+              <div className="modal-body">
+                {/* Review ID (Read-Only) */}
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Review ID"
+                  value={editReview.reviewID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Hotel ID"
+                  value={editReview.hotelID}
+                  onChange={(e) => setEditReview({ ...editReview, hotelID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Guest ID"
+                  value={editReview.guestID}
+                  onChange={(e) => setEditReview({ ...editReview, guestID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Rating"
+                  value={editReview.rating}
+                  onChange={(e) => setEditReview({ ...editReview, rating: e.target.value })}
+                />
+                <textarea
+                  className="form-control mb-3"
+                  placeholder="Comment"
+                  value={editReview.comment}
+                  onChange={(e) => setEditReview({ ...editReview, comment: e.target.value })}
+                />
+                <input
+                  type="date"
+                  className="form-control mb-3"
+                  placeholder="Review Date"
+                  value={editReview.reviewDate}
+                  onChange={(e) => setEditReview({ ...editReview, reviewDate: e.target.value })}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateReview}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditReview(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
   
   
-  
-  
-  
-  
+
   
   const renderGuestsContent = () => (
     <div className="card shadow-sm border-0">
@@ -2186,6 +2881,14 @@ const handleUpdateInventory = async () => {
       {!isSidebarCollapsed && "Guests"}
     </li>
     <li
+  className={`nav-item p-2 ${activeTab === "amenities" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("amenities")}
+>
+  <FaTools className="me-2" />
+  {!isSidebarCollapsed && "Amenities"}
+</li>
+
+    <li
       className={`nav-item p-2 ${activeTab === "inventory" ? "bg-primary text-white" : ""}`}
       onClick={() => setActiveTab("inventory")}
     >
@@ -2220,6 +2923,21 @@ const handleUpdateInventory = async () => {
   <FaBox className="me-2" />
   {!isSidebarCollapsed && "Rooms"}
 </li>
+<li
+    className={`nav-item p-2 ${activeTab === "reviews" ? "bg-primary text-white" : ""}`}
+    onClick={() => setActiveTab("reviews")}
+  >
+    <FaEdit className="me-2" />
+    {!isSidebarCollapsed && "Reviews"}
+  </li>
+  <li
+  className={`nav-item p-2 ${activeTab === "reservations" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("reservations")}
+>
+  <FaClipboardList className="me-2" />
+  {!isSidebarCollapsed && "Reservations"}
+</li>
+
 
   </ul>
 </div>
@@ -2235,6 +2953,9 @@ const handleUpdateInventory = async () => {
 {activeTab === "maintenanceRequests" && renderMaintenanceRequestsContent()}
 {activeTab === "employeeSchedule" && renderEmployeeScheduleContent()}
 {activeTab === "rooms" && renderRoomsContent()}
+{activeTab === "reviews" && renderReviewsContent()}
+{activeTab === "amenities" && renderAmenitiesContent()}
+{activeTab === "reservations" && renderReservationsContent()}
 
 
 </div>

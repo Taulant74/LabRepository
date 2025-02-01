@@ -1,92 +1,273 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useParams, Link } from "react-router-dom";
+import axios from "axios";
 
 const Reservation = () => {
-  const { roomId } = useParams(); // Extract room ID from URL
-  const [roomDetails, setRoomDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [roomTypes, setRoomTypes] = useState([
+    { id: 1, name: "Standard", price: 90, imageUrl: "/images/standard.png" },
+    { id: 2, name: "Deluxe", price: 120, imageUrl: "/images/deluxe.png" },
+    { id: 3, name: "Suite", price: 200, imageUrl: "/images/suite.png" },
+  ]);
+  const [rooms, setRooms] = useState([]);
+  const [selectedRoomType, setSelectedRoomType] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [checkInDate, setCheckInDate] = useState("");
+  const [checkOutDate, setCheckOutDate] = useState("");
 
-  // Simulate fetching data
+  // These states control showing the payment screen
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [invoiceID, setInvoiceID] = useState(null);
+
+  // Keep the reservation data for final submission
+  const [pendingReservation, setPendingReservation] = useState(null);
+
   useEffect(() => {
-    const roomsData = [
-      {
-        id: 1,
-        name: "Deluxe Room",
-        description: "Luxurious room with modern amenities and city views.",
-        maxOccupancy: 2,
-        price: 120,
-        status: "Available",
-        imageUrl: "/images/room1.jpg",
-      },
-      {
-        id: 2,
-        name: "Suite Room",
-        description: "Spacious suite with a king-size bed and premium services.",
-        maxOccupancy: 3,
-        price: 200,
-        status: "Available",
-        imageUrl: "/images/room2.jpg",
-      },
-      {
-        id: 3,
-        name: "Standard Room",
-        description: "Comfortable room with all essential amenities.",
-        maxOccupancy: 2,
-        price: 90,
-        status: "Available",
-        imageUrl: "/images/room3.jpg",
-      },
-    ];
+    const fetchRooms = async () => {
+      try {
+        const response = await axios.get("https://localhost:7085/api/Room");
+        console.log("Fetched Rooms:", response.data);
+        setRooms(response.data);
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      }
+    };
+    fetchRooms();
+  }, []);
 
-    const roomData = roomsData.find((room) => room.id.toString() === roomId); // Match roomId
-    setRoomDetails(roomData);
-    setLoading(false);
-  }, [roomId]);
+  const handleRoomTypeClick = (roomType) => {
+    setSelectedRoomType(roomType);
+    setSelectedRoom(null);
+  };
 
-  if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
-  }
+  /**
+   * Instead of posting the reservation directly,
+   * we prepare the reservation data and show the payment form first.
+   */
+  const handleReserveNow = () => {
+    if (!selectedRoom || !checkInDate || !checkOutDate) {
+      alert("Please select a room and enter reservation dates.");
+      return;
+    }
 
-  if (!roomDetails) {
+    // Build the reservation data object
+    const reservationData = {
+      guestID: 1, // Placeholder for your actual Guest ID
+      hotelID: 1, // Placeholder for your actual Hotel ID
+      roomID: selectedRoom.roomID,
+      checkInDate,
+      checkOutDate,
+      totalPrice: selectedRoomType.price,
+    };
+
+    // Save it to state so we can submit after payment
+    setPendingReservation(reservationData);
+
+    // Set up random invoice ID for demonstration
+    const generatedInvoiceId = Math.floor(Math.random() * 900000) + 100000;
+    setInvoiceID(generatedInvoiceId);
+
+    // Show the payment form
+    setPaymentAmount(selectedRoomType.price);
+    setShowPayment(true);
+  };
+
+  /**
+   * This is called by the Payment form once the payment has been made successfully.
+   * We then go ahead and create the reservation in the database.
+   */
+  const handlePaymentSuccess = async () => {
+    try {
+      console.log("Sending Reservation Data:", pendingReservation);
+
+      await axios.post(
+        "https://localhost:7085/api/Reservation",
+        pendingReservation
+      );
+
+      alert("Reservation successful!");
+      window.location.reload(); // or navigate to a confirmation page
+    } catch (error) {
+      console.error("Error making reservation:", error.response?.data || error.message);
+      alert(`Failed to make reservation: ${error.response?.data || "Unknown error"}`);
+    }
+  };
+
+  /**
+   * Payment form component (inline for simplicity).
+   * You can style it as you wish—this is a simple demo.
+   */
+  const PaymentForm = () => {
+    // For a real-world scenario, you'd have credit card fields, etc.
+    // Here, we just do a POST to the Payment endpoint with `paymentAmount`.
+
+    const handleMakePayment = async () => {
+      try {
+        // Build the payment object. The PaymentID is generated by the server,
+        // but we must at least send InvoiceID + Amount.
+        const paymentData = {
+          invoiceID: invoiceID,
+          amount: paymentAmount,
+        };
+
+        await axios.post(
+          "https://localhost:7085/api/Payment/make-payment",
+          paymentData
+        );
+
+        // If payment is successful, create the reservation
+        alert("Payment successful!");
+        setShowPayment(false);
+
+        // Now actually create the reservation
+        await handlePaymentSuccess();
+      } catch (error) {
+        alert(`Payment failed: ${error.response?.data || error.message}`);
+      }
+    };
+
     return (
-      <div className="container mt-5 text-center">
-        <h2>Room not found</h2>
-        <p>The room you're looking for does not exist. Please go back and select a valid room.</p>
-        <Link to="/rooms" className="btn btn-primary">Back to Rooms</Link>
+      <div className="mt-4 p-4 bg-light border rounded shadow">
+        <h4 className="text-center">Payment</h4>
+        <p>Total to Pay: €{paymentAmount}</p>
+        {/* Placeholder Payment Button */}
+        <button className="btn btn-primary w-100" onClick={handleMakePayment}>
+          Pay Now
+        </button>
+        <button
+          className="btn btn-secondary w-100 mt-2"
+          onClick={() => setShowPayment(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    );
+  };
+
+  // ---- Rendering ----
+  if (showPayment) {
+    // If user clicked Reserve, show the Payment Form
+    return (
+      <div className="container mt-5">
+        <PaymentForm />
       </div>
     );
   }
 
   return (
     <div className="container mt-5">
-      <h2 className="reservation-header text-center">{roomDetails.name}</h2>
-      <div className="row">
-        <div className="col-md-6 text-center">
-          <img
-            src={roomDetails.imageUrl}
-            alt={roomDetails.name}
-            className="img-fluid reservation-image"
-          />
+      <h1 className="text-center">Make a Reservation</h1>
+
+      {/* Room Type Boxes */}
+      {!selectedRoomType && (
+        <div className="row text-center mt-5">
+          {roomTypes.map((roomType) => (
+            <div key={roomType.id} className="col-md-4 mb-4">
+              <div
+                className="card shadow"
+                onClick={() => handleRoomTypeClick(roomType)}
+                style={{ cursor: "pointer" }}
+              >
+                <img
+                  src={roomType.imageUrl}
+                  className="card-img-top"
+                  alt={roomType.name}
+                  style={{ height: "200px", objectFit: "cover" }}
+                />
+                <div className="card-body">
+                  <h5 className="card-title">{roomType.name}</h5>
+                  <p className="card-text">Price: €{roomType.price} / night</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="col-md-6 reservation-details">
-          <p><strong>Description:</strong> {roomDetails.description}</p>
-          <p><strong>Max Occupancy:</strong> {roomDetails.maxOccupancy}</p>
-          <p><strong>Price:</strong> ${roomDetails.price} per night</p>
-          <p><strong>Status:</strong> <span className="text-success">{roomDetails.status}</span></p>
-          <div className="d-flex">
-            <button
-              className="btn btn-primary btn-reserve"
-              onClick={() => alert("Reservation completed successfully!")}
-            >
-              Reserve Now
-            </button>
-            <Link to="/rooms" className="btn btn-secondary btn-back">
-              Back to Rooms
-            </Link>
+      )}
+
+      {/* Room Availability Table */}
+      {selectedRoomType && (
+        <div className="mt-5">
+          <button
+            className="btn btn-secondary mb-4"
+            onClick={() => setSelectedRoomType(null)}
+          >
+            Back to Room Types
+          </button>
+          <h3 className="text-center mb-4">
+            Available Rooms: {selectedRoomType.name}
+          </h3>
+
+          <div className="row">
+            {rooms
+              .filter((room) => room.roomTypeID === selectedRoomType.id)
+              .map((room) => (
+                <div key={room.roomID} className="col-md-4 mb-4">
+                  <div
+                    className={`card shadow ${
+                      selectedRoom?.roomID === room.roomID ? "border-primary" : ""
+                    }`}
+                    onClick={() => setSelectedRoom(room)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className="card-body text-center">
+                      <h5 className="card-title">Room {room.roomNumber}</h5>
+                      <p className="card-text">
+                        Status:{" "}
+                        <span
+                          className={
+                            room.occupiedByGuestID ? "text-danger" : "text-success"
+                          }
+                        >
+                          {room.occupiedByGuestID ? "Unavailable" : "Available"}
+                        </span>
+                      </p>
+                      <p className="text-info">
+                        <strong>Price:</strong> €{selectedRoomType.price} / night
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
           </div>
+
+          {/* Reservation Form */}
+          {selectedRoom && (
+            <div className="mt-4 p-4 bg-light border rounded shadow">
+              <h4 className="text-center text-primary">
+                Confirm Your Reservation
+              </h4>
+
+              <div className="row">
+                <div className="col-md-6">
+                  <label>Check-in Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={checkInDate}
+                    onChange={(e) => setCheckInDate(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Check-out Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={checkOutDate}
+                    onChange={(e) => setCheckOutDate(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <button
+                className="btn btn-success w-100 mt-3"
+                onClick={handleReserveNow}
+              >
+                Reserve Now
+              </button>
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };

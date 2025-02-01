@@ -9,10 +9,11 @@ namespace labbackend.Models
         }
 
         public DbSet<Payment> Payments { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Payment>().ToTable("Payment"); // Map to the correct table name
+            // Just points to dbo.Payment. 
+            modelBuilder.Entity<Payment>().ToTable("Payment");
         }
     }
-
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using labbackend.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace labbackend.Controllers
 {
@@ -10,33 +10,42 @@ namespace labbackend.Controllers
     [ApiController]
     public class RoomController : ControllerBase
     {
-        private readonly RoomContext _context;
+        private readonly RoomContext _roomContext;
+        private readonly GuestContext _guestContext;
 
-        public RoomController(RoomContext context)
+        public RoomController(RoomContext roomContext, GuestContext guestContext)
         {
-            _context = context;
+            _roomContext = roomContext;
+            _guestContext = guestContext;
         }
 
         // GET: api/Room
         [HttpGet]
         public async Task<IActionResult> GetRooms()
         {
-            var rooms = await _context.Rooms.ToListAsync();
+            var rooms = await _roomContext.Rooms
+                .Include(r => r.OccupiedByGuest) // Include guest details
+                .Select(r => new
+                {
+                    r.RoomID,
+                    r.HotelID,
+                    r.RoomNumber,
+                    r.RoomTypeID,
+                    r.OccupiedByGuestID,
+                    OccupiedByGuest = r.OccupiedByGuest != null ? new
+                    {
+                        r.OccupiedByGuest.GuestID,
+                        r.OccupiedByGuest.FirstName,
+                        r.OccupiedByGuest.LastName,
+                        r.OccupiedByGuest.Email,
+                        r.OccupiedByGuest.Phone,
+                        r.OccupiedByGuest.Passi,
+                        r.OccupiedByGuest.Role
+                    } : null
+                })
+                .ToListAsync();
+
             return Ok(rooms);
-        }
-
-        // GET: api/Room/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetRoom(int id)
-        {
-            var room = await _context.Rooms.FirstOrDefaultAsync(r => r.RoomID == id);
-
-            if (room == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(room);
         }
 
         // POST: api/Room
@@ -48,10 +57,21 @@ namespace labbackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.Rooms.Add(room);
-            await _context.SaveChangesAsync();
+            // Validate that the guest exists if `OccupiedByGuestID` is provided
+            if (room.OccupiedByGuestID.HasValue)
+            {
+                var guestExists = await _guestContext.Guests.AnyAsync(g => g.GuestID == room.OccupiedByGuestID.Value);
+                if (!guestExists)
+                {
+                    return NotFound(new { message = "Guest not found." });
+                }
+            }
 
-            return CreatedAtAction(nameof(GetRoom), new { id = room.RoomID }, room);
+            // Add the room
+            _roomContext.Rooms.Add(room);
+            await _roomContext.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetRooms), new { id = room.RoomID }, room);
         }
 
         // PUT: api/Room/{id}
@@ -68,7 +88,7 @@ namespace labbackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            var existingRoom = await _context.Rooms.FindAsync(id);
+            var existingRoom = await _roomContext.Rooms.FindAsync(id);
             if (existingRoom == null)
             {
                 return NotFound();
@@ -77,9 +97,10 @@ namespace labbackend.Controllers
             existingRoom.HotelID = room.HotelID;
             existingRoom.RoomNumber = room.RoomNumber;
             existingRoom.RoomTypeID = room.RoomTypeID;
+            existingRoom.OccupiedByGuestID = room.OccupiedByGuestID;
 
-            _context.Entry(existingRoom).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            _roomContext.Entry(existingRoom).State = EntityState.Modified;
+            await _roomContext.SaveChangesAsync();
 
             return NoContent();
         }
@@ -88,14 +109,14 @@ namespace labbackend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRoom(int id)
         {
-            var room = await _context.Rooms.FindAsync(id);
+            var room = await _roomContext.Rooms.FindAsync(id);
             if (room == null)
             {
                 return NotFound();
             }
 
-            _context.Rooms.Remove(room);
-            await _context.SaveChangesAsync();
+            _roomContext.Rooms.Remove(room);
+            await _roomContext.SaveChangesAsync();
 
             return NoContent();
         }

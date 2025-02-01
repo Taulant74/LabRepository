@@ -13,9 +13,7 @@ namespace labbackend.Models
         public DbSet<Amenity> Amenities { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Amenity>().ToTable("Amenity");
-
-           
+            modelBuilder.Entity<Amenity>().ToTable("Amenities"); // Map to the correct table name
         }
     }
 

@@ -1,14 +1,17 @@
-﻿ namespace labbackend.Models
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace labbackend.Models
 {
-    [System.ComponentModel.DataAnnotations.Schema.Table("Amenity")]
+
+    [Table("Amenities")]
     public class Amenity
     {
         public int AmenityID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
-        // Relationships
-        // public ICollection<HotelAmenity> HotelAmenities { get; set; }
     }
 
 }
