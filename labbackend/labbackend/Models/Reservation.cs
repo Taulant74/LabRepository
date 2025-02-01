@@ -1,5 +1,8 @@
-﻿namespace labbackend.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace labbackend.Models
 {
+    [Table("Reservation")]
     public class Reservation
     {
         public int ReservationID { get; set; }

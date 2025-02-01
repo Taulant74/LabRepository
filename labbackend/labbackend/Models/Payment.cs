@@ -1,7 +1,9 @@
 ﻿using labbackend.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace labbackend.Models
 {
+    [Table("Payment")]
     public class Payment
     {
         public int PaymentID { get; set; }

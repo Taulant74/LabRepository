@@ -17,36 +17,27 @@ import Profile from './pages/Profile';
 import Amenities from './pages/Amenities';
 import AboutUs from './pages/AboutUs';
 import Reservation from './pages/Reservation';
-import ProtectedRoute from './pages/ProtectedRoute';
-
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
+        <Route path="/" element={< MainPage/>} />
+        <Route path="/rooms" element={< Rooms/>} />
+        <Route path="/amenities" element={< Amenities/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={<MainPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/review" element={<Review />} />
+        <Route path="/feedback" element={<Feedback />} />
+        <Route path="/event" element={<EventBooking />} /> 
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/reservation" element={<Reservation />} />
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/rooms" element={<Rooms />} />
-          <Route path="/amenities" element={<Amenities />} />
-          <Route path="/review" element={<Review />} />
-          <Route path="/feedback" element={<Feedback />} />
-          <Route path="/event" element={<EventBooking />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/reservation" element={<Reservation />} />
-        </Route>
-
-        {/* Admin Protected Route */}
-        <Route element={<ProtectedRoute requiredRole="admin" />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-        </Route>
       </Routes>
     </Router>
   );
 };
+
 
 export default App;

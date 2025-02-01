@@ -11,6 +11,12 @@ namespace labbackend.Models
         }
 
         public DbSet<Amenity> Amenities { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Amenity>().ToTable("Amenity");
+
+           
+        }
     }
 
 }

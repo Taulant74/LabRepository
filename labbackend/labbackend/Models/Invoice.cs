@@ -1,7 +1,9 @@
 ﻿using labbackend.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace labbackend.Models
 {
+    [Table("Invoice")]
     public class Invoice
     {
         public int InvoiceID { get; set; }

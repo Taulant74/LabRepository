@@ -18,86 +18,56 @@ namespace labbackend.Controllers
             _context = context;
         }
 
-        // GET: api/EventBooking
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventBooking>>> GetEventBookings()
         {
             return await _context.EventBookings.ToListAsync();
         }
 
-        // GET: api/EventBooking/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<EventBooking>> GetEventBooking(int id)
         {
-            var eventBooking = await _context.EventBookings.FindAsync(id);
-
-            if (eventBooking == null)
+            var booking = await _context.EventBookings.FindAsync(id);
+            if (booking == null)
             {
                 return NotFound();
             }
-
-            return eventBooking;
+            return booking;
         }
 
-        // POST: api/EventBooking
         [HttpPost]
-        public async Task<ActionResult<EventBooking>> PostEventBooking(EventBooking eventBooking)
+        public async Task<ActionResult<EventBooking>> PostEventBooking(EventBooking booking)
         {
-            _context.EventBookings.Add(eventBooking);
+            _context.EventBookings.Add(booking);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetEventBooking), new { id = eventBooking.EventBookingID }, eventBooking);
+            return CreatedAtAction(nameof(GetEventBooking), new { id = booking.EventBookingID }, booking);
         }
 
-        // PUT: api/EventBooking/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEventBooking(int id, EventBooking eventBooking)
+        public async Task<IActionResult> PutEventBooking(int id, EventBooking booking)
         {
-            if (id != eventBooking.EventBookingID)
+            if (id != booking.EventBookingID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(eventBooking).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventBookingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            _context.Entry(booking).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
-        // DELETE: api/EventBooking/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEventBooking(int id)
         {
-            var eventBooking = await _context.EventBookings.FindAsync(id);
-            if (eventBooking == null)
+            var booking = await _context.EventBookings.FindAsync(id);
+            if (booking == null)
             {
                 return NotFound();
             }
 
-            _context.EventBookings.Remove(eventBooking);
+            _context.EventBookings.Remove(booking);
             await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool EventBookingExists(int id)
-        {
-            return _context.EventBookings.Any(e => e.EventBookingID == id);
         }
     }
 }

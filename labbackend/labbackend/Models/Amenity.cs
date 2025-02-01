@@ -1,5 +1,6 @@
 ﻿ namespace labbackend.Models
 {
+    [System.ComponentModel.DataAnnotations.Schema.Table("Amenity")]
     public class Amenity
     {
         public int AmenityID { get; set; }

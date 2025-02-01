@@ -10,6 +10,10 @@ namespace backendLab.Models
         }
 
         public DbSet<Reservation> Reservations { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Reservation>().ToTable("Reservation"); // Map to the correct table name
+        }
     }
 
 }
