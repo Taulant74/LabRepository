@@ -1,17 +1,12 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute = ({ requiredRole }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const isLoggedIn = !!user;
+  const isLoggedIn = Boolean(localStorage.getItem('token')); // Example authentication check
+  const userRole = localStorage.getItem('role'); // Example role retrieval
 
-  if (!isLoggedIn) {
-    return <Navigate to="/login" />;
-  }
-
-  if (requiredRole && user.role?.toLowerCase() !== requiredRole.toLowerCase()) {
-    return <Navigate to="/" />;
-  }
+  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  if (requiredRole && userRole !== requiredRole) return <Navigate to="/" replace />;
 
   return <Outlet />;
 };

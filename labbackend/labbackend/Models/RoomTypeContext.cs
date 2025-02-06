@@ -9,5 +9,9 @@ namespace labbackend.Models
         }
 
         public DbSet<RoomType> RoomTypes { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RoomType>().ToTable("RoomType"); // Map to the correct table name
+        }
     }
 }

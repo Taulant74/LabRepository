@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace labbackend.Models
 {
+    [Table("RoomType")]
     public class RoomType
     {
         public int RoomTypeID { get; set; }
