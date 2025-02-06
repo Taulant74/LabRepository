@@ -395,7 +395,7 @@ const FeedbackSectionComponent = () => {
   return (
     <FeedbackSection id="feedback" className="text-center py-5 bg-light"  style={{ minHeight: "20vh" }}>
     <h2 className="mb-4">We Value Your Feedback</h2>
-    <Link to="/review">
+    <Link to="/feedback">
       <button className="btn btn-warning btn-lg">
         Share Feedback <i className="fas fa-comment-alt"></i>
       </button>
@@ -433,15 +433,11 @@ const MainPage = () => {
     <a href="#feedback" className="text-white text-decoration-none">Feedback</a>
   </Nav>
   <div>
-    {loggedInUser ? (
-      <Link to="/profile">
-        <button className="btn btn-warning">View Profile</button>
-      </Link>
-    ) : (
+    
       <Link to="/login">
-        <button className="btn btn-warning">Login</button>
+        <button className="btn btn-warning">Log Out</button>
       </Link>
-    )}
+  
   </div>
 </Header>
 
