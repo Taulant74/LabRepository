@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt,FaClipboardList  } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -112,6 +113,75 @@ const rowsPerPage = 7; // Show 7 rooms per page
 const [reservations, setReservations] = useState([]);
 const [editReservation, setEditReservation] = useState(null);
 const [newReservation, setNewReservation] = useState(null);
+const [sessionExpired, setSessionExpired] = useState(false);
+
+
+const navigate = useNavigate();
+
+
+useEffect(() => {
+  const checkTokenExpiration = () => {
+    const refreshToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("refreshToken="))
+      ?.split("=")[1];
+
+    if (!refreshToken && !sessionExpired) {
+      setSessionExpired(true); // Show the expiration message
+      setTimeout(() => {
+        navigate("/login"); // Redirect after 3 seconds
+      }, 3000);
+    }
+  };
+
+  const interval = setInterval(checkTokenExpiration, 100000); // Check every 10 seconds
+
+  return () => clearInterval(interval); // Cleanup
+}, [navigate, sessionExpired]);
+// Check if refresh token is expired
+const checkSession = () => {
+  const refreshToken = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('refreshToken='))
+    ?.split('=')[1];
+
+  if (!refreshToken) {
+    // Clear user session from localStorage when token expires
+    localStorage.removeItem('user');
+
+    // Show session expired message (if needed)
+    alert('Your session has expired. Please log in again.');
+
+    // Redirect to login
+    window.location.href = '/login';
+  }
+};
+
+// Run the session check when the component mounts
+useEffect(() => {
+  const interval = setInterval(checkSession, 100000); // Check every 2 seconds
+  return () => clearInterval(interval); // Clean up interval on unmount
+}, []);
+
+
+const handleLogout = () => {
+  // Clear the user from localStorage
+  localStorage.removeItem('user');
+
+  // Clear the refresh token cookie (if applicable)
+  document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+  // Redirect to login page
+  window.location.href = '/login';
+};
+
+
+
+
+
+
+
+
 
 
 const fetchAmenities = async () => {
@@ -2940,6 +3010,21 @@ const handleUpdateInventory = async () => {
 
 
   </ul>
+  {/* Logout Button at the Bottom */}
+<button
+  className="btn btn-danger w-100 mt-auto"
+  style={{
+    borderRadius: "0",
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    border: "none",
+    padding: "12px 0",
+  }}
+  onClick={handleLogout}
+>
+  Log Out
+</button>
+
 </div>
 
       <div style={{ flex: 1 }}>
@@ -2975,6 +3060,14 @@ const handleUpdateInventory = async () => {
     style={{ zIndex: 2000 }}
   >
     <i className="me-2 fa fa-check-circle"></i> {notification}
+  </div>
+)}
+{sessionExpired && (
+  <div
+    className="alert alert-danger position-fixed top-0 end-0 m-3"
+    style={{ zIndex: 2000 }}
+  >
+    <i className="me-2 fa fa-exclamation-circle"></i> Your session has expired. Redirecting to login...
   </div>
 )}
 

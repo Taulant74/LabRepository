@@ -5,6 +5,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
 
 import { Link } from 'react-router-dom';
 // Styled-components
@@ -414,6 +416,9 @@ const Footer = styled.footer`
 
 const MainPage = () => {
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const navigate = useNavigate();
+const user = JSON.parse(localStorage.getItem('user'));
+
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
@@ -432,13 +437,26 @@ const MainPage = () => {
     <a href="#amenities" className="text-white text-decoration-none">Amenities</a>
     <a href="#feedback" className="text-white text-decoration-none">Feedback</a>
   </Nav>
-  <div>
-    
-      <Link to="/login">
-        <button className="btn btn-warning">Log Out</button>
-      </Link>
+  <div className="d-flex align-items-center">
+  {!loggedInUser ? (
+    <Link to="/login">
+      <button className="btn btn-warning">Login</button>
+    </Link>
+  ) : (
+    <FaUserCircle
+      onClick={() => navigate('/profile')}
+      style={{
+        fontSize: '2rem',
+        color: '#ECC94B', // Same gold color as your button
+        cursor: 'pointer',
+        marginLeft: '10px',
+      }}
+      title="Go to Profile"
+    />
+  )}
+</div>
+
   
-  </div>
 </Header>
 
 
