@@ -1,9 +1,11 @@
+// Login.js
 import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 // Styled Components
 const PageContainer = styled.div`
@@ -98,7 +100,6 @@ const SignupLink = styled.a`
   }
 `;
 
-// Login Component
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ Email: "", Passi: "" });
@@ -117,17 +118,31 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("https://localhost:7085/api/Guest/login", {
-        Email: formData.Email,
-        Passi: formData.Passi,
-      });
+      const response = await axios.post(
+        "https://localhost:7085/api/Guest/login",
+        {
+          Email: formData.Email,
+          Passi: formData.Passi,
+        },
+        { withCredentials: true }
+      );
 
-      const user = response.data.user;
+      // Extract token and user from response
+      const { token, user } = response.data;
+
+      // Debugging
+      console.log("Login successful:", user);
+
+      // Store them in localStorage
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
 
+      // Navigate based on role
       if (user.role?.toLowerCase() === "admin") {
+        console.log("Navigating to /admin");
         navigate("/admin");
       } else {
+        console.log("Navigating to /main");
         navigate("/");
       }
     } catch (err) {
@@ -141,10 +156,23 @@ const Login = () => {
 
   return (
     <PageContainer>
+      <FontAwesomeIcon 
+  icon={faArrowLeft} 
+  onClick={() => navigate('/')} 
+  style={{
+    position: 'absolute', 
+    top: '20px', 
+    left: '20px', 
+    cursor: 'pointer', 
+    fontSize: '1.5rem', 
+    color: '#1e293b'
+  }} 
+  title="Go back to home"
+/>
+
       <LoginBox>
         <Title>Login</Title>
         <Form onSubmit={handleSubmit}>
-          {/* Email Input */}
           <InputWrapper>
             <Input
               type="email"
@@ -156,7 +184,6 @@ const Login = () => {
             />
           </InputWrapper>
 
-          {/* Password Input */}
           <InputWrapper>
             <Input
               type={showPassword ? "text" : "password"}
@@ -182,7 +209,6 @@ const Login = () => {
             />
           </InputWrapper>
 
-          {/* Submit Button */}
           <Button type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Log In"}
           </Button>

@@ -1,9 +1,15 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const AboutUs = () => {
+  const navigate = useNavigate(); 
   return (
     <>
+
+    
       {/* Hero Section */}
       <section
         className="bg-dark text-light d-flex align-items-center"
@@ -16,6 +22,20 @@ const AboutUs = () => {
           backgroundColor: "rgba(0, 0, 0, 0.5)",
         }}
       >
+        <FontAwesomeIcon 
+  icon={faArrowLeft} 
+  onClick={() => navigate('/')} 
+  style={{
+    position: 'absolute', 
+    top: '20px', 
+    left: '20px', 
+    cursor: 'pointer', 
+    fontSize: '1.5rem', 
+    color: '#ffffff',
+    zIndex: 1000
+  }} 
+  title="Go back to home"
+/>
         <div className="container text-center">
           <h1 className="display-3 fw-bold">About Us</h1>
           <p className="lead">

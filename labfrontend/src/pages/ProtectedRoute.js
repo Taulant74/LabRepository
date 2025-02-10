@@ -1,13 +1,20 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
-const ProtectedRoute = ({ requiredRole }) => {
-  const isLoggedIn = Boolean(localStorage.getItem('token')); // Example authentication check
-  const userRole = localStorage.getItem('role'); // Example role retrieval
+const ProtectedRoute = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
 
-  if (!isLoggedIn) return <Navigate to="/login" replace />;
-  if (requiredRole && userRole !== requiredRole) return <Navigate to="/" replace />;
+  // Redirect to login if no user is logged in
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
 
+  // Admin access control: Only allow users with 'admin' role to access /admin
+  if (window.location.pathname === '/admin' && user.role?.toLowerCase() !== 'admin') {
+    return <Navigate to="/profile" />;
+  }
+
+  // Allow access if authenticated
   return <Outlet />;
 };
 

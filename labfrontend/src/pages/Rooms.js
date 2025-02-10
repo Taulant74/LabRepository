@@ -197,7 +197,7 @@ const Rooms = () => {
                 <p>{room.description}</p>
                 <p className="room-price">{room.price}</p>
                 {/* Updated Link for Book Now */}
-                <Link to={`/reservation/${index + 1}`} className="btn btn-outline-primary">
+                <Link to="/reservation" className="btn btn-outline-primary">
                   Book Now
                 </Link>
               </div>
