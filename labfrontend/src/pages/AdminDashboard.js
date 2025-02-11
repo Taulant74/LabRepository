@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt,FaClipboardList  } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt,FaClipboardList ,FaDumbbell, FaHotTub, FaSpa } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 
@@ -114,7 +114,15 @@ const [reservations, setReservations] = useState([]);
 const [editReservation, setEditReservation] = useState(null);
 const [newReservation, setNewReservation] = useState(null);
 const [sessionExpired, setSessionExpired] = useState(false);
-
+const [gyms, setGyms] = useState([]);
+const [editGym, setEditGym] = useState(null);
+const [newGym, setNewGym] = useState(null);
+const [saunas, setSaunas] = useState([]);
+const [editSauna, setEditSauna] = useState(null);
+const [newSauna, setNewSauna] = useState(null);
+const [spas, setSpas] = useState([]);
+const [editSpa, setEditSpa] = useState(null);
+const [newSpa, setNewSpa] = useState(null);
 
 const navigate = useNavigate();
 
@@ -164,6 +172,7 @@ useEffect(() => {
 }, []);
 
 
+
 const handleLogout = () => {
   // Clear the user from localStorage
   localStorage.removeItem('user');
@@ -174,14 +183,39 @@ const handleLogout = () => {
   // Redirect to login page
   window.location.href = '/login';
 };
+const fetchSpas = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Spa");
+    setSpas(response.data);
+  } catch (error) {
+    console.error("Error fetching spas:", error);
+    if (error.response) {
+      console.error("Server response data:", error.response.data); // Log server error details
+    }
+    showNotification("Failed to fetch spas.");
+  }
+};
+const fetchSaunas = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Sauna");
+    setSaunas(response.data);
+  } catch (error) {
+    console.error("Error fetching saunas:", error);
+    if (error.response) {
+      console.error("Server response data:", error.response.data); // Log server error details
+    }
+    showNotification("Failed to fetch saunas.");
+  }
+};
 
-
-
-
-
-
-
-
+const fetchGyms = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Gym");
+    setGyms(response.data);
+  } catch (error) {
+    console.error("Error fetching gyms:", error);
+  }
+};
 
 
 const fetchAmenities = async () => {
@@ -203,7 +237,11 @@ const fetchReservations = async () => {
     console.error("Error fetching reservations:", error);
   }
 };
-
+useEffect(() => {
+  if (activeTab === "gyms") {
+    fetchGyms();
+  }
+}, [activeTab]);
 // Fetch when tab is active
 useEffect(() => {
   if (activeTab === "reservations") {
@@ -295,7 +333,105 @@ const handleDeleteAmenity = async (id) => {
     showNotification("Failed to delete amenity.");
   }
 };
+const handleAddGym = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Gym", newGym);
+    fetchGyms();
+    setNewGym(null);
+    showNotification("Gym added successfully!");
+  } catch (error) {
+    console.error("Error adding gym:", error);
+    showNotification("Failed to add gym.");
+  }
+};
+const handleUpdateGym = async () => {
+  try {
+    await axios.put(`https://localhost:7085/api/Gym/${editGym.GymID}`, editGym);
+    fetchGyms();
+    setEditGym(null);
+    showNotification("Gym updated successfully!");
+  } catch (error) {
+    console.error("Error updating gym:", error);
+    showNotification("Failed to update gym.");
+  }
+};
+const handleDeleteGym = async (id) => {
+  try {
+    await axios.delete(`https://localhost:7085/api/Gym/${id}`);
+    fetchGyms();
+    showNotification("Gym deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting gym:", error);
+    showNotification("Failed to delete gym.");
+  }
+};
 
+const handleAddSauna = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Sauna", newSauna);
+    fetchSaunas();
+    setNewSauna(null);
+    showNotification("Sauna added successfully!");
+  } catch (error) {
+    console.error("Error adding sauna:", error);
+    showNotification("Failed to add sauna.");
+  }
+};
+
+const handleUpdateSauna = async () => {
+  try {
+    await axios.put(`https://localhost:7085/api/Sauna/${editSauna.SaunaID}`, editSauna);
+    fetchSaunas();
+    setEditSauna(null);
+    showNotification("Sauna updated successfully!");
+  } catch (error) {
+    console.error("Error updating sauna:", error);
+    showNotification("Failed to update sauna.");
+  }
+};
+
+const handleDeleteSauna = async (id) => {
+  try {
+    await axios.delete(`https://localhost:7085/api/Sauna/${id}`);
+    fetchSaunas();
+    showNotification("Sauna deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting sauna:", error);
+    showNotification("Failed to delete sauna.");
+  }
+};
+const handleAddSpa = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Spa", newSpa);
+    fetchSpas();
+    setNewSpa(null);
+    showNotification("Spa added successfully!");
+  } catch (error) {
+    console.error("Error adding spa:", error);
+    showNotification("Failed to add spa.");
+  }
+};
+const handleUpdateSpa = async () => {
+  try {
+    await axios.put(`https://localhost:7085/api/Spa/${editSpa.SpaID}`, editSpa);
+    fetchSpas();
+    setEditSpa(null);
+    showNotification("Spa updated successfully!");
+  } catch (error) {
+    console.error("Error updating spa:", error);
+    showNotification("Failed to update spa.");
+  }
+};
+const handleDeleteSpa = async (id) => {
+  try {
+    await axios.delete(`https://localhost:7085/api/Spa/${id}`);
+    fetchSpas();
+    showNotification("Spa deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting spa:", error);
+    showNotification("Failed to delete spa.");
+  }
+};
 
 const fetchRooms = async () => {
   try {
@@ -384,6 +520,19 @@ useEffect(() => {
   useEffect(() => {
     if (activeTab === "reviews") {
       fetchReviews();
+    }
+  }, [activeTab]);
+
+  
+
+  useEffect(() => {
+    if (activeTab === "saunas") {
+      fetchSaunas();
+    }
+  }, [activeTab]);
+  useEffect(() => {
+    if (activeTab === "spas") {
+      fetchSpas();
     }
   }, [activeTab]);
   
@@ -903,10 +1052,514 @@ const handleUpdateInventory = async () => {
   };
   
   
+  const renderGymsContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Gyms</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewGym({
+              AmenityID: "",
+              NumberOfMachines: "",
+              Open24Hours: false,
+            })
+          }
+        >
+          Add New Gym
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Gym ID</th>
+              <th>Amenity ID</th>
+              <th>Number of Machines</th>
+              <th>Open 24 Hours</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {gyms.length > 0 ? (
+              gyms.map((gym) => (
+                <tr key={gym.GymID}>
+                  <td>{gym.GymID}</td>
+                  <td>{gym.AmenityID}</td>
+                  <td>{gym.NumberOfMachines}</td>
+                  <td>{gym.Open24Hours ? "Yes" : "No"}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditGym(gym)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteGym(gym.GymID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted">
+                  No gyms found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
   
+      {/* Edit Gym Modal */}
+      {editGym && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Gym</h5>
+                <button type="button" className="btn-close" onClick={() => setEditGym(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Gym ID"
+                  value={editGym.GymID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={editGym.AmenityID}
+                  onChange={(e) => setEditGym({ ...editGym, AmenityID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Number of Machines"
+                  value={editGym.NumberOfMachines}
+                  onChange={(e) => setEditGym({ ...editGym, NumberOfMachines: e.target.value })}
+                />
+                <select
+                  className="form-control mb-3"
+                  value={editGym.Open24Hours ? "true" : "false"}
+                  onChange={(e) => setEditGym({ ...editGym, Open24Hours: e.target.value === "true" })}
+                >
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateGym}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditGym(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
   
-  
+      {/* Add Gym Modal */}
+      {newGym && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Gym</h5>
+                <button type="button" className="btn-close" onClick={() => setNewGym(null)}></button>
+              </div>
+              <div className="modal-body">
+                {/* Removed Gym ID field since it's auto-incremented */}
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={newGym.AmenityID}
+                  onChange={(e) => setNewGym({ ...newGym, AmenityID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Number of Machines"
+                  value={newGym.NumberOfMachines}
+                  onChange={(e) => setNewGym({ ...newGym, NumberOfMachines: e.target.value })}
+                />
+                <select
+                  className="form-control mb-3"
+                  value={newGym.Open24Hours ? "true" : "false"}
+                  onChange={(e) => setNewGym({ ...newGym, Open24Hours: e.target.value === "true" })}
+                >
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddGym}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewGym(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
+
+  const renderSaunasContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Saunas</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewSauna({
+              SaunaID: 0, // Auto-incremented by the database
+              AmenityID: "",
+              MaxTemperature: "",
+              Capacity: "",
+            })
+          }
+        >
+          Add New Sauna
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Sauna ID</th>
+              <th>Amenity ID</th>
+              <th>Max Temperature</th>
+              <th>Capacity</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {saunas.length > 0 ? (
+              saunas.map((sauna) => (
+                <tr key={sauna.SaunaID}>
+                  <td>{sauna.SaunaID}</td>
+                  <td>{sauna.AmenityID}</td>
+                  <td>{sauna.MaxTemperature}</td>
+                  <td>{sauna.Capacity}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditSauna(sauna)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteSauna(sauna.SaunaID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted">
+                  No saunas found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Sauna Modal */}
+      {editSauna && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Sauna</h5>
+                <button type="button" className="btn-close" onClick={() => setEditSauna(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Sauna ID"
+                  value={editSauna.SaunaID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={editSauna.AmenityID}
+                  onChange={(e) => setEditSauna({ ...editSauna, AmenityID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Max Temperature"
+                  value={editSauna.MaxTemperature}
+                  onChange={(e) => setEditSauna({ ...editSauna, MaxTemperature: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Capacity"
+                  value={editSauna.Capacity}
+                  onChange={(e) => setEditSauna({ ...editSauna, Capacity: e.target.value })}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateSauna}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditSauna(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add Sauna Modal */}
+      {newSauna && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Sauna</h5>
+                <button type="button" className="btn-close" onClick={() => setNewSauna(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={newSauna.AmenityID}
+                  onChange={(e) => setNewSauna({ ...newSauna, AmenityID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Max Temperature"
+                  value={newSauna.MaxTemperature}
+                  onChange={(e) => setNewSauna({ ...newSauna, MaxTemperature: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Capacity"
+                  value={newSauna.Capacity}
+                  onChange={(e) => setNewSauna({ ...newSauna, Capacity: e.target.value })}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddSauna}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewSauna(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  
+  const renderSpasContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Spas</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewSpa({
+              SpaID: 0, // Auto-incremented by the database
+              AmenityID: "",
+              NumberOfRooms: "",
+              OpeningTime: "09:00", // Default opening time
+              ClosingTime: "18:00", // Default closing time
+            })
+          }
+        >
+          Add New Spa
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Spa ID</th>
+              <th>Amenity ID</th>
+              <th>Number of Rooms</th>
+              <th>Opening Time</th>
+              <th>Closing Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {spas.length > 0 ? (
+              spas.map((spa) => (
+                <tr key={spa.SpaID}>
+                  <td>{spa.SpaID}</td>
+                  <td>{spa.AmenityID}</td>
+                  <td>{spa.NumberOfRooms}</td>
+                  <td>{spa.OpeningTime}</td>
+                  <td>{spa.ClosingTime}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditSpa(spa)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteSpa(spa.SpaID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center text-muted">
+                  No spas found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Spa Modal */}
+      {editSpa && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Spa</h5>
+                <button type="button" className="btn-close" onClick={() => setEditSpa(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Spa ID"
+                  value={editSpa.SpaID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={editSpa.AmenityID}
+                  onChange={(e) => setEditSpa({ ...editSpa, AmenityID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Number of Rooms"
+                  value={editSpa.NumberOfRooms}
+                  onChange={(e) => setEditSpa({ ...editSpa, NumberOfRooms: e.target.value })}
+                />
+                <input
+                  type="time"
+                  className="form-control mb-3"
+                  placeholder="Opening Time"
+                  value={editSpa.OpeningTime}
+                  onChange={(e) => setEditSpa({ ...editSpa, OpeningTime: e.target.value })}
+                />
+                <input
+                  type="time"
+                  className="form-control mb-3"
+                  placeholder="Closing Time"
+                  value={editSpa.ClosingTime}
+                  onChange={(e) => setEditSpa({ ...editSpa, ClosingTime: e.target.value })}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateSpa}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditSpa(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add Spa Modal */}
+      {newSpa && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Spa</h5>
+                <button type="button" className="btn-close" onClick={() => setNewSpa(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={newSpa.AmenityID}
+                  onChange={(e) => setNewSpa({ ...newSpa, AmenityID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Number of Rooms"
+                  value={newSpa.NumberOfRooms}
+                  onChange={(e) => setNewSpa({ ...newSpa, NumberOfRooms: e.target.value })}
+                />
+                <input
+                  type="time"
+                  className="form-control mb-3"
+                  placeholder="Opening Time"
+                  value={newSpa.OpeningTime}
+                  onChange={(e) => setNewSpa({ ...newSpa, OpeningTime: e.target.value })}
+                />
+                <input
+                  type="time"
+                  className="form-control mb-3"
+                  placeholder="Closing Time"
+                  value={newSpa.ClosingTime}
+                  onChange={(e) => setNewSpa({ ...newSpa, ClosingTime: e.target.value })}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddSpa}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewSpa(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
 
   const renderAmenitiesContent = () => (
@@ -3007,8 +3660,27 @@ const handleUpdateInventory = async () => {
   <FaClipboardList className="me-2" />
   {!isSidebarCollapsed && "Reservations"}
 </li>
-
-
+<li
+  className={`nav-item p-2 ${activeTab === "gyms" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("gyms")}
+>
+  <FaDumbbell className="me-2" />
+  {!isSidebarCollapsed && "Gyms"}
+</li>
+<li
+  className={`nav-item p-2 ${activeTab === "saunas" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("saunas")}
+>
+  <FaHotTub className="me-2" /> {/* Use an appropriate icon */}
+  {!isSidebarCollapsed && "Saunas"}
+</li>
+<li
+  className={`nav-item p-2 ${activeTab === "spas" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("spas")}
+>
+  <FaSpa className="me-2" /> {/* Use an appropriate icon */}
+  {!isSidebarCollapsed && "Spas"}
+</li>
   </ul>
   {/* Logout Button at the Bottom */}
 <button
@@ -3041,7 +3713,9 @@ const handleUpdateInventory = async () => {
 {activeTab === "reviews" && renderReviewsContent()}
 {activeTab === "amenities" && renderAmenitiesContent()}
 {activeTab === "reservations" && renderReservationsContent()}
-
+{activeTab === "gyms" && renderGymsContent()}
+{activeTab === "saunas" && renderSaunasContent()}
+{activeTab === "spas" && renderSpasContent()}
 
 </div>
 
