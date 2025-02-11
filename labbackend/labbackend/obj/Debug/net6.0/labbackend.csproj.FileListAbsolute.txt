@@ -260,3 +260,4 @@ C:\Users\rinaq\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin
 C:\Users\rinaq\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 C:\Users\rinaq\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\rinaq\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\rinaq\OneDrive\Documents\GitHub\LabRepository\labbackend\labbackend\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
