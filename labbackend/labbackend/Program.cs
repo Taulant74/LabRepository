@@ -53,7 +53,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", corsBuilder =>
     {
-        corsBuilder.WithOrigins("http://localhost:3002")
+        corsBuilder.WithOrigins("http://localhost:3005")
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials(); // For HttpOnly cookies
