@@ -58,12 +58,12 @@ builder.Services.AddDbContext<GymContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 3. Configure CORS (allows requests from your React app at http://localhost:3005)
+// 3. Configure CORS (allows requests from your React app at http://localhost:3004)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", corsBuilder =>
     {
-        corsBuilder.WithOrigins("http://localhost:3005")
+        corsBuilder.WithOrigins("http://localhost:3001")
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials(); // For HttpOnly cookies
