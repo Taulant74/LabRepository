@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -6,10 +7,10 @@ using labbackend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Add Controllers
 builder.Services.AddControllers();
 
-// 2. Register DbContexts (one example shown; include yours as needed)
+
+
 builder.Services.AddDbContext<InventoryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -20,6 +21,9 @@ builder.Services.AddDbContext<StaffContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDbContext<EventBookingContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<EventContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDbContext<FeedbackContext>(options =>
@@ -43,33 +47,41 @@ builder.Services.AddDbContext<EmployeeScheduleContext>(options =>
 builder.Services.AddDbContext<GuestContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ... Add the rest of your DbContexts here similarly ...
+builder.Services.AddDbContext<SpaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<SaunaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<GymContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<MenuContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Adjust the connection string name as needed
+
+
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 3. Configure CORS (allows requests from your React app at http://localhost:3002)
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", corsBuilder =>
     {
-        corsBuilder.WithOrigins("http://localhost:3005")
+        corsBuilder.WithOrigins("http://localhost:3002")
                    .AllowAnyHeader()
                    .AllowAnyMethod()
-                   .AllowCredentials(); // For HttpOnly cookies
+                   .AllowCredentials();
     });
 });
 
-// 4. Configure JWT Bearer Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        // For local development
         options.RequireHttpsMetadata = false;
-        // Save token in the authentication properties
         options.SaveToken = true;
-
-        // Token validation parameters
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
@@ -80,18 +92,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Issuer"],
-
-            // ClockSkew = 0 ensures the token expires exactly at token expiration time
             ClockSkew = TimeSpan.Zero
         };
     });
 
 var app = builder.Build();
 
-// 5. Enable CORS
 app.UseCors("AllowFrontend");
 
-// 6. Enable Swagger in development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -99,13 +107,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// 7. Use Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
-
-// 8. Map controllers
 app.MapControllers();
 
-// 9. Run the app
+
+
+
+
 app.Run();

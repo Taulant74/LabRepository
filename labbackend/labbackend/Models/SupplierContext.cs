@@ -12,7 +12,7 @@ namespace labbackend.Models
         public DbSet<Supplier> Suppliers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Inventory>().ToTable("Inventory"); // Map to the correct table name
+            modelBuilder.Entity<Supplier>().ToTable("Supplier"); // Map to the correct table name
         }
     }
 }

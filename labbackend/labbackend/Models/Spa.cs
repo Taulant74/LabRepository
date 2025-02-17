@@ -1,4 +1,5 @@
 ﻿using labbackend.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace labbackend.Models
@@ -12,7 +13,10 @@ namespace labbackend.Models
         public TimeSpan OpeningTime { get; set; }
         public TimeSpan ClosingTime { get; set; }
 
+        [Required] // Assuming this is the missing required field
+        public string SpaName { get; set; }
     }
+
 }
 
 

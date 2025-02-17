@@ -41,7 +41,7 @@ namespace labbackend.Controllers
                 _config["Jwt:Issuer"],
                 _config["Jwt:Issuer"],
                 claims,
-                expires: DateTime.Now.AddMinutes(2),
+                expires: DateTime.Now.AddMinutes(60),
                 signingCredentials: creds
             );
 
@@ -68,13 +68,13 @@ namespace labbackend.Controllers
             var token = GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
 
-            // Set the refresh token in HttpOnly cookie
+            // Set the refresh token in HttpOnly cookieWin32Exception: The wait operation timed out.
             Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.Now.AddMinutes(2)  // <-- 2 minutes
+                Expires = DateTime.Now.AddMinutes(10)  // <-- 2 minutes
             });
 
 
@@ -169,34 +169,7 @@ namespace labbackend.Controllers
                 guest.Role
             });
         }
-        [HttpPost]
-        public IActionResult AddGuest([FromBody] Guest newGuest)
-        {
-            // Example: Check if email already exists
-            var existingGuest = _context.Guests.FirstOrDefault(g => g.Email == newGuest.Email);
-            if (existingGuest != null)
-            {
-                return Conflict(new { message = "Email already registered." });
-            }
 
-            // Optional: Validate fields (e.g., require non-empty names, etc.)
-            if (string.IsNullOrEmpty(newGuest.FirstName) ||
-                string.IsNullOrEmpty(newGuest.LastName) ||
-                string.IsNullOrEmpty(newGuest.Email) ||
-                string.IsNullOrEmpty(newGuest.Passi))
-            {
-                return BadRequest(new { message = "All fields are required." });
-            }
-
-            // Assign default role if you want
-            // newGuest.Role = "User";
-
-            _context.Guests.Add(newGuest);
-            _context.SaveChanges();
-
-            // Return the newly created guest 
-            return CreatedAtAction(nameof(GetGuest), new { id = newGuest.GuestID }, newGuest);
-        }
 
         // DELETE: api/Guest/{id}
         [HttpDelete("{id}")]
@@ -210,6 +183,42 @@ namespace labbackend.Controllers
             _context.SaveChanges();
 
             return Ok(new { message = "Guest deleted successfully." });
+        }
+
+        // POST: api/Guest
+        [HttpPost]
+        public IActionResult CreateGuest([FromBody] Guest guest)
+        {
+            if (guest == null)
+            {
+                return BadRequest(new { message = "Guest data is required." });
+            }
+
+            // Validate required fields
+            if (string.IsNullOrEmpty(guest.FirstName))
+                return BadRequest(new { message = "First name is required." });
+            if (string.IsNullOrEmpty(guest.LastName))
+                return BadRequest(new { message = "Last name is required." });
+            if (string.IsNullOrEmpty(guest.Email))
+                return BadRequest(new { message = "Email is required." });
+            if (string.IsNullOrEmpty(guest.Passi))
+                return BadRequest(new { message = "Password is required." });
+
+            // Check if the email is already registered
+            var existingGuest = _context.Guests.FirstOrDefault(g => g.Email == guest.Email);
+            if (existingGuest != null)
+            {
+                return Conflict(new { message = "Email is already registered." });
+            }
+
+            // Assign a default role if not provided
+            guest.Role = guest.Role ?? "User";
+
+            // Add the new guest to the database
+            _context.Guests.Add(guest);
+            _context.SaveChanges();
+
+            return Ok(new { message = "Guest created successfully.", guest });
         }
     }
 }
