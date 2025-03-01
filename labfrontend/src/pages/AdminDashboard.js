@@ -125,6 +125,9 @@ const [newSpa, setNewSpa] = useState(null);
 const [menuItems, setMenuItems] = useState([]);
 const [newMenuItem, setNewMenuItem] = useState(null);
 const [editMenuItem, setEditMenuItem] = useState(null);
+const [feedbacks, setFeedbacks] = useState([]);
+const [newFeedback, setNewFeedback] = useState(null);
+const [editFeedback, setEditFeedback] = useState(null);
 
 const navigate = useNavigate();
 
@@ -198,6 +201,11 @@ const handleLogout = () => {
   window.location.href = '/login';
 };
 
+useEffect(() => {
+  if (activeTab === "feedback") {
+    fetchFeedbacks();
+  }
+}, [activeTab]);
 
 const fetchAmenities = async () => {
   try {
@@ -225,6 +233,57 @@ useEffect(() => {
     fetchReservations();
   }
 }, [activeTab]);
+// Function to fetch all feedback entries
+const fetchFeedbacks = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Feedback");
+    setFeedbacks(response.data);
+  } catch (error) {
+    console.error("Error fetching feedbacks:", error);
+  }
+};
+
+// Function to add new feedback
+const handleAddFeedback = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Feedback", newFeedback);
+    fetchFeedbacks();
+    setNewFeedback(null);
+    showNotification("Feedback added successfully!");
+  } catch (error) {
+    console.error("Error adding feedback:", error);
+    showNotification("Failed to add feedback.");
+  }
+};
+
+// Function to update existing feedback
+const handleUpdateFeedback = async () => {
+  try {
+    await axios.put(
+      `https://localhost:7085/api/Feedback/${editFeedback.feedbackID}`,
+      editFeedback
+    );
+    fetchFeedbacks();
+    setEditFeedback(null);
+    showNotification("Feedback updated successfully!");
+  } catch (error) {
+    console.error("Error updating feedback:", error);
+    showNotification("Failed to update feedback.");
+  }
+};
+
+// Function to delete a feedback item
+const handleDeleteFeedback = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this feedback?")) return;
+  try {
+    await axios.delete(`https://localhost:7085/api/Feedback/${id}`);
+    fetchFeedbacks();
+    showNotification("Feedback deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting feedback:", error);
+    showNotification("Failed to delete feedback.");
+  }
+};
 
 const handleAddMenuItem = async () => {
   try {
@@ -1015,13 +1074,262 @@ const handleUpdateInventory = async () => {
     }
   };
   
-  
-  
-  
   const showNotification = (message) => {
     setNotification(message);
     setTimeout(() => setNotification(""), 2000);
   };
+  const renderFeedbackContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Feedback</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewFeedback({
+              feedbackID:
+                feedbacks.length > 0
+                  ? Math.max(...feedbacks.map((f) => f.feedbackID)) + 1
+                  : 1,
+              guestID: "",
+              feedbackType: "",
+              message: "",
+              feedbackDate: new Date().toISOString(),
+            })
+          }
+        >
+          Add New Feedback
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Feedback ID</th>
+              <th>Guest ID</th>
+              <th>Feedback Type</th>
+              <th>Message</th>
+              <th>Feedback Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {feedbacks.length > 0 ? (
+              feedbacks.map((feedback) => (
+                <tr key={feedback.feedbackID}>
+                  <td>{feedback.feedbackID}</td>
+                  <td>{feedback.guestID}</td>
+                  <td>{feedback.feedbackType}</td>
+                  <td>{feedback.message}</td>
+                  <td>{new Date(feedback.feedbackDate).toLocaleString()}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditFeedback(feedback)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteFeedback(feedback.feedbackID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center text-muted">
+                  No feedback found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Feedback Modal */}
+      {editFeedback && (
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Feedback</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setEditFeedback(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Feedback ID"
+                  value={editFeedback.feedbackID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Guest ID"
+                  value={editFeedback.guestID}
+                  onChange={(e) =>
+                    setEditFeedback({ ...editFeedback, guestID: e.target.value })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Feedback Type"
+                  value={editFeedback.feedbackType}
+                  onChange={(e) =>
+                    setEditFeedback({
+                      ...editFeedback,
+                      feedbackType: e.target.value,
+                    })
+                  }
+                />
+                <textarea
+                  className="form-control mb-3"
+                  placeholder="Message"
+                  value={editFeedback.message}
+                  onChange={(e) =>
+                    setEditFeedback({ ...editFeedback, message: e.target.value })
+                  }
+                ></textarea>
+                <input
+                  type="datetime-local"
+                  className="form-control mb-3"
+                  value={
+                    editFeedback.feedbackDate
+                      ? new Date(editFeedback.feedbackDate)
+                          .toISOString()
+                          .slice(0, 16)
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setEditFeedback({
+                      ...editFeedback,
+                      feedbackDate: new Date(e.target.value).toISOString(),
+                    })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleUpdateFeedback}
+                >
+                  Save
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditFeedback(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add New Feedback Modal */}
+      {newFeedback && (
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Feedback</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setNewFeedback(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Feedback ID"
+                  value={newFeedback.feedbackID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Guest ID"
+                  value={newFeedback.guestID}
+                  onChange={(e) =>
+                    setNewFeedback({ ...newFeedback, guestID: e.target.value })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Feedback Type"
+                  value={newFeedback.feedbackType}
+                  onChange={(e) =>
+                    setNewFeedback({
+                      ...newFeedback,
+                      feedbackType: e.target.value,
+                    })
+                  }
+                />
+                <textarea
+                  className="form-control mb-3"
+                  placeholder="Message"
+                  value={newFeedback.message}
+                  onChange={(e) =>
+                    setNewFeedback({ ...newFeedback, message: e.target.value })
+                  }
+                ></textarea>
+                <input
+                  type="datetime-local"
+                  className="form-control mb-3"
+                  value={
+                    newFeedback.feedbackDate
+                      ? new Date(newFeedback.feedbackDate)
+                          .toISOString()
+                          .slice(0, 16)
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setNewFeedback({
+                      ...newFeedback,
+                      feedbackDate: new Date(e.target.value).toISOString(),
+                    })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleAddFeedback}
+                >
+                  Add
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setNewFeedback(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  
   const renderReservationsContent = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset time for comparison
@@ -3759,12 +4067,21 @@ const renderMenuContent = () => (
   {!isSidebarCollapsed && "Rooms"}
 </li>
 <li
+  className={`nav-item p-2 ${activeTab === "feedback" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("feedback")}
+>
+  <FaClipboardList className="me-2" />
+  {!isSidebarCollapsed && "Feedback"}
+</li>
+<li
     className={`nav-item p-2 ${activeTab === "reviews" ? "bg-primary text-white" : ""}`}
     onClick={() => setActiveTab("reviews")}
   >
     <FaEdit className="me-2" />
     {!isSidebarCollapsed && "Reviews"}
   </li>
+
+
   <li
   className={`nav-item p-2 ${activeTab === "reservations" ? "bg-primary text-white" : ""}`}
   onClick={() => setActiveTab("reservations")}
@@ -3839,6 +4156,7 @@ const renderMenuContent = () => (
 {activeTab === "sauna" && renderSaunaContent()}
 {activeTab === "spa" && renderSpaContent()}
 {activeTab === "menu" && renderMenuContent()}
+{activeTab === "feedback" && renderFeedbackContent()}
 </div>
 
 
