@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt,FaClipboardList ,FaDumbbell, FaHotTub, FaSpa } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaUser, FaBox, FaUsers, FaTools, FaCalendarAlt, FaEdit, FaTrashAlt,FaClipboardList,FaDumbbell, FaHotTub, FaSpa } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
 
 
 // Inline styles for components
@@ -125,6 +124,12 @@ const [newSauna, setNewSauna] = useState(null);
 const [spas, setSpas] = useState([]);
 const [editSpa, setEditSpa] = useState(null);
 const [newSpa, setNewSpa] = useState(null);
+const [menuItems, setMenuItems] = useState([]);
+const [newMenuItem, setNewMenuItem] = useState(null);
+const [editMenuItem, setEditMenuItem] = useState(null);
+const [feedbacks, setFeedbacks] = useState([]);
+const [newFeedback, setNewFeedback] = useState(null);
+const [editFeedback, setEditFeedback] = useState(null);
 
 const navigate = useNavigate();
 
@@ -144,7 +149,7 @@ useEffect(() => {
     }
   };
 
-  const interval = setInterval(checkTokenExpiration, 100000); // Check every 10 seconds
+  const interval = setInterval(checkTokenExpiration, 10000000); // Check every 10 seconds
 
   return () => clearInterval(interval); // Cleanup
 }, [navigate, sessionExpired]);
@@ -173,7 +178,19 @@ useEffect(() => {
   return () => clearInterval(interval); // Clean up interval on unmount
 }, []);
 
-
+const fetchMenuItems = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Menu");
+    setMenuItems(response.data);
+  } catch (error) {
+    console.error("Error fetching menu items:", error);
+  }
+};
+useEffect(() => {
+  if (activeTab === "menu") {
+    fetchMenuItems();
+  }
+}, [activeTab]);
 
 const handleLogout = () => {
   // Clear the user from localStorage
@@ -185,40 +202,12 @@ const handleLogout = () => {
   // Redirect to login page
   window.location.href = '/login';
 };
-const fetchSpas = async () => {
-  try {
-    const response = await axios.get("https://localhost:7085/api/Spa");
-    setSpas(response.data);
-  } catch (error) {
-    console.error("Error fetching spas:", error);
-    if (error.response) {
-      console.error("Server response data:", error.response.data); // Log server error details
-    }
-    showNotification("Failed to fetch spas.");
-  }
-};
-const fetchSaunas = async () => {
-  try {
-    const response = await axios.get("https://localhost:7085/api/Sauna");
-    setSaunas(response.data);
-  } catch (error) {
-    console.error("Error fetching saunas:", error);
-    if (error.response) {
-      console.error("Server response data:", error.response.data); // Log server error details
-    }
-    showNotification("Failed to fetch saunas.");
-  }
-};
 
-const fetchGyms = async () => {
-  try {
-    const response = await axios.get("https://localhost:7085/api/Gym");
-    setGyms(response.data);
-  } catch (error) {
-    console.error("Error fetching gyms:", error);
+useEffect(() => {
+  if (activeTab === "feedback") {
+    fetchFeedbacks();
   }
-};
-
+}, [activeTab]);
 
 const fetchAmenities = async () => {
   try {
@@ -239,17 +228,101 @@ const fetchReservations = async () => {
     console.error("Error fetching reservations:", error);
   }
 };
-useEffect(() => {
-  if (activeTab === "gyms") {
-    fetchGyms();
-  }
-}, [activeTab]);
+
 // Fetch when tab is active
 useEffect(() => {
   if (activeTab === "reservations") {
     fetchReservations();
   }
 }, [activeTab]);
+// Function to fetch all feedback entries
+const fetchFeedbacks = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Feedback");
+    setFeedbacks(response.data);
+  } catch (error) {
+    console.error("Error fetching feedbacks:", error);
+  }
+};
+
+// Function to add new feedback
+const handleAddFeedback = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Feedback", newFeedback);
+    fetchFeedbacks();
+    setNewFeedback(null);
+    showNotification("Feedback added successfully!");
+  } catch (error) {
+    console.error("Error adding feedback:", error);
+    showNotification("Failed to add feedback.");
+  }
+};
+
+// Function to update existing feedback
+const handleUpdateFeedback = async () => {
+  try {
+    await axios.put(
+      `https://localhost:7085/api/Feedback/${editFeedback.feedbackID}`,
+      editFeedback
+    );
+    fetchFeedbacks();
+    setEditFeedback(null);
+    showNotification("Feedback updated successfully!");
+  } catch (error) {
+    console.error("Error updating feedback:", error);
+    showNotification("Failed to update feedback.");
+  }
+};
+
+// Function to delete a feedback item
+const handleDeleteFeedback = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this feedback?")) return;
+  try {
+    await axios.delete(`https://localhost:7085/api/Feedback/${id}`);
+    fetchFeedbacks();
+    showNotification("Feedback deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting feedback:", error);
+    showNotification("Failed to delete feedback.");
+  }
+};
+
+const handleAddMenuItem = async () => {
+  try {
+    await axios.post("https://localhost:7085/api/Menu", newMenuItem);
+    fetchMenuItems();
+    setNewMenuItem(null);
+    alert("Menu item added successfully!");
+  } catch (error) {
+    console.error("Error adding menu item:", error);
+    alert("Failed to add menu item.");
+  }
+};
+const handleUpdateMenuItem = async () => {
+  try {
+    await axios.put(`https://localhost:7085/api/Menu/${editMenuItem.MenuID}`, editMenuItem);
+    fetchMenuItems();
+    setEditMenuItem(null);
+    alert("Menu item updated successfully!");
+  } catch (error) {
+    console.error("Error updating menu item:", error);
+    alert("Failed to update menu item.");
+  }
+};
+const handleDeleteMenuItem = async (menuID) => {
+  if (!window.confirm("Are you sure you want to delete this menu item?")) return;
+
+  try {
+    await axios.delete(`https://localhost:7085/api/Menu/${menuID}`);
+    fetchMenuItems();
+    alert("Menu item deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting menu item:", error);
+    alert("Failed to delete menu item.");
+  }
+};
+
+
 const handleAddReservation = async () => {
   try {
     await axios.post("https://localhost:7085/api/Reservation", newReservation);
@@ -295,7 +368,32 @@ const handleDeleteReservation = async (reservationID) => {
     alert("Failed to delete reservation. Please try again.");
   }
 };
+const fetchGyms = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Gym");
+    setGyms(response.data);
+  } catch (error) {
+    console.error("Error fetching gyms:", error);
+  }
+};
 
+const fetchSaunas = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Sauna");
+    setSaunas(response.data);
+  } catch (error) {
+    console.error("Error fetching saunas:", error);
+  }
+};
+
+const fetchSpas = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/Spa");
+    setSpas(response.data);
+  } catch (error) {
+    console.error("Error fetching spas:", error);
+  }
+};
 
 
 const handleAddAmenity = async () => {
@@ -335,105 +433,165 @@ const handleDeleteAmenity = async (id) => {
     showNotification("Failed to delete amenity.");
   }
 };
+// Gym CRUD
 const handleAddGym = async () => {
+  const gymData = { ...newGym };
+  delete gymData.gymID; // Prevent sending GymID (use database auto-increment)
+
   try {
-    await axios.post("https://localhost:7085/api/Gym", newGym);
+    await axios.post("https://localhost:7085/api/Gym", gymData);
     fetchGyms();
     setNewGym(null);
-    showNotification("Gym added successfully!");
+    alert("Gym added successfully!");
   } catch (error) {
     console.error("Error adding gym:", error);
-    showNotification("Failed to add gym.");
-  }
-};
-const handleUpdateGym = async () => {
-  try {
-    await axios.put(`https://localhost:7085/api/Gym/${editGym.GymID}`, editGym);
-    fetchGyms();
-    setEditGym(null);
-    showNotification("Gym updated successfully!");
-  } catch (error) {
-    console.error("Error updating gym:", error);
-    showNotification("Failed to update gym.");
-  }
-};
-const handleDeleteGym = async (id) => {
-  try {
-    await axios.delete(`https://localhost:7085/api/Gym/${id}`);
-    fetchGyms();
-    showNotification("Gym deleted successfully!");
-  } catch (error) {
-    console.error("Error deleting gym:", error);
-    showNotification("Failed to delete gym.");
   }
 };
 
-const handleAddSauna = async () => {
+const handleUpdateGym = async () => {
   try {
-    await axios.post("https://localhost:7085/api/Sauna", newSauna);
+    await axios.put(`https://localhost:7085/api/Gym/${editGym.gymID}`, editGym);
+    fetchGyms();
+    setEditGym(null);
+    alert("Gym updated successfully!");
+  } catch (error) {
+    console.error("Error updating gym:", error);
+    alert("Failed to update gym.");
+  }
+};
+
+const handleDeleteGym = async (gymID) => {
+  if (!window.confirm("Are you sure you want to delete this gym?")) return;
+
+  try {
+    await axios.delete(`https://localhost:7085/api/Gym/${gymID}`);
+    setGyms((prevGyms) => prevGyms.filter((gym) => gym.gymID !== gymID));
+    alert("Gym deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting gym:", error);
+    alert("Failed to delete gym.");
+  }
+};
+
+
+const handleAddSauna = async () => {
+  console.log("Adding Sauna Data:", newSauna); // Debugging
+
+  // Ensure required fields are filled
+  if (!newSauna || !newSauna.amenityID || newSauna.maxTemperature === undefined || newSauna.capacity === undefined) {
+    alert("Please fill in all fields before adding.");
+    return;
+  }
+
+  // Remove SaunaID to allow auto-increment
+  const saunaData = { ...newSauna };
+  delete saunaData.saunaID;
+
+  try {
+    const response = await axios.post("https://localhost:7085/api/Sauna", saunaData);
+    console.log("Server Response:", response.data);
     fetchSaunas();
     setNewSauna(null);
-    showNotification("Sauna added successfully!");
+    alert("Sauna added successfully!");
   } catch (error) {
     console.error("Error adding sauna:", error);
-    showNotification("Failed to add sauna.");
+    if (error.response) {
+      console.error("Server Response Data:", error.response.data);
+    }
+    alert("Failed to add sauna.");
   }
 };
 
 const handleUpdateSauna = async () => {
+  console.log("Updating Sauna Data:", editSauna);
+
   try {
-    await axios.put(`https://localhost:7085/api/Sauna/${editSauna.SaunaID}`, editSauna);
+    const response = await axios.put(`https://localhost:7085/api/Sauna/${editSauna.saunaID}`, editSauna);
+    console.log("Server Response:", response.data);
     fetchSaunas();
     setEditSauna(null);
-    showNotification("Sauna updated successfully!");
+    alert("Sauna updated successfully!");
   } catch (error) {
     console.error("Error updating sauna:", error);
-    showNotification("Failed to update sauna.");
+    if (error.response) {
+      console.error("Server Response Data:", error.response.data);
+    }
+    alert("Failed to update sauna.");
+  }
+};
+const handleDeleteSauna = async (saunaID) => {
+  if (!window.confirm("Are you sure you want to delete this sauna?")) return;
+
+  try {
+    await axios.delete(`https://localhost:7085/api/Sauna/${saunaID}`);
+    setSaunas((prevSaunas) => prevSaunas.filter((sauna) => sauna.saunaID !== saunaID));
+    alert("Sauna deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting sauna:", error);
+    alert("Failed to delete sauna.");
   }
 };
 
-const handleDeleteSauna = async (id) => {
-  try {
-    await axios.delete(`https://localhost:7085/api/Sauna/${id}`);
-    fetchSaunas();
-    showNotification("Sauna deleted successfully!");
-  } catch (error) {
-    console.error("Error deleting sauna:", error);
-    showNotification("Failed to delete sauna.");
-  }
-};
+
+// Spa CRUD
 const handleAddSpa = async () => {
+  console.log("Adding Spa Data:", newSpa); // Debugging
+
+  // Ensure required fields are filled
+  if (!newSpa || !newSpa.amenityID || newSpa.numberOfRooms === undefined || !newSpa.openingTime || !newSpa.closingTime) {
+    alert("Please fill in all fields before adding.");
+    return;
+  }
+
+  // Remove SpaID to allow auto-increment
+  const spaData = { ...newSpa };
+  delete spaData.spaID;
+
   try {
-    await axios.post("https://localhost:7085/api/Spa", newSpa);
+    const response = await axios.post("https://localhost:7085/api/Spa", spaData);
+    console.log("Server Response:", response.data);
     fetchSpas();
     setNewSpa(null);
-    showNotification("Spa added successfully!");
+    alert("Spa added successfully!");
   } catch (error) {
     console.error("Error adding spa:", error);
-    showNotification("Failed to add spa.");
+    if (error.response) {
+      console.error("Server Response Data:", error.response.data);
+    }
+    alert("Failed to add spa.");
   }
 };
+
 const handleUpdateSpa = async () => {
+  console.log("Updating Spa Data:", editSpa);
+
   try {
-    await axios.put(`https://localhost:7085/api/Spa/${editSpa.SpaID}`, editSpa);
+    const response = await axios.put(`https://localhost:7085/api/Spa/${editSpa.spaID}`, editSpa);
+    console.log("Server Response:", response.data);
     fetchSpas();
     setEditSpa(null);
-    showNotification("Spa updated successfully!");
+    alert("Spa updated successfully!");
   } catch (error) {
     console.error("Error updating spa:", error);
-    showNotification("Failed to update spa.");
+    if (error.response) {
+      console.error("Server Response Data:", error.response.data);
+    }
+    alert("Failed to update spa.");
   }
 };
-const handleDeleteSpa = async (id) => {
+const handleDeleteSpa = async (spaID) => {
+  if (!window.confirm("Are you sure you want to delete this spa?")) return;
+
   try {
-    await axios.delete(`https://localhost:7085/api/Spa/${id}`);
-    fetchSpas();
-    showNotification("Spa deleted successfully!");
+    await axios.delete(`https://localhost:7085/api/Spa/${spaID}`);
+    setSpas((prevSpas) => prevSpas.filter((spa) => spa.spaID !== spaID));
+    alert("Spa deleted successfully.");
   } catch (error) {
     console.error("Error deleting spa:", error);
-    showNotification("Failed to delete spa.");
+    alert("Failed to delete spa.");
   }
 };
+
 
 const fetchRooms = async () => {
   try {
@@ -453,6 +611,21 @@ const fetchSchedules = async () => {
     console.error("Error fetching schedules:", error.message);
   }
 };
+useEffect(() => {
+  switch (activeTab) {
+    case "gym":
+      fetchGyms();
+      break;
+    case "sauna":
+      fetchSaunas();
+      break;
+    case "spa":
+      fetchSpas();
+      break;
+    default:
+      break;
+  }
+}, [activeTab]);
 
 useEffect(() => {
   switch (activeTab) {
@@ -484,7 +657,7 @@ useEffect(() => {
 
 useEffect(() => {
   if (activeTab === "amenities") {
-    fetchRooms();
+    fetchAmenities();
   }
 }, [activeTab]);
 
@@ -522,19 +695,6 @@ useEffect(() => {
   useEffect(() => {
     if (activeTab === "reviews") {
       fetchReviews();
-    }
-  }, [activeTab]);
-
-  
-
-  useEffect(() => {
-    if (activeTab === "saunas") {
-      fetchSaunas();
-    }
-  }, [activeTab]);
-  useEffect(() => {
-    if (activeTab === "spas") {
-      fetchSpas();
     }
   }, [activeTab]);
   
@@ -916,13 +1076,262 @@ const handleUpdateInventory = async () => {
     }
   };
   
-  
-  
-  
   const showNotification = (message) => {
     setNotification(message);
     setTimeout(() => setNotification(""), 2000);
   };
+  const renderFeedbackContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Feedback</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewFeedback({
+              feedbackID:
+                feedbacks.length > 0
+                  ? Math.max(...feedbacks.map((f) => f.feedbackID)) + 1
+                  : 1,
+              guestID: "",
+              feedbackType: "",
+              message: "",
+              feedbackDate: new Date().toISOString(),
+            })
+          }
+        >
+          Add New Feedback
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Feedback ID</th>
+              <th>Guest ID</th>
+              <th>Feedback Type</th>
+              <th>Message</th>
+              <th>Feedback Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {feedbacks.length > 0 ? (
+              feedbacks.map((feedback) => (
+                <tr key={feedback.feedbackID}>
+                  <td>{feedback.feedbackID}</td>
+                  <td>{feedback.guestID}</td>
+                  <td>{feedback.feedbackType}</td>
+                  <td>{feedback.message}</td>
+                  <td>{new Date(feedback.feedbackDate).toLocaleString()}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditFeedback(feedback)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteFeedback(feedback.feedbackID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center text-muted">
+                  No feedback found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Feedback Modal */}
+      {editFeedback && (
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Feedback</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setEditFeedback(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Feedback ID"
+                  value={editFeedback.feedbackID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Guest ID"
+                  value={editFeedback.guestID}
+                  onChange={(e) =>
+                    setEditFeedback({ ...editFeedback, guestID: e.target.value })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Feedback Type"
+                  value={editFeedback.feedbackType}
+                  onChange={(e) =>
+                    setEditFeedback({
+                      ...editFeedback,
+                      feedbackType: e.target.value,
+                    })
+                  }
+                />
+                <textarea
+                  className="form-control mb-3"
+                  placeholder="Message"
+                  value={editFeedback.message}
+                  onChange={(e) =>
+                    setEditFeedback({ ...editFeedback, message: e.target.value })
+                  }
+                ></textarea>
+                <input
+                  type="datetime-local"
+                  className="form-control mb-3"
+                  value={
+                    editFeedback.feedbackDate
+                      ? new Date(editFeedback.feedbackDate)
+                          .toISOString()
+                          .slice(0, 16)
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setEditFeedback({
+                      ...editFeedback,
+                      feedbackDate: new Date(e.target.value).toISOString(),
+                    })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleUpdateFeedback}
+                >
+                  Save
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditFeedback(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add New Feedback Modal */}
+      {newFeedback && (
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Feedback</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setNewFeedback(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Feedback ID"
+                  value={newFeedback.feedbackID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Guest ID"
+                  value={newFeedback.guestID}
+                  onChange={(e) =>
+                    setNewFeedback({ ...newFeedback, guestID: e.target.value })
+                  }
+                />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  placeholder="Feedback Type"
+                  value={newFeedback.feedbackType}
+                  onChange={(e) =>
+                    setNewFeedback({
+                      ...newFeedback,
+                      feedbackType: e.target.value,
+                    })
+                  }
+                />
+                <textarea
+                  className="form-control mb-3"
+                  placeholder="Message"
+                  value={newFeedback.message}
+                  onChange={(e) =>
+                    setNewFeedback({ ...newFeedback, message: e.target.value })
+                  }
+                ></textarea>
+                <input
+                  type="datetime-local"
+                  className="form-control mb-3"
+                  value={
+                    newFeedback.feedbackDate
+                      ? new Date(newFeedback.feedbackDate)
+                          .toISOString()
+                          .slice(0, 16)
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setNewFeedback({
+                      ...newFeedback,
+                      feedbackDate: new Date(e.target.value).toISOString(),
+                    })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleAddFeedback}
+                >
+                  Add
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setNewFeedback(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  
   const renderReservationsContent = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset time for comparison
@@ -935,24 +1344,6 @@ const handleUpdateInventory = async () => {
       <div className="card shadow-sm border-0">
         <div className="card-header bg-primary text-white d-flex justify-content-between">
           <h3 className="m-0">Reservations</h3>
-          <button
-            className="btn btn-light text-primary"
-            onClick={() =>
-              setNewReservation({
-                reservationID: 0, // Auto-increment
-                guestID: "",
-                hotelID: "",
-                roomID: "",
-                checkInDate: "",
-                checkOutDate: "",
-                totalPrice: 0,
-                paymentStatus: "Pending", // Default to Pending
-                invoiceID: null, // No payment yet
-              })
-            }
-          >
-            Add Reservation
-          </button>
         </div>
   
         {notification && (
@@ -1049,519 +1440,60 @@ const handleUpdateInventory = async () => {
             </tbody>
           </table>
         </div>
+        {/* Edit Reservation Modal */}
+{editReservation && (
+  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Edit Reservation</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setEditReservation(null)} // Closes the modal
+          ></button>
+        </div>
+        <div className="modal-body">
+          <input
+            type="date"
+            className="form-control mb-3"
+            placeholder="Check-In Date"
+            value={editReservation.checkInDate}
+            onChange={(e) => setEditReservation({ ...editReservation, checkInDate: e.target.value })}
+          />
+          <input
+            type="date"
+            className="form-control mb-3"
+            placeholder="Check-Out Date"
+            value={editReservation.checkOutDate}
+            onChange={(e) => setEditReservation({ ...editReservation, checkOutDate: e.target.value })}
+          />
+          <input
+            type="number"
+            className="form-control mb-3"
+            placeholder="Total Price"
+            value={editReservation.totalPrice}
+            onChange={(e) => setEditReservation({ ...editReservation, totalPrice: e.target.value })}
+          />
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={handleUpdateReservation}>
+            Update
+          </button>
+          <button className="btn btn-secondary" onClick={() => setEditReservation(null)}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
     );
   };
   
-  
-  const renderGymsContent = () => (
-    <div className="card shadow-sm border-0">
-      <div className="card-header bg-primary text-white d-flex justify-content-between">
-        <h3 className="m-0">Gyms</h3>
-        <button
-          className="btn btn-light text-primary"
-          onClick={() =>
-            setNewGym({
-              AmenityID: "",
-              NumberOfMachines: "",
-              Open24Hours: false,
-            })
-          }
-        >
-          Add New Gym
-        </button>
-      </div>
-      <div className="table-responsive">
-        <table className="table table-bordered">
-          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
-            <tr>
-              <th>Gym ID</th>
-              <th>Amenity ID</th>
-              <th>Number of Machines</th>
-              <th>Open 24 Hours</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {gyms.length > 0 ? (
-              gyms.map((gym) => (
-                <tr key={gym.GymID}>
-                  <td>{gym.GymID}</td>
-                  <td>{gym.AmenityID}</td>
-                  <td>{gym.NumberOfMachines}</td>
-                  <td>{gym.Open24Hours ? "Yes" : "No"}</td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      onClick={() => setEditGym(gym)}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteGym(gym.GymID)}
-                    >
-                      <FaTrashAlt />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center text-muted">
-                  No gyms found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-  
-      {/* Edit Gym Modal */}
-      {editGym && (
-        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Edit Gym</h5>
-                <button type="button" className="btn-close" onClick={() => setEditGym(null)}></button>
-              </div>
-              <div className="modal-body">
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Gym ID"
-                  value={editGym.GymID}
-                  readOnly
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Amenity ID"
-                  value={editGym.AmenityID}
-                  onChange={(e) => setEditGym({ ...editGym, AmenityID: e.target.value })}
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Number of Machines"
-                  value={editGym.NumberOfMachines}
-                  onChange={(e) => setEditGym({ ...editGym, NumberOfMachines: e.target.value })}
-                />
-                <select
-                  className="form-control mb-3"
-                  value={editGym.Open24Hours ? "true" : "false"}
-                  onChange={(e) => setEditGym({ ...editGym, Open24Hours: e.target.value === "true" })}
-                >
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </select>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={handleUpdateGym}>
-                  Save
-                </button>
-                <button className="btn btn-secondary" onClick={() => setEditGym(null)}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-  
-      {/* Add Gym Modal */}
-      {newGym && (
-        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Add New Gym</h5>
-                <button type="button" className="btn-close" onClick={() => setNewGym(null)}></button>
-              </div>
-              <div className="modal-body">
-                {/* Removed Gym ID field since it's auto-incremented */}
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Amenity ID"
-                  value={newGym.AmenityID}
-                  onChange={(e) => setNewGym({ ...newGym, AmenityID: e.target.value })}
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Number of Machines"
-                  value={newGym.NumberOfMachines}
-                  onChange={(e) => setNewGym({ ...newGym, NumberOfMachines: e.target.value })}
-                />
-                <select
-                  className="form-control mb-3"
-                  value={newGym.Open24Hours ? "true" : "false"}
-                  onChange={(e) => setNewGym({ ...newGym, Open24Hours: e.target.value === "true" })}
-                >
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </select>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={handleAddGym}>
-                  Add
-                </button>
-                <button className="btn btn-secondary" onClick={() => setNewGym(null)}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
-
-  const renderSaunasContent = () => (
-    <div className="card shadow-sm border-0">
-      <div className="card-header bg-primary text-white d-flex justify-content-between">
-        <h3 className="m-0">Saunas</h3>
-        <button
-          className="btn btn-light text-primary"
-          onClick={() =>
-            setNewSauna({
-              SaunaID: 0, // Auto-incremented by the database
-              AmenityID: "",
-              MaxTemperature: "",
-              Capacity: "",
-            })
-          }
-        >
-          Add New Sauna
-        </button>
-      </div>
-      <div className="table-responsive">
-        <table className="table table-bordered">
-          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
-            <tr>
-              <th>Sauna ID</th>
-              <th>Amenity ID</th>
-              <th>Max Temperature</th>
-              <th>Capacity</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {saunas.length > 0 ? (
-              saunas.map((sauna) => (
-                <tr key={sauna.SaunaID}>
-                  <td>{sauna.SaunaID}</td>
-                  <td>{sauna.AmenityID}</td>
-                  <td>{sauna.MaxTemperature}</td>
-                  <td>{sauna.Capacity}</td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      onClick={() => setEditSauna(sauna)}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteSauna(sauna.SaunaID)}
-                    >
-                      <FaTrashAlt />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center text-muted">
-                  No saunas found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-  
-      {/* Edit Sauna Modal */}
-      {editSauna && (
-        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Edit Sauna</h5>
-                <button type="button" className="btn-close" onClick={() => setEditSauna(null)}></button>
-              </div>
-              <div className="modal-body">
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Sauna ID"
-                  value={editSauna.SaunaID}
-                  readOnly
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Amenity ID"
-                  value={editSauna.AmenityID}
-                  onChange={(e) => setEditSauna({ ...editSauna, AmenityID: e.target.value })}
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Max Temperature"
-                  value={editSauna.MaxTemperature}
-                  onChange={(e) => setEditSauna({ ...editSauna, MaxTemperature: e.target.value })}
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Capacity"
-                  value={editSauna.Capacity}
-                  onChange={(e) => setEditSauna({ ...editSauna, Capacity: e.target.value })}
-                />
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={handleUpdateSauna}>
-                  Save
-                </button>
-                <button className="btn btn-secondary" onClick={() => setEditSauna(null)}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-  
-      {/* Add Sauna Modal */}
-      {newSauna && (
-        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Add New Sauna</h5>
-                <button type="button" className="btn-close" onClick={() => setNewSauna(null)}></button>
-              </div>
-              <div className="modal-body">
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Amenity ID"
-                  value={newSauna.AmenityID}
-                  onChange={(e) => setNewSauna({ ...newSauna, AmenityID: e.target.value })}
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Max Temperature"
-                  value={newSauna.MaxTemperature}
-                  onChange={(e) => setNewSauna({ ...newSauna, MaxTemperature: e.target.value })}
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Capacity"
-                  value={newSauna.Capacity}
-                  onChange={(e) => setNewSauna({ ...newSauna, Capacity: e.target.value })}
-                />
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={handleAddSauna}>
-                  Add
-                </button>
-                <button className="btn btn-secondary" onClick={() => setNewSauna(null)}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-  
-  const renderSpasContent = () => (
-    <div className="card shadow-sm border-0">
-      <div className="card-header bg-primary text-white d-flex justify-content-between">
-        <h3 className="m-0">Spas</h3>
-        <button
-          className="btn btn-light text-primary"
-          onClick={() =>
-            setNewSpa({
-              SpaID: 0, // Auto-incremented by the database
-              AmenityID: "",
-              NumberOfRooms: "",
-              OpeningTime: "09:00", // Default opening time
-              ClosingTime: "18:00", // Default closing time
-            })
-          }
-        >
-          Add New Spa
-        </button>
-      </div>
-      <div className="table-responsive">
-        <table className="table table-bordered">
-          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
-            <tr>
-              <th>Spa ID</th>
-              <th>Amenity ID</th>
-              <th>Number of Rooms</th>
-              <th>Opening Time</th>
-              <th>Closing Time</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {spas.length > 0 ? (
-              spas.map((spa) => (
-                <tr key={spa.SpaID}>
-                  <td>{spa.SpaID}</td>
-                  <td>{spa.AmenityID}</td>
-                  <td>{spa.NumberOfRooms}</td>
-                  <td>{spa.OpeningTime}</td>
-                  <td>{spa.ClosingTime}</td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-primary me-2"
-                      onClick={() => setEditSpa(spa)}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteSpa(spa.SpaID)}
-                    >
-                      <FaTrashAlt />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center text-muted">
-                  No spas found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-  
-      {/* Edit Spa Modal */}
-      {editSpa && (
-        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Edit Spa</h5>
-                <button type="button" className="btn-close" onClick={() => setEditSpa(null)}></button>
-              </div>
-              <div className="modal-body">
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Spa ID"
-                  value={editSpa.SpaID}
-                  readOnly
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Amenity ID"
-                  value={editSpa.AmenityID}
-                  onChange={(e) => setEditSpa({ ...editSpa, AmenityID: e.target.value })}
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Number of Rooms"
-                  value={editSpa.NumberOfRooms}
-                  onChange={(e) => setEditSpa({ ...editSpa, NumberOfRooms: e.target.value })}
-                />
-                <input
-                  type="time"
-                  className="form-control mb-3"
-                  placeholder="Opening Time"
-                  value={editSpa.OpeningTime}
-                  onChange={(e) => setEditSpa({ ...editSpa, OpeningTime: e.target.value })}
-                />
-                <input
-                  type="time"
-                  className="form-control mb-3"
-                  placeholder="Closing Time"
-                  value={editSpa.ClosingTime}
-                  onChange={(e) => setEditSpa({ ...editSpa, ClosingTime: e.target.value })}
-                />
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={handleUpdateSpa}>
-                  Save
-                </button>
-                <button className="btn btn-secondary" onClick={() => setEditSpa(null)}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-  
-      {/* Add Spa Modal */}
-      {newSpa && (
-        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Add New Spa</h5>
-                <button type="button" className="btn-close" onClick={() => setNewSpa(null)}></button>
-              </div>
-              <div className="modal-body">
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Amenity ID"
-                  value={newSpa.AmenityID}
-                  onChange={(e) => setNewSpa({ ...newSpa, AmenityID: e.target.value })}
-                />
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Number of Rooms"
-                  value={newSpa.NumberOfRooms}
-                  onChange={(e) => setNewSpa({ ...newSpa, NumberOfRooms: e.target.value })}
-                />
-                <input
-                  type="time"
-                  className="form-control mb-3"
-                  placeholder="Opening Time"
-                  value={newSpa.OpeningTime}
-                  onChange={(e) => setNewSpa({ ...newSpa, OpeningTime: e.target.value })}
-                />
-                <input
-                  type="time"
-                  className="form-control mb-3"
-                  placeholder="Closing Time"
-                  value={newSpa.ClosingTime}
-                  onChange={(e) => setNewSpa({ ...newSpa, ClosingTime: e.target.value })}
-                />
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={handleAddSpa}>
-                  Add
-                </button>
-                <button className="btn btn-secondary" onClick={() => setNewSpa(null)}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+ 
 
 
   const renderAmenitiesContent = () => (
@@ -2010,7 +1942,126 @@ const handleUpdateInventory = async () => {
     </div>
   )
 };
-  
+const renderMenuContent = () => (
+  <div className="card shadow-sm border-0">
+    <div className="card-header bg-primary text-white d-flex justify-content-between">
+      <h3 className="m-0">Menu</h3>
+      <button
+        className="btn btn-light text-primary"
+        onClick={() =>
+          setNewMenuItem({
+            MenuID: menuItems.length > 0 ? Math.max(...menuItems.map(m => m.MenuID)) + 1 : 1,
+            ItemName: "",
+            Description: "",
+            Price: "",
+          })
+        }
+      >
+        Add New Item
+      </button>
+    </div>
+    
+    <div className="table-responsive">
+      <table className="table table-bordered">
+        <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+          <tr>
+            <th>ID</th>
+            <th>Item Name</th>
+            <th>Description</th>
+            <th>Price (€)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {menuItems.length > 0 ? (
+            menuItems.map((item) => (
+              <tr key={item.menuID}>
+                <td>{item.menuID}</td>
+                <td>{item.itemName}</td>
+                <td>{item.description}</td>
+                <td>{item.price}</td>
+                <td>
+                  <button className="btn btn-sm btn-primary me-2" onClick={() => setEditMenuItem(item)}>
+                    <FaEdit />
+                  </button>
+                  <button className="btn btn-sm btn-danger" onClick={() => handleDeleteMenuItem(item.menuID)}>
+                    <FaTrashAlt />
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="text-center text-muted">No menu items found.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Edit Modal */}
+    {editMenuItem && (
+      <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Edit Menu Item</h5>
+              <button type="button" className="btn-close" onClick={() => setEditMenuItem(null)}></button>
+            </div>
+            <div className="modal-body">
+              <input type="text" className="form-control mb-3" placeholder="Item Name" 
+                value={editMenuItem.itemName} 
+                onChange={(e) => setEditMenuItem({ ...editMenuItem, itemName: e.target.value })} 
+              />
+              <textarea className="form-control mb-3" placeholder="Description" 
+                value={editMenuItem.description} 
+                onChange={(e) => setEditMenuItem({ ...editMenuItem, description: e.target.value })} 
+              />
+              <input type="number" className="form-control mb-3" placeholder="Price (€)" 
+                value={editMenuItem.price} 
+                onChange={(e) => setEditMenuItem({ ...editMenuItem, price: parseFloat(e.target.value) })} 
+              />
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-primary" onClick={handleUpdateMenuItem}>Save</button>
+              <button className="btn btn-secondary" onClick={() => setEditMenuItem(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Add Modal */}
+    {newMenuItem && (
+      <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Add New Menu Item</h5>
+              <button type="button" className="btn-close" onClick={() => setNewMenuItem(null)}></button>
+            </div>
+            <div className="modal-body">
+              <input type="text" className="form-control mb-3" placeholder="Item Name" 
+                onChange={(e) => setNewMenuItem({ ...newMenuItem, itemName: e.target.value })} 
+              />
+              <textarea className="form-control mb-3" placeholder="Description" 
+                onChange={(e) => setNewMenuItem({ ...newMenuItem, description: e.target.value })} 
+              />
+              <input type="number" className="form-control mb-3" placeholder="Price (€)" 
+                onChange={(e) => setNewMenuItem({ ...newMenuItem, price: parseFloat(e.target.value) })} 
+              />
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-primary" onClick={handleAddMenuItem}>Add</button>
+              <button className="btn btn-secondary" onClick={() => setNewMenuItem(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
   
   
   const renderStaffContent = () => (
@@ -3438,9 +3489,378 @@ const handleUpdateInventory = async () => {
       )}
     </div>
   );
+  const renderGymContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Gym</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewGym({
+              gymID: gyms.length > 0 ? Math.max(...gyms.map((g) => g.gymID)) + 1 : 1,
+              amenityID: "",
+              numberOfMachines: "",
+              open24Hours: false,
+            })
+          }
+        >
+          Add New Gym
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Gym ID</th>
+              <th>Amenity ID</th>
+              <th>Number of Machines</th>
+              <th>Open 24 Hours</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {gyms.length > 0 ? (
+              gyms.map((gym) => (
+                <tr key={gym.gymID}>
+                  <td>{gym.gymID}</td>
+                  <td>{gym.amenityID}</td>
+                  <td>{gym.numberOfMachines}</td>
+                  <td>{gym.open24Hours ? "Yes" : "No"}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditGym(gym)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteGym(gym.gymID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted">
+                  No gyms found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Gym Modal */}
+      {editGym && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Gym</h5>
+                <button type="button" className="btn-close" onClick={() => setEditGym(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Gym ID"
+                  value={editGym.gymID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={editGym.amenityID}
+                  onChange={(e) => setEditGym({ ...editGym, amenityID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Number of Machines"
+                  value={editGym.numberOfMachines}
+                  onChange={(e) => setEditGym({ ...editGym, numberOfMachines: e.target.value })}
+                />
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={editGym.open24Hours}
+                    onChange={(e) => setEditGym({ ...editGym, open24Hours: e.target.checked })}
+                  />
+                  <label className="form-check-label">Open 24 Hours</label>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateGym}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditGym(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add Gym Modal */}
+      {newGym && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Gym</h5>
+                <button type="button" className="btn-close" onClick={() => setNewGym(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Amenity ID"
+                  value={newGym.amenityID}
+                  onChange={(e) => setNewGym({ ...newGym, amenityID: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Number of Machines"
+                  value={newGym.numberOfMachines}
+                  onChange={(e) => setNewGym({ ...newGym, numberOfMachines: e.target.value })}
+                />
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={newGym.open24Hours}
+                    onChange={(e) => setNewGym({ ...newGym, open24Hours: e.target.checked })}
+                  />
+                  <label className="form-check-label">Open 24 Hours</label>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddGym}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewGym(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  
+  const renderSaunaContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Saunas</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewSauna({
+              saunaID: saunas.length > 0 ? Math.max(...saunas.map((s) => s.saunaID)) + 1 : 1,
+              amenityID: "",
+              maxTemperature: "",
+              capacity: "",
+            })
+          }
+        >
+          Add New Sauna
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Sauna ID</th>
+              <th>Amenity ID</th>
+              <th>Max Temperature (°C)</th>
+              <th>Capacity</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {saunas.length > 0 ? (
+              saunas.map((sauna) => (
+                <tr key={sauna.saunaID}>
+                  <td>{sauna.saunaID}</td>
+                  <td>{sauna.amenityID}</td>
+                  <td>{sauna.maxTemperature}</td>
+                  <td>{sauna.capacity}</td>
+                  <td>
+                    <button className="btn btn-sm btn-primary me-2" onClick={() => setEditSauna(sauna)}>
+                      <FaEdit />
+                    </button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDeleteSauna(sauna.saunaID)}>
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted">
+                  No saunas found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Edit Sauna Modal */}
+      {editSauna && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Sauna</h5>
+                <button type="button" className="btn-close" onClick={() => setEditSauna(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input type="number" className="form-control mb-3" placeholder="Amenity ID" value={editSauna.amenityID} onChange={(e) => setEditSauna({ ...editSauna, amenityID: e.target.value })} />
+                <input type="number" className="form-control mb-3" placeholder="Max Temperature" value={editSauna.maxTemperature} onChange={(e) => setEditSauna({ ...editSauna, maxTemperature: e.target.value })} />
+                <input type="number" className="form-control mb-3" placeholder="Capacity" value={editSauna.capacity} onChange={(e) => setEditSauna({ ...editSauna, capacity: e.target.value })} />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateSauna}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditSauna(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      {/* Add Sauna Modal */}
+      {newSauna && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Sauna</h5>
+                <button type="button" className="btn-close" onClick={() => setNewSauna(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input type="number" className="form-control mb-3" placeholder="Amenity ID" value={newSauna.amenityID} onChange={(e) => setNewSauna({ ...newSauna, amenityID: e.target.value })} />
+                <input type="number" className="form-control mb-3" placeholder="Max Temperature" value={newSauna.maxTemperature} onChange={(e) => setNewSauna({ ...newSauna, maxTemperature: e.target.value })} />
+                <input type="number" className="form-control mb-3" placeholder="Capacity" value={newSauna.capacity} onChange={(e) => setNewSauna({ ...newSauna, capacity: e.target.value })} />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddSauna}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewSauna(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  const renderSpaContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Spas</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewSpa({
+              spaID: spas.length > 0 ? Math.max(...spas.map((s) => s.spaID)) + 1 : 1,
+              amenityID: "",
+              numberOfRooms: "",
+              openingTime: "",
+              closingTime: "",
+            })
+          }
+        >
+          Add New Spa
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Spa ID</th>
+              <th>Amenity ID</th>
+              <th>Number of Rooms</th>
+              <th>Opening Time</th>
+              <th>Closing Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {spas.length > 0 ? (
+              spas.map((spa) => (
+                <tr key={spa.spaID}>
+                  <td>{spa.spaID}</td>
+                  <td>{spa.amenityID}</td>
+                  <td>{spa.numberOfRooms}</td>
+                  <td>{spa.openingTime}</td>
+                  <td>{spa.closingTime}</td>
+                  <td>
+                    <button className="btn btn-sm btn-primary me-2" onClick={() => setEditSpa(spa)}>
+                      <FaEdit />
+                    </button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDeleteSpa(spa.spaID)}>
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center text-muted">
+                  No spas found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+  
+      {/* Add Spa Modal */}
+      {newSpa && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Spa</h5>
+                <button type="button" className="btn-close" onClick={() => setNewSpa(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input type="number" className="form-control mb-3" placeholder="Amenity ID" value={newSpa.amenityID} onChange={(e) => setNewSpa({ ...newSpa, amenityID: e.target.value })} />
+                <input type="number" className="form-control mb-3" placeholder="Number of Rooms" value={newSpa.numberOfRooms} onChange={(e) => setNewSpa({ ...newSpa, numberOfRooms: e.target.value })} />
+                <input type="time" className="form-control mb-3" placeholder="Opening Time" value={newSpa.openingTime} onChange={(e) => setNewSpa({ ...newSpa, openingTime: e.target.value })} />
+                <input type="time" className="form-control mb-3" placeholder="Closing Time" value={newSpa.closingTime} onChange={(e) => setNewSpa({ ...newSpa, closingTime: e.target.value })} />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddSpa}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewSpa(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
   
   
-
   
   const renderGuestsContent = () => (
     <div className="card shadow-sm border-0">
@@ -3649,12 +4069,21 @@ const handleUpdateInventory = async () => {
   {!isSidebarCollapsed && "Rooms"}
 </li>
 <li
+  className={`nav-item p-2 ${activeTab === "feedback" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("feedback")}
+>
+  <FaClipboardList className="me-2" />
+  {!isSidebarCollapsed && "Feedback"}
+</li>
+<li
     className={`nav-item p-2 ${activeTab === "reviews" ? "bg-primary text-white" : ""}`}
     onClick={() => setActiveTab("reviews")}
   >
     <FaEdit className="me-2" />
     {!isSidebarCollapsed && "Reviews"}
   </li>
+
+
   <li
   className={`nav-item p-2 ${activeTab === "reservations" ? "bg-primary text-white" : ""}`}
   onClick={() => setActiveTab("reservations")}
@@ -3663,26 +4092,36 @@ const handleUpdateInventory = async () => {
   {!isSidebarCollapsed && "Reservations"}
 </li>
 <li
-  className={`nav-item p-2 ${activeTab === "gyms" ? "bg-primary text-white" : ""}`}
-  onClick={() => setActiveTab("gyms")}
+  className={`nav-item p-2 ${activeTab === "gym" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("gym")}
 >
-  <FaDumbbell className="me-2" />
-  {!isSidebarCollapsed && "Gyms"}
+  <FaDumbbell className="me-2" /> {/* You can use appropriate icons */}
+  {!isSidebarCollapsed && "Gym"}
 </li>
 <li
-  className={`nav-item p-2 ${activeTab === "saunas" ? "bg-primary text-white" : ""}`}
-  onClick={() => setActiveTab("saunas")}
+  className={`nav-item p-2 ${activeTab === "sauna" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("sauna")}
 >
-  <FaHotTub className="me-2" /> {/* Use an appropriate icon */}
-  {!isSidebarCollapsed && "Saunas"}
+  <FaHotTub className="me-2" /> {/* You can use appropriate icons */}
+  {!isSidebarCollapsed && "Sauna"}
 </li>
 <li
-  className={`nav-item p-2 ${activeTab === "spas" ? "bg-primary text-white" : ""}`}
-  onClick={() => setActiveTab("spas")}
+  className={`nav-item p-2 ${activeTab === "spa" ? "bg-primary text-white" : ""}`}
+  onClick={() => setActiveTab("spa")}
 >
-  <FaSpa className="me-2" /> {/* Use an appropriate icon */}
-  {!isSidebarCollapsed && "Spas"}
+  <FaSpa className="me-2" /> {/* You can use appropriate icons */}
+  {!isSidebarCollapsed && "Spa"}
 </li>
+<li
+  style={{ 
+    ...styles.sidebarMenuItem, 
+    ...(activeTab === "menu" ? styles.sidebarMenuItemActive : {}) 
+  }}
+  onClick={() => setActiveTab("menu")}
+>
+  <FaClipboardList className="me-2" /> Menu
+</li>
+
   </ul>
   {/* Logout Button at the Bottom */}
 <button
@@ -3715,10 +4154,11 @@ const handleUpdateInventory = async () => {
 {activeTab === "reviews" && renderReviewsContent()}
 {activeTab === "amenities" && renderAmenitiesContent()}
 {activeTab === "reservations" && renderReservationsContent()}
-{activeTab === "gyms" && renderGymsContent()}
-{activeTab === "saunas" && renderSaunasContent()}
-{activeTab === "spas" && renderSpasContent()}
-
+{activeTab === "gym" && renderGymContent()}
+{activeTab === "sauna" && renderSaunaContent()}
+{activeTab === "spa" && renderSpaContent()}
+{activeTab === "menu" && renderMenuContent()}
+{activeTab === "feedback" && renderFeedbackContent()}
 </div>
 
 
@@ -3753,3 +4193,5 @@ const handleUpdateInventory = async () => {
 };
 
 export default AdminDashboard;
+
+
