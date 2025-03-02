@@ -436,6 +436,7 @@ const user = JSON.parse(localStorage.getItem('user'));
     <a href="#rooms" className="text-white text-decoration-none">Rooms</a>
     <a href="#amenities" className="text-white text-decoration-none">Amenities</a>
     <a href="#feedback" className="text-white text-decoration-none">Feedback</a>
+    <a href="#event" className="text-white text-decoration-none">Events</a>
   </Nav>
   <div className="d-flex align-items-center">
   {!loggedInUser ? (

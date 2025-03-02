@@ -55,16 +55,16 @@ const Feedback = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <a className="nav-link" href="#">Home</a>
+                <a className="nav-link" href="#about">About Us</a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="#rooms">Rooms</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#about">About</a>
+                <a className="nav-link" href="#feedback">Feedback</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#contact">Contact</a>
+                <a className="nav-link" href="#event">Events</a>
               </li>
             </ul>
           </div>
