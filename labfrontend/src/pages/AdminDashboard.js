@@ -8,8 +8,6 @@ import { useNavigate } from "react-router-dom";
 // Inline styles for components
 const styles = {
   layout: {
-
-    
     display: "flex",
     minHeight: "100vh",
   },
