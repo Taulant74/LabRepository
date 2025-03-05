@@ -141,13 +141,9 @@ const Feedback = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-<<<<<<< HEAD
                 <Link className="nav-link fw-bold text-dark" to="/about">
                   About Us
                 </Link>
-=======
-                <a className="nav-link" href="#">Home</a>
->>>>>>> parent of bed4e51 (Linkat ne Headers)
               </li>
               <li className="nav-item">
                 <Link className="nav-link fw-bold text-dark" to="/rooms">
@@ -155,7 +151,6 @@ const Feedback = () => {
                 </Link>
               </li>
               <li className="nav-item">
-<<<<<<< HEAD
                 <Link className="nav-link fw-bold text-dark" to="/amenities">
                   Amenities
                 </Link>
@@ -169,12 +164,6 @@ const Feedback = () => {
                 <Link className="nav-link fw-bold text-dark" to="/event">
                   Events
                 </Link>
-=======
-                <a className="nav-link" href="#about">About</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#contact">Contact</a>
->>>>>>> parent of bed4e51 (Linkat ne Headers)
               </li>
             </ul>
           </div>

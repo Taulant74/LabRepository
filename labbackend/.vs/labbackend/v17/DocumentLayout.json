@@ -178,73 +178,7 @@
             },
             {
               "$type": "Document",
-<<<<<<< HEAD
               "DocumentIndex": 17,
-=======
-              "DocumentIndex": 1,
-              "Title": "EventController.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Controllers\\EventController.cs",
-              "RelativeDocumentMoniker": "labbackend\\Controllers\\EventController.cs",
-              "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Controllers\\EventController.cs",
-              "RelativeToolTip": "labbackend\\Controllers\\EventController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAD4AAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T12:49:24.593Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "EventContext.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\EventContext.cs",
-              "RelativeDocumentMoniker": "labbackend\\Models\\EventContext.cs",
-              "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\EventContext.cs",
-              "RelativeToolTip": "labbackend\\Models\\EventContext.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T12:40:36.161Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Event.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\Event.cs",
-              "RelativeDocumentMoniker": "labbackend\\Models\\Event.cs",
-              "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\Event.cs",
-              "RelativeToolTip": "labbackend\\Models\\Event.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T12:40:14.624Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "SaunaContext.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\SaunaContext.cs",
-              "RelativeDocumentMoniker": "labbackend\\Models\\SaunaContext.cs",
-              "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\SaunaContext.cs",
-              "RelativeToolTip": "labbackend\\Models\\SaunaContext.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAAABAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-10T21:12:43.414Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Supplier.cs",
-              "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\Supplier.cs",
-              "RelativeDocumentMoniker": "labbackend\\Models\\Supplier.cs",
-              "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\Supplier.cs",
-              "RelativeToolTip": "labbackend\\Models\\Supplier.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAWAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-03T22:44:12.373Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
->>>>>>> parent of bed4e51 (Linkat ne Headers)
               "Title": "Staff.cs",
               "DocumentMoniker": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Models\\Staff.cs",
               "RelativeDocumentMoniker": "labbackend\\Models\\Staff.cs",
@@ -262,11 +196,7 @@
               "RelativeDocumentMoniker": "labbackend\\Program.cs",
               "ToolTip": "C:\\Users\\rinaq\\OneDrive\\Documents\\GitHub\\LabRepository\\labbackend\\labbackend\\Program.cs",
               "RelativeToolTip": "labbackend\\Program.cs",
-<<<<<<< HEAD
               "ViewState": "AQIAAEkAAAAAAAAAAAAYwGUAAAAAAAAA",
-=======
-              "ViewState": "AQIAAC0AAAAAAAAAAAAAAGcAAAAAAAAA",
->>>>>>> parent of bed4e51 (Linkat ne Headers)
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-04T15:41:10.482Z"
             },
