@@ -138,7 +138,6 @@ const Rooms = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
 <<<<<<< HEAD
-<<<<<<< HEAD
             <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/">Home</Link></li>
               <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/about">About Us</Link></li>
               <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/rooms">Rooms</Link></li>
@@ -146,8 +145,6 @@ const Rooms = () => {
               <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/feedback">Feedback</Link></li>
               <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/event">Events</Link></li>
 =======
-=======
->>>>>>> parent of bed4e51 (Linkat ne Headers)
               <li className="nav-item">
                 <a className="nav-link" href="#">Home</a>
               </li>
@@ -160,9 +157,6 @@ const Rooms = () => {
               <li className="nav-item">
                 <a className="nav-link" href="#contact">Contact</a>
               </li>
-<<<<<<< HEAD
->>>>>>> parent of bed4e51 (Linkat ne Headers)
-=======
 >>>>>>> parent of bed4e51 (Linkat ne Headers)
             </ul>
           </div>
