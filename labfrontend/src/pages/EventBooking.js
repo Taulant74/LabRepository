@@ -77,16 +77,10 @@ const EventBooking = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <a className="nav-link" href="#about">About Us</a>
+                <a className="nav-link" href="#events">Events</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#rooms">Rooms</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#feedback">Feedback</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#event">Events</a>
+                <a className="nav-link" href="#bookings">Bookings</a>
               </li>
             </ul>
           </div>
