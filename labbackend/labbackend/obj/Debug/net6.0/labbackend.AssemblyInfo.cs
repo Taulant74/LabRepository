@@ -15,7 +15,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 <<<<<<< HEAD
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6408f253408a5228ae4a4f1fa0fbd1b16cb16e1d")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+>>>>>>> parent of bed4e51 (Linkat ne Headers)
 =======
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
 >>>>>>> parent of bed4e51 (Linkat ne Headers)

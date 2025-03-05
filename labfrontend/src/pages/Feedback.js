@@ -142,9 +142,13 @@ const Feedback = () => {
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <Link className="nav-link fw-bold text-dark" to="/about">
                   About Us
                 </Link>
+=======
+                <a className="nav-link" href="#">Home</a>
+>>>>>>> parent of bed4e51 (Linkat ne Headers)
 =======
                 <a className="nav-link" href="#">Home</a>
 >>>>>>> parent of bed4e51 (Linkat ne Headers)
@@ -155,6 +159,7 @@ const Feedback = () => {
                 </Link>
               </li>
               <li className="nav-item">
+<<<<<<< HEAD
 <<<<<<< HEAD
                 <Link className="nav-link fw-bold text-dark" to="/amenities">
                   Amenities
@@ -169,6 +174,12 @@ const Feedback = () => {
                 <Link className="nav-link fw-bold text-dark" to="/event">
                   Events
                 </Link>
+=======
+                <a className="nav-link" href="#about">About</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#contact">Contact</a>
+>>>>>>> parent of bed4e51 (Linkat ne Headers)
 =======
                 <a className="nav-link" href="#about">About</a>
               </li>
