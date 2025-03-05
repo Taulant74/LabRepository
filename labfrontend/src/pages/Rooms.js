@@ -23,7 +23,6 @@ const Rooms = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-            <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/">Home</Link></li>
               <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/about">About Us</Link></li>
               <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/rooms">Rooms</Link></li>
               <li className="nav-item"><Link className="nav-link fw-bold text-dark" to="/amenities">Amenities</Link></li>
