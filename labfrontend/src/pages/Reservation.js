@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import { FaArrowLeft } from "react-icons/fa";
+
 
 const Reservation = () => {
+  const navigate = useNavigate();
+  
   const [roomTypes, setRoomTypes] = useState([
     { id: 1, name: "Standard", price: 90, imageUrl: "/images/standard.png" },
     { id: 2, name: "Deluxe", price: 120, imageUrl: "/images/deluxe.png" },
@@ -156,7 +161,15 @@ const Reservation = () => {
 
   return (
     <div className="container mt-5">
-      <h1 className="text-center">Make a Reservation</h1>
+    {/* Add the arrow button at the top left */}
+    <div
+      style={{ cursor: "pointer", marginBottom: "10px" }}
+      onClick={() => navigate("/")}
+    >
+      <FaArrowLeft size={20} />
+    </div>
+    
+    <h1 className="text-center">Make a Reservation</h1>
 
       {/* Room Type Boxes */}
       {!selectedRoomType && (

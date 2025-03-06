@@ -128,6 +128,9 @@ const [editMenuItem, setEditMenuItem] = useState(null);
 const [feedbacks, setFeedbacks] = useState([]);
 const [newFeedback, setNewFeedback] = useState(null);
 const [editFeedback, setEditFeedback] = useState(null);
+const [eventBookings, setEventBookings] = useState([]);
+const [newEventBooking, setNewEventBooking] = useState(null);
+const [editEventBooking, setEditEventBooking] = useState(null);
 
 const navigate = useNavigate();
 
@@ -255,6 +258,56 @@ const handleAddFeedback = async () => {
     showNotification("Failed to add feedback.");
   }
 };
+
+const fetchEventBookings = async () => {
+  try {
+    const response = await axios.get("https://localhost:7085/api/EventBooking");
+    setEventBookings(response.data);
+  } catch (error) {
+    console.error("Error fetching event bookings:", error);
+  }
+};
+
+// CRUD functions for event bookings:
+const handleAddEventBooking = async () => {
+  try {
+    // Do not include EventBookingID – let the backend auto-generate it.
+    await axios.post("https://localhost:7085/api/EventBooking", newEventBooking);
+    fetchEventBookings();
+    setNewEventBooking(null);
+    showNotification("Event booking added successfully!");
+  } catch (error) {
+    console.error("Error adding event booking:", error);
+    showNotification("Failed to add event booking.");
+  }
+};
+
+const handleUpdateEventBooking = async () => {
+  try {
+    await axios.put(
+      `https://localhost:7085/api/EventBooking/${editEventBooking.EventBookingID}`,
+      editEventBooking
+    );
+    fetchEventBookings();
+    setEditEventBooking(null);
+    showNotification("Event booking updated successfully!");
+  } catch (error) {
+    console.error("Error updating event booking:", error);
+    showNotification("Failed to update event booking.");
+  }
+};
+
+const handleDeleteEventBooking = async (id) => {
+  try {
+    await axios.delete(`https://localhost:7085/api/EventBooking/${id}`);
+    fetchEventBookings();
+    showNotification("Event booking deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting event booking:", error);
+    showNotification("Failed to delete event booking.");
+  }
+};
+
 
 // Function to update existing feedback
 const handleUpdateFeedback = async () => {
@@ -935,35 +988,34 @@ useEffect(() => {
       showNotification("Failed to delete supplier.");
     }
   };
-const handleAddSchedule = async () => {
-  try {
-    const scheduleData = {
-      scheduleID: newSchedule.scheduleID,
-      staffID: parseInt(newSchedule.staffID, 10), // Ensure it's an integer
-      date: newSchedule.date, // Ensure ISO 8601 format
-      startTime: `${newSchedule.startTime}:00`, // Ensure HH:mm:ss format
-      endTime: `${newSchedule.endTime}:00`, // Ensure HH:mm:ss format
-    };
-
-    const response = await axios.post(
-      "https://localhost:7085/api/EmployeeSchedule",
-      scheduleData
-    );
-
-    console.log("Server Response:", response.data);
-    fetchSchedules(); // Refresh the schedule list
-    setNewSchedule(null); // Close the modal
-    showNotification("Schedule added successfully!");
-  } catch (error) {
-    if (error.response) {
-      console.error("Error adding schedule:", error.response.data); // Log server response
-    } else {
-      console.error("Error adding schedule:", error.message); // Log error message
+  const handleAddSchedule = async () => {
+    try {
+      const scheduleData = {
+        scheduleID: newSchedule.scheduleID,
+        staffID: parseInt(newSchedule.staffID, 10),
+        date: newSchedule.date,
+        startTime: `${newSchedule.startTime}:00`,
+        endTime: `${newSchedule.endTime}:00`,
+      };
+  
+      const response = await axios.post(
+        "https://localhost:7085/api/EmployeeSchedule",
+        scheduleData
+      );
+      console.log("Server Response:", response.data);
+      fetchSchedules(); // Refresh the schedule list
+      setNewSchedule(null);
+      showNotification("Schedule added successfully!");
+    } catch (error) {
+      if (error.response) {
+        console.error("Error adding schedule:", error.response.data);
+      } else {
+        console.error("Error adding schedule:", error.message);
+      }
+      showNotification("Failed to add schedule. Check console for details.");
     }
-    showNotification("Failed to add schedule. Check console for details.");
-  }
-};
-
+  };
+  
 
 
 
@@ -1078,6 +1130,157 @@ const handleUpdateInventory = async () => {
     setNotification(message);
     setTimeout(() => setNotification(""), 2000);
   };
+  const renderEventBookingContent = () => (
+    <div className="card shadow-sm border-0">
+      <div className="card-header bg-primary text-white d-flex justify-content-between">
+        <h3 className="m-0">Event Bookings</h3>
+        <button
+          className="btn btn-light text-primary"
+          onClick={() =>
+            setNewEventBooking({
+              // Only include the fields the user should fill
+              eventID: "",
+              guestID: "",
+            })
+          }
+        >
+          Add New Booking
+        </button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead style={{ backgroundColor: "#007bff", color: "#fff" }}>
+            <tr>
+              <th>Booking ID</th>
+              <th>Event ID</th>
+              <th>Guest ID</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {eventBookings.length > 0 ? (
+              eventBookings.map((booking) => (
+                <tr key={booking.eventBookingID}>
+                  <td>{booking.eventBookingID}</td>
+                  <td>{booking.eventID}</td>
+                  <td>{booking.guestID}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => setEditEventBooking(booking)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteEventBooking(booking.eventBookingID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center text-muted">
+                  No event bookings found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* Edit Modal */}
+      {editEventBooking && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Event Booking</h5>
+                <button type="button" className="btn-close" onClick={() => setEditEventBooking(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Booking ID"
+                  value={editEventBooking.eventBookingID}
+                  readOnly
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Event ID"
+                  value={editEventBooking.eventID}
+                  onChange={(e) =>
+                    setEditEventBooking({ ...editEventBooking, EventID: e.target.value })
+                  }
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Guest ID"
+                  value={editEventBooking.guestID}
+                  onChange={(e) =>
+                    setEditEventBooking({ ...editEventBooking, GuestID: e.target.value })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleUpdateEventBooking}>
+                  Save
+                </button>
+                <button className="btn btn-secondary" onClick={() => setEditEventBooking(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Add Modal */}
+      {newEventBooking && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Event Booking</h5>
+                <button type="button" className="btn-close" onClick={() => setNewEventBooking(null)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Event ID"
+                  value={newEventBooking.eventID}
+                  onChange={(e) =>
+                    setNewEventBooking({ ...newEventBooking, eventID: e.target.value })
+                  }
+                />
+                <input
+                  type="number"
+                  className="form-control mb-3"
+                  placeholder="Guest ID"
+                  value={newEventBooking.guestID}
+                  onChange={(e) =>
+                    setNewEventBooking({ ...newEventBooking, guestID: e.target.value })
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={handleAddEventBooking}>
+                  Add
+                </button>
+                <button className="btn btn-secondary" onClick={() => setNewEventBooking(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
   const renderFeedbackContent = () => (
     <div className="card shadow-sm border-0">
       <div className="card-header bg-primary text-white d-flex justify-content-between">
@@ -1400,13 +1603,8 @@ const handleUpdateInventory = async () => {
                       <td>{statusText}</td>
                       <td>
                         <span
-                          className={`badge ${
-                            reservation.paymentStatus === "Paid"
-                              ? "bg-success"
-                              : "bg-danger"
-                          }`}
                         >
-                          {reservation.paymentStatus}
+                           Paid
                         </span>
                       </td>
                       <td>
@@ -1439,8 +1637,11 @@ const handleUpdateInventory = async () => {
           </table>
         </div>
         {/* Edit Reservation Modal */}
-{editReservation && (
-  <div className="modal d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        {editReservation && (
+  <div
+    className="modal d-block"
+    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+  >
     <div className="modal-dialog">
       <div className="modal-content">
         <div className="modal-header">
@@ -1448,37 +1649,113 @@ const handleUpdateInventory = async () => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => setEditReservation(null)} // Closes the modal
+            onClick={() => setEditReservation(null)}
           ></button>
         </div>
         <div className="modal-body">
-          <input
-            type="date"
-            className="form-control mb-3"
-            placeholder="Check-In Date"
-            value={editReservation.checkInDate}
-            onChange={(e) => setEditReservation({ ...editReservation, checkInDate: e.target.value })}
-          />
-          <input
-            type="date"
-            className="form-control mb-3"
-            placeholder="Check-Out Date"
-            value={editReservation.checkOutDate}
-            onChange={(e) => setEditReservation({ ...editReservation, checkOutDate: e.target.value })}
-          />
-          <input
-            type="number"
-            className="form-control mb-3"
-            placeholder="Total Price"
-            value={editReservation.totalPrice}
-            onChange={(e) => setEditReservation({ ...editReservation, totalPrice: e.target.value })}
-          />
+          {/* Reservation ID is read-only */}
+          <div className="mb-3">
+            <label className="form-label">Reservation ID</label>
+            <input
+              type="number"
+              className="form-control"
+              value={editReservation.reservationID}
+              readOnly
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Guest ID</label>
+            <input
+              type="number"
+              className="form-control"
+              value={editReservation.guestID}
+              onChange={(e) =>
+                setEditReservation({
+                  ...editReservation,
+                  guestID: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Hotel ID</label>
+            <input
+              type="number"
+              className="form-control"
+              value={editReservation.hotelID}
+              onChange={(e) =>
+                setEditReservation({
+                  ...editReservation,
+                  hotelID: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Room ID</label>
+            <input
+              type="number"
+              className="form-control"
+              value={editReservation.roomID}
+              onChange={(e) =>
+                setEditReservation({
+                  ...editReservation,
+                  roomID: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Check-In Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={editReservation.checkInDate}
+              onChange={(e) =>
+                setEditReservation({
+                  ...editReservation,
+                  checkInDate: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Check-Out Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={editReservation.checkOutDate}
+              onChange={(e) =>
+                setEditReservation({
+                  ...editReservation,
+                  checkOutDate: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Total Price (€)</label>
+            <input
+              type="number"
+              className="form-control"
+              value={editReservation.totalPrice}
+              onChange={(e) =>
+                setEditReservation({
+                  ...editReservation,
+                  totalPrice: e.target.value,
+                })
+              }
+            />
+          </div>
         </div>
         <div className="modal-footer">
           <button className="btn btn-primary" onClick={handleUpdateReservation}>
             Update
           </button>
-          <button className="btn btn-secondary" onClick={() => setEditReservation(null)}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setEditReservation(null)}
+          >
             Cancel
           </button>
         </div>
@@ -1486,6 +1763,7 @@ const handleUpdateInventory = async () => {
     </div>
   </div>
 )}
+
 
       </div>
     );
@@ -1948,7 +2226,6 @@ const renderMenuContent = () => (
         className="btn btn-light text-primary"
         onClick={() =>
           setNewMenuItem({
-            MenuID: menuItems.length > 0 ? Math.max(...menuItems.map(m => m.MenuID)) + 1 : 1,
             ItemName: "",
             Description: "",
             Price: "",
@@ -2307,9 +2584,7 @@ const renderMenuContent = () => (
           className="btn btn-light text-primary"
           onClick={() =>
             setNewSchedule({
-              scheduleID: employeeSchedules.length > 0
-                ? Math.max(...employeeSchedules.map((s) => s.scheduleID)) + 1
-                : 1,
+              // Removed scheduleID to let the database handle it
               staffID: "",
               date: "",
               startTime: "",
@@ -2342,22 +2617,21 @@ const renderMenuContent = () => (
                   <td>{schedule.startTime}</td>
                   <td>{schedule.endTime}</td>
                   <td>
-  <button
-    className="btn btn-sm btn-primary me-2"
-    title="Edit Schedule"
-    onClick={() => setEditSchedule(schedule)} // Opens the Edit modal
-  >
-    <FaEdit />
-  </button>
-  <button
-    className="btn btn-sm btn-danger"
-    title="Delete Schedule"
-    onClick={() => handleDeleteSchedule(schedule.scheduleID)} // Deletes the schedule
-  >
-    <FaTrashAlt />
-  </button>
-</td>
-
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      title="Edit Schedule"
+                      onClick={() => setEditSchedule(schedule)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      title="Delete Schedule"
+                      onClick={() => handleDeleteSchedule(schedule.scheduleID)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
@@ -2459,13 +2733,7 @@ const renderMenuContent = () => (
                 ></button>
               </div>
               <div className="modal-body">
-                <input
-                  type="number"
-                  className="form-control mb-3"
-                  placeholder="Schedule ID"
-                  value={newSchedule.scheduleID}
-                  readOnly
-                />
+                {/* Removed Schedule ID input as it's auto-generated */}
                 <input
                   type="number"
                   className="form-control mb-3"
@@ -2520,6 +2788,7 @@ const renderMenuContent = () => (
       )}
     </div>
   );
+  
   const renderMaintenanceRequestsContent = () => (
     <div className="card shadow-sm border-0">
       <div className="card-header bg-primary text-white d-flex justify-content-between">
@@ -4023,6 +4292,8 @@ const renderMenuContent = () => (
       <FaUser className="me-2" />
       {!isSidebarCollapsed && "Guests"}
     </li>
+    
+
     <li
   className={`nav-item p-2 ${activeTab === "amenities" ? "bg-primary text-white" : ""}`}
   onClick={() => setActiveTab("amenities")}
@@ -4104,6 +4375,16 @@ const renderMenuContent = () => (
   {!isSidebarCollapsed && "Sauna"}
 </li>
 <li
+  className={`nav-item p-2 ${activeTab === "eventbooking" ? "bg-primary text-white" : ""}`}
+  onClick={() => {
+    setActiveTab("eventbooking");
+    fetchEventBookings(); // fetch data when switching to this tab
+  }}
+>
+  <FaCalendarAlt className="me-2" />
+  {!isSidebarCollapsed && "Event Booking"}
+</li>
+<li
   className={`nav-item p-2 ${activeTab === "spa" ? "bg-primary text-white" : ""}`}
   onClick={() => setActiveTab("spa")}
 >
@@ -4138,10 +4419,19 @@ const renderMenuContent = () => (
 
 </div>
 
-      <div style={{ flex: 1 }}>
-      <div className="d-flex justify-content-between align-items-center bg-light border-bottom p-3">
-  <h1 className="h5 m-0">{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h1>
-</div>
+  <div style={{ flex: 1 }}>
+  <div className="d-flex justify-content-between align-items-center bg-light border-bottom p-3">
+    <div
+      style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+      onClick={() => navigate("/")}
+    >
+      <FaArrowLeft size={20} />
+    </div>
+    <h1 className="h5 m-0">
+      {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+    </h1>
+    <div></div>
+  </div>
 <div className="container mt-3">
 {activeTab === "guests" && renderGuestsContent()}
 {activeTab === "inventory" && renderInventoryContent()}
@@ -4150,6 +4440,7 @@ const renderMenuContent = () => (
 {activeTab === "employeeSchedule" && renderEmployeeScheduleContent()}
 {activeTab === "rooms" && renderRoomsContent()}
 {activeTab === "reviews" && renderReviewsContent()}
+{activeTab === "eventbooking" && renderEventBookingContent()}
 {activeTab === "amenities" && renderAmenitiesContent()}
 {activeTab === "reservations" && renderReservationsContent()}
 {activeTab === "gym" && renderGymContent()}

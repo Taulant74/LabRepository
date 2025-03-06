@@ -111,12 +111,7 @@ const Profile = () => {
             <div className="card-body d-flex flex-column justify-content-center">
               {userData ? (
                 <div className="text-center">
-                  <img
-                    src="https://via.placeholder.com/150"
-                    alt="Profile"
-                    className="rounded-circle mb-4"
-                    style={{ width: "150px", height: "150px", objectFit: "cover" }}
-                  />
+                 
                   <h4 className="mb-2">{`${userData.firstName} ${userData.lastName}`}</h4>
                   <p className="text-muted mb-1">{userData.email}</p>
                   <p className="text-muted mb-3">{userData.phone}</p>

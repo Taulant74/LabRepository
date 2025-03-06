@@ -33,7 +33,7 @@ namespace labbackend.Controllers
 
             if (schedule == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Schedule not found." });
             }
 
             return schedule;
@@ -43,18 +43,22 @@ namespace labbackend.Controllers
         [HttpPost]
         public async Task<ActionResult<EmployeeSchedule>> CreateEmployeeSchedule([FromBody] EmployeeSchedule employeeSchedule)
         {
-            // Validate the incoming data
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Add to the database
+            // Ensure StartTime and EndTime have valid values
+            employeeSchedule.StartTime ??= "09:00";
+            employeeSchedule.EndTime ??= "17:00";
+
+            // Do not set ScheduleID, let SQL handle it
             _context.EmployeeSchedules.Add(employeeSchedule);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetEmployeeSchedule), new { id = employeeSchedule.ScheduleID }, employeeSchedule);
         }
+
 
         // PUT: api/EmployeeSchedule/{id}
         [HttpPut("{id}")]
@@ -62,7 +66,7 @@ namespace labbackend.Controllers
         {
             if (id != employeeSchedule.ScheduleID)
             {
-                return BadRequest(new { error = "ScheduleID mismatch" });
+                return BadRequest(new { error = "Schedule ID mismatch." });
             }
 
             if (!ModelState.IsValid)
@@ -70,26 +74,24 @@ namespace labbackend.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.Entry(employeeSchedule).State = EntityState.Modified;
-
-            try
+            var existingSchedule = await _context.EmployeeSchedules.FindAsync(id);
+            if (existingSchedule == null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeScheduleExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound(new { message = "Schedule not found." });
             }
 
-            return NoContent();
+            // Update fields only if new values are provided
+            existingSchedule.StaffID = employeeSchedule.StaffID;
+            existingSchedule.Date = employeeSchedule.Date;
+            existingSchedule.StartTime = employeeSchedule.StartTime ?? existingSchedule.StartTime;
+            existingSchedule.EndTime = employeeSchedule.EndTime ?? existingSchedule.EndTime;
+
+            _context.Entry(existingSchedule).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Schedule updated successfully.", existingSchedule });
         }
+
 
         // DELETE: api/EmployeeSchedule/{id}
         [HttpDelete("{id}")]
@@ -98,18 +100,13 @@ namespace labbackend.Controllers
             var schedule = await _context.EmployeeSchedules.FindAsync(id);
             if (schedule == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Schedule not found." });
             }
 
             _context.EmployeeSchedules.Remove(schedule);
             await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
-
-        private bool EmployeeScheduleExists(int id)
-        {
-            return _context.EmployeeSchedules.Any(e => e.ScheduleID == id);
+            return Ok(new { message = "Schedule deleted successfully." });
         }
     }
 }

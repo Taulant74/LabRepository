@@ -7,18 +7,21 @@ namespace labbackend.Models
     public class EmployeeSchedule
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-increment
         public int ScheduleID { get; set; }
 
-        [Required] // Ensure StaffID is required
+        [Required]
         public int StaffID { get; set; }
 
-        [Required] // Ensure Date is required
+        [Required]
         public DateTime Date { get; set; }
 
-        [Required] // Ensure StartTime is required
-        public TimeSpan StartTime { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string StartTime { get; set; } = "09:00";  // Default
 
-        [Required] // Ensure EndTime is required
-        public TimeSpan EndTime { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string EndTime { get; set; } = "17:00";    // Default
     }
 }

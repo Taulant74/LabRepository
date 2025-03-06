@@ -59,7 +59,11 @@ builder.Services.AddDbContext<GymContext>(options =>
 builder.Services.AddDbContext<MenuContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Adjust the connection string name as needed
 
+builder.Services.AddDbContext<LigjeruesiContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDbContext<LigjerataContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 builder.Services.AddEndpointsApiExplorer();

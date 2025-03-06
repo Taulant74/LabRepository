@@ -41,7 +41,7 @@ namespace labbackend.Controllers
                 _config["Jwt:Issuer"],
                 _config["Jwt:Issuer"],
                 claims,
-                expires: DateTime.Now.AddMinutes(60),
+                expires: DateTime.UtcNow.AddMinutes(10),
                 signingCredentials: creds
             );
 
@@ -71,7 +71,7 @@ namespace labbackend.Controllers
             // Set the refresh token in HttpOnly cookieWin32Exception: The wait operation timed out.
             Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
-                HttpOnly = true,
+                HttpOnly = false,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.Now.AddMinutes(10)  // <-- 2 minutes

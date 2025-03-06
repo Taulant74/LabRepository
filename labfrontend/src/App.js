@@ -16,6 +16,8 @@ import Amenities from './pages/Amenities';
 import AboutUs from './pages/AboutUs';
 import Reservation from './pages/Reservation';
 import ProtectedRoute from './pages/ProtectedRoute';
+import Lecturers from './pages/Lecturers';
+import Lectures from './pages/Lectures';
 
 const App = () => {
   return (
@@ -36,6 +38,8 @@ const App = () => {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/reservation" element={<Reservation />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/lecturers" element={<Lecturers />} />
+        <Route path="/lectures" element={<Lectures />} />
       </Route>
     </Routes>
   );
